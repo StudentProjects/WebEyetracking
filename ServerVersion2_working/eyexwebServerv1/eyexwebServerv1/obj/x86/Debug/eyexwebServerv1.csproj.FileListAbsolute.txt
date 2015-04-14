@@ -1,0 +1,16 @@
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.csprojResolveAssemblyReference.cache
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.Form1.resources
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.introform.resources
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.Properties.Resources.resources
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.csproj.GenerateResource.Cache
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\eyexwebServerv1.exe.config
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\eyexwebServerv1.exe
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\eyexwebServerv1.pdb
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\EyeXFramework.dll
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\Newtonsoft.Json.dll
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\Tobii.EyeX.Client.Net20.dll
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\EyeXFramework.pdb
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\Newtonsoft.Json.xml
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\Tobii.EyeX.Client.Net20.xml
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.exe
+C:\Users\xxjohapd\Documents\Visual Studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.pdb
