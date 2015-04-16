@@ -37,12 +37,13 @@ function handleMessage(i_message)
 		if(currentMessage['MessageContent'] == "Succeeded")
 		{
 			chrome.runtime.sendMessage({ msg: "popup::startReceived" });
+			startMouseRecording();
 			console.log("Recording started!");
 		}
 		else if(currentMessage['MessageContent'] == "Failed")
 		{
 			console.log("Unable to start recording!");
-			chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Error: Unable to start recording.<br><br>Please try again!"});
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to start recording, please try again!", type: "Error"});
 		}
 		else
 		{
@@ -59,7 +60,7 @@ function handleMessage(i_message)
 		else if(currentMessage['MessageContent'] == "Failed")
 		{
 			console.log("Unable to pause recording!");
-			chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Error: Unable to pause recording.<br><br>Please try again!"});
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to pause recording, please try again!", type: "Error"});
 		}
 		else
 		{
@@ -76,7 +77,7 @@ function handleMessage(i_message)
 		else if(currentMessage['MessageContent'] == "Failed")
 		{
 			console.log("Unable to resume recording!");
-			chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Error: Unable to resume recording.<br><br>Please try again!"});
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to resume recording, please try again!", type: "Error"});
 		}
 		else
 		{
@@ -88,12 +89,13 @@ function handleMessage(i_message)
 		if(currentMessage['MessageContent'] == "Succeeded")
 		{
 			chrome.runtime.sendMessage({ msg: "popup::stopReceived" });
+			stopMouseRecording();
 			console.log("Recording stopped!");
 		}
 		else if(currentMessage['MessageContent'] == "Failed")
 		{
 			console.log("Unable to stop recording!");
-			chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Error: Unable to stop recording.<br><br>Please try again!"});
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to stop recording, please try again!", type: "Error"});
 		}
 		else
 		{
@@ -104,6 +106,42 @@ function handleMessage(i_message)
 	case 12:
 		closeWebSocket();
 		break;
+	//ApplicationResponse
+	case 16:
+		chrome.runtime.sendMessage({msg: 'load::createLinkTable', data: currentMessage['MessageContent']});
+		break;
+	//GetAllApplicationsResponse
+	case 18:
+		chrome.runtime.sendMessage({msg: 'load::createApplicationTable', data: currentMessage['MessageContent']});
+		break;
+	//LoadData
+	case 20:
+		if(currentMessage['MessageContent'] == "NoData")
+		{
+			chrome.runtime.sendMessage({msg: 'load::loadFailed'});
+		}
+		else
+		{
+			chrome.runtime.sendMessage({msg: 'load::loadSucceeded'});
+			setHeatmapData(currentMessage['MessageContent']);	
+		}
+		break;
+	//SubTestResponse
+	case 22:
+		//Do stuff
+		break;
+	//RecordedMouseDataResponse
+	case 24:
+		if(currentMessage['MessageContent'] == "Succeeded")
+		{
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Successfully sent mouse data!", type: "Alert"});
+		}
+		else if(currentMessage['MessageContent'] == "Failed")
+		{
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Failed to send mouse data!", type: "Error"});
+		}
+		break;
+	//Error message
 	case 99:
 		console.log("Error: " + currentMessage['MessageContent']);
 		chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Error: " + currentMessage['MessageContent']});

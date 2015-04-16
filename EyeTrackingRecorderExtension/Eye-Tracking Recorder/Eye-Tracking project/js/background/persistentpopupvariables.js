@@ -15,6 +15,7 @@ var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
 var isConnected = false; //Are we connected to the server?
 var debugText = "Please connect to server."; //Debug text currently being shown in debug_paragraph.
+var userInfo = null; //Information about the user
 
 ///////////
 //METHODS//
@@ -23,7 +24,12 @@ var debugText = "Please connect to server."; //Debug text currently being shown 
 //Send variables to popup.js
 function sendPopupVariables()
 {
-	chrome.runtime.sendMessage({msg: 'popup::variables', recording: isRecording, paused: isRecordingPaused, connected: isConnected, text: debugText});
+	chrome.runtime.sendMessage({msg: 'popup::variables', recording: isRecording, paused: isRecordingPaused, connected: isConnected, text: debugText, info: userInfo});
+}
+
+function sendUserInfo()
+{
+	chrome.runtime.sendMessage({msg: 'info::setUserInfo', info: userInfo});
 }
 
 //Create a listener that waits for a requests. 
@@ -56,6 +62,16 @@ chrome.extension.onRequest.addListener
         else if(request.msg == "persistentpopupvariables::setDebugText") 
 		{
 			debugText = request.text;
+		}
+		//setUserInfo
+        else if(request.msg == "persistentpopupvariables::setUserInfo") 
+		{
+			userInfo = request.info;
+		}
+		//getUserInfo
+		else if(request.msg == "persistentpopupvariables::getUserInfo") 
+		{
+			sendUserInfo();
 		}
 	}
 );

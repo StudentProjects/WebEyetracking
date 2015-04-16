@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 
 	"name": "Eye-Tracking Recorder",
-	"version": "0.2",
+	"version": "0.3",
 	"description": "Record and play eye-tracking movements",
 	
 	"browser_action":
@@ -26,9 +26,14 @@
 	
 	"permissions": 
 	[      
+        "webRequest",
+		"webRequestBlocking",
+        "*://*.google.com/",
 		"tabs",
         "notifications",
         "http://*/",
-        "https://*/"
+        "https://*/",
+		"bookmarks",
+		"unlimitedStorage"
 	]
 }

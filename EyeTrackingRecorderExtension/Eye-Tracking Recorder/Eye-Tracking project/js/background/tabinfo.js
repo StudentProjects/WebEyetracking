@@ -4,7 +4,7 @@
 /////////////////////
 //
 //Sends information about the current tab
-//to the server during runtime. This includes
+//to the server during runtime, such as
 //scroll height.
 //
 
@@ -12,20 +12,18 @@
 //Variables//
 /////////////
 
-//None
-
 ///////////
 //METHODS//
 ///////////
 
 //Inject scripts into current tab.
-function injectTabInfo(i_tab)
+function injectTabInfo()
 {
 	chrome.tabs.getSelected(null, function(i_tab)
 	{ 
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
 	
-		chrome.tabs.executeScript(i_tab.id, {file: 'js/injectedtabinfo.js'});
+		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedtabinfo.js'});
 	});	
 }
 
@@ -37,6 +35,23 @@ chrome.runtime.onConnect.addListener(function(port)
 		if(msg.message == "tabinfo::scrollHeight")
 		{
 			sendMessage(13, msg.scroll);
+		}
+	});
+	
+	port.onMessage.addListener(function(msg) 
+	{
+		if(msg.message == "tabinfo::mouseCoords")
+		{
+			//Update mouse position on mouserecorder.js
+			updateMousePosition(msg.xCoord, msg.yCoord);
+		}
+	});
+	
+	port.onMessage.addListener(function(msg) 
+	{
+		if(msg.message == "tabinfo::httpRequest")
+		{
+			sendMessage(21, msg.address);
 		}
 	});
 });
