@@ -1,0 +1,15 @@
+Web server installation
+
+1. Open the folder ServerInstaller
+
+2. Press 'setup.exe'
+
+3. Follow the installation guide
+
+4. When the installation is finished there should be a shortcut to the EyeX Webserver located on your Desktop.
+
+5. Press the shortcut and the application will start
+
+6. Press Start Local Server to start server or Options if you want to configure your server before starting.
+
+7. Finished!
