@@ -1,0 +1,5 @@
+add JSON
+
+1. In the project solution explorer, right click the reference tab
+2. Press manage NuGet packages
+3. Find JSON.net add press Install
