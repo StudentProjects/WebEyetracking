@@ -1,9 +1,0 @@
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\Debug\eyexwebServerv1.exe.config
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\Debug\eyexwebServerv1.exe
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\bin\Debug\eyexwebServerv1.pdb
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\Debug\eyexwebServerv1.csprojResolveAssemblyReference.cache
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\Debug\eyexwebServerv1.Form1.resources
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\Debug\eyexwebServerv1.Properties.Resources.resources
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\Debug\eyexwebServerv1.csproj.GenerateResource.Cache
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\Debug\eyexwebServerv1.exe
-c:\users\xxjohapd\documents\visual studio 2013\Projects\eyexwebServerv1\eyexwebServerv1\obj\Debug\eyexwebServerv1.pdb
