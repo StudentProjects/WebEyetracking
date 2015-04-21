@@ -49,7 +49,7 @@ var indexMouse = 0; //Integer representing the current animation frame, which
 var sizeMouse = 0; //Size of coordinate arrays.
 
 var mousePointer = null;
-var imageObj = null;
+var mouseImage = null;
 ///////////
 //METHODS//
 ///////////
@@ -173,7 +173,6 @@ function animateMouse()
 		
 			mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 			mousePointer.style.top = yMouseCoords[indexMouse]+'px';
-			mousePointer.style.position = 'absolute';
 			indexMouse++;
 		}, 16.67);	
 	}
@@ -309,15 +308,17 @@ function manageMouseDiv(create)
 		mousePointer.style.width = "24px";
 		mousePointer.style.height = "24px";
 		mousePointer.style.zIndex = "1";
-	    var img = document.createElement('img');
-		img.src = chrome.runtime.getURL("../../img/mousepointer.png");
-		mousePointer.appendChild(img);
+	    mouseImage = document.createElement('img');
+		mouseImage.src = chrome.runtime.getURL("../../img/mousepointer.png");
+		mousePointer.appendChild(mouseImage);
 		document.body.appendChild(mousePointer);
 	}
 	else
 	{
+		mousePointer.removeChild(mouseImage);
 		document.body.removeChild(mousePointer);
 		mousePointer = null;
+		mouseImage = null;
 	}
 }
 //Show the collected data as a heatmap in the tab
