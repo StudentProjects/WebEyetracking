@@ -141,8 +141,8 @@ namespace tieto.education.eyetrackingwebserver
                    if (m_eyeHost != null && !m_isRecording && m_isInfoSubmitted)
                    {
                        // Start if the eye tracker device is available
-                       if (m_eyeHost.EyeTrackingDeviceStatus.Value != EyeTrackingDeviceStatus.DeviceNotConnected)
-                       {
+                       //if (m_eyeHost.EyeTrackingDeviceStatus.Value != EyeTrackingDeviceStatus.DeviceNotConnected)
+                       //{
                            m_coordinateList.Clear();
                            m_dataString = "";
                            // Initializing datastream which will collect points where the user is looking. LightlyFiltered means that the GazeData will be somehow filtered and not just raw data.
@@ -161,11 +161,11 @@ namespace tieto.education.eyetrackingwebserver
                            log("Recorder: Successfully started new recording instance!", 1);
 
                            return true;
-                       }
-                       else
+                       //}
+                       /*else
                        {
                            log("Recorder: Failed to start test! The EYE-Tracker device is not connected", 2);
-                       }
+                       }*/
                    }
                }
                else if(i_requestedTestType == 1)

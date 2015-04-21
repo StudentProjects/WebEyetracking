@@ -253,9 +253,19 @@ namespace tieto.education.eyetrackingwebserver
                 //Client requesting info from specific application
                 else if(t_messageType == 15)
                 {
-                    JObject t_stringToJSON = JObject.Parse(i_decryptedMessage);
-                    string t_applicationData = t_stringToJSON.GetValue("MessageContent").Value<string>();
-                    constructResponseMessage(16, true, m_activeServerInstance.getApplicationData(t_applicationData));
+                    try
+                    {
+                        JObject t_stringToJSON = JObject.Parse(i_decryptedMessage);
+                        string t_applicationData = t_stringToJSON.GetValue("MessageContent").Value<string>();
+                        constructResponseMessage(16, true, m_activeServerInstance.getApplicationData(t_applicationData));
+                    }
+                    catch(Exception e)
+                    {
+                        m_activeServerInstance.setLogType(2);
+                        m_activeServerInstance.setOutputTextProperty("MessageHandler: Failed when converting json message of type " + t_messageType.ToString());
+                        m_activeServerInstance.setLogType(2);
+                        m_activeServerInstance.setOutputTextProperty("Error message: " + e.ToString());
+                    }
                 }
                     //Client requesting all application names
                 else if(t_messageType == 17)
