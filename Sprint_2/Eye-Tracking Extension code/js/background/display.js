@@ -53,9 +53,9 @@ function setHeatmapData(i_data)
 
 //Tell injecteddisplay.js to animate heatmap of data.
 function animateHeatmap(animateEye, animateMouse)
-{
+{	
 	chrome.tabs.getSelected(null, function(i_tab) 
-	{
+	{		
 		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::animate", eye: animateEye, mouse: animateMouse}, function(response) 
 		{
 			try
@@ -71,6 +71,7 @@ function animateHeatmap(animateEye, animateMouse)
 		});
 	});
 }
+
 
 //Tell injecteddisplay.js to show heatmap of data.
 function showHeatmap(showEye, showMouse)

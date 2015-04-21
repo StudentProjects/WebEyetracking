@@ -49,6 +49,7 @@ var indexMouse = 0; //Integer representing the current animation frame, which
 var sizeMouse = 0; //Size of coordinate arrays.
 
 var mousePointer = null;
+var imageObj = null;
 ///////////
 //METHODS//
 ///////////
@@ -152,6 +153,7 @@ function animateEye()
 //as long as index is less than the size of the timeStampMouse array.
 function animateMouse()
 {	
+	console.log("Totally drawing");
 	if(mousePointer != null)
 	{
 		animationMouse = setInterval(function()
@@ -168,11 +170,10 @@ function animateMouse()
 				y: yMouseCoords[indexMouse],
 				value: 1
 			});*/
-			
-			mousePointer.style.position = "absolute";
-			mousePointer.style.left = xMouseCoords[indexMouse]+'px';;
-			mousePointer.style.top = yMouseCoords[indexMouse]+'px';;
-			
+		
+			mousePointer.style.left = xMouseCoords[indexMouse]+'px';
+			mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+			mousePointer.style.position = 'absolute';
 			indexMouse++;
 		}, 16.67);	
 	}
@@ -189,6 +190,7 @@ function animateBoth()
 //Start the animate function. Gets the length of timeStampEye.
 function startAnimation(animateEyeBool, animateMouseBool)
 {
+	console.log("Start animation");
 	if(!animating && animateEyeBool && !animateMouseBool)
 	{
 		if(timeStampEYE)
@@ -300,11 +302,15 @@ function manageMouseDiv(create)
 {
 	if(create)
 	{
+		console.log("Creating element");
 		mousePointer = document.createElement('div');
 		mousePointer.id = "mouse";
+		mousePointer.style.position = 'absolute';
 		mousePointer.style.width = "24px";
 		mousePointer.style.height = "24px";
-		mousePointer.style.background = url("../../img/mousepointer.png");
+		mousePointer.style.zIndex = "1";
+		//mousePointer.style.backgroundColor= "#FFFFFF";
+	    mousePointer.style.backgroundImage = chrome.runtime.getURL("../../img/mousepointer.png");
 		document.body.appendChild(mousePointer);
 	}
 	else

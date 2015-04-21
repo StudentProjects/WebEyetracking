@@ -23,6 +23,9 @@
 		"page": "html/background.html",
 		"persistent": true
 	},
+	"web_accessible_resources": [
+  		"img/*.png"
+	],
 	
 	"permissions": 
 	[      
