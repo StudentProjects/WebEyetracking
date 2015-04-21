@@ -48,6 +48,7 @@ var indexMouse = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeMouse = 0; //Size of coordinate arrays.
 
+var mousePointer = null;
 ///////////
 //METHODS//
 ///////////
@@ -151,23 +152,30 @@ function animateEye()
 //as long as index is less than the size of the timeStampMouse array.
 function animateMouse()
 {	
-	animationMouse = setInterval(function()
-	{	
-		if(indexMouse >= sizeMouse)
-		{
-			stopAnimation();
-			return;
-		}
-		
-		heatmapMouseInstance.addData(
-		{
-			x: xMouseCoords[indexMouse],
-			y: yMouseCoords[indexMouse],
-			value: 1
-		});
-		
-		indexMouse++;
-	}, 16.67);
+	if(mousePointer != null)
+	{
+		animationMouse = setInterval(function()
+		{	
+			if(indexMouse >= sizeMouse)
+			{
+				stopAnimation();
+				return;
+			}
+			
+			/*heatmapMouseInstance.addData(
+			{
+				x: xMouseCoords[indexMouse],
+				y: yMouseCoords[indexMouse],
+				value: 1
+			});*/
+			
+			mousePointer.style.position = "absolute";
+			mousePointer.style.left = xMouseCoords[indexMouse]+'px';;
+			mousePointer.style.top = yMouseCoords[indexMouse]+'px';;
+			
+			indexMouse++;
+		}, 16.67);	
+	}
 }
 
 //Animate the result of the collected eye and mouse data. Recursive function that runs
@@ -206,6 +214,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			sizeMouse = timeStampMouse.length;
 			indexMouse = 0;
 			animating = true;
+			manageMouseDiv(true);
 			animateMouse();
 		}
 		else
@@ -224,6 +233,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			sizeMouse = timeStampMouse.length;
 			indexMouse = 0;
 			animating = true;
+			manageMouseDiv(true);
 			animateBoth();
 		}
 		else if(timeStampEYE)
@@ -242,6 +252,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			sizeMouse= timeStampMouse.length;
 			indexMouse = 0;
 			animating = true;
+			manageMouseDiv(true);
 			animateMouse();			
 		}
 		else
@@ -267,6 +278,7 @@ function stopAnimation()
 	{
 		clearInterval(animationMouse);
 		animationMouse = null;
+		manageMouseDiv(false);
 	}
 	animating = false;
 }
@@ -283,6 +295,24 @@ function show(eyeShow, mouseShow)
 	}
 }
 
+//Show or hide mouse pointer
+function manageMouseDiv(create)
+{
+	if(create)
+	{
+		mousePointer = document.createElement('div');
+		mousePointer.id = "mouse";
+		mousePointer.style.width = "24px";
+		mousePointer.style.height = "24px";
+		mousePointer.style.background = url("../../img/mousepointer.png");
+		document.body.appendChild(mousePointer);
+	}
+	else
+	{
+		document.body.removeChild(mousePointer);
+		mousePointer = null;
+	}
+}
 //Show the collected data as a heatmap in the tab
 function showEye()
 {	
