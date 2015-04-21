@@ -309,8 +309,9 @@ function manageMouseDiv(create)
 		mousePointer.style.width = "24px";
 		mousePointer.style.height = "24px";
 		mousePointer.style.zIndex = "1";
-		mousePointer.style.backgroundColor= "#000000";
-	    //mousePointer.style.backgroundImage = chrome.runtime.getURL("../../img/mousepointer.png");
+	    var img = document.createElement('img');
+		img.src = chrome.runtime.getURL("../../img/mousepointer.png");
+		mousePointer.appendChild(img);
 		document.body.appendChild(mousePointer);
 	}
 	else
