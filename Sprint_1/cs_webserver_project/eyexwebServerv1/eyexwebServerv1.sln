@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eyexwebServerv1", "eyexwebServerv1\eyexwebServerv1.csproj", "{D4F75583-3E47-4CE2-8550-288793B47D2E}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "installer", "installer\installer.vdproj", "{CEC7E93B-946B-4B79-9FAB-4215E80E0968}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{D4F75583-3E47-4CE2-8550-288793B47D2E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D4F75583-3E47-4CE2-8550-288793B47D2E}.Release|x86.ActiveCfg = Release|x86
 		{D4F75583-3E47-4CE2-8550-288793B47D2E}.Release|x86.Build.0 = Release|x86
-		{CEC7E93B-946B-4B79-9FAB-4215E80E0968}.Debug|Any CPU.ActiveCfg = Debug
-		{CEC7E93B-946B-4B79-9FAB-4215E80E0968}.Debug|x86.ActiveCfg = Debug
-		{CEC7E93B-946B-4B79-9FAB-4215E80E0968}.Release|Any CPU.ActiveCfg = Release
-		{CEC7E93B-946B-4B79-9FAB-4215E80E0968}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
