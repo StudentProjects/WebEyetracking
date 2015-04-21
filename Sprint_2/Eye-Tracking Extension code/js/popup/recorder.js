@@ -56,11 +56,16 @@ function initRecorder()
 			//If recording and not paused, send message to pause recording.
 			else if(isRecording && !isRecordingPaused)
 			{	
-				if(recordEye)
+				if(recordEye && recordMouse)
+				{
+					chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });
+					chrome.extension.sendRequest({ msg: "mouserecorder::pauseRecording" });
+				}
+				else if(recordEye)
 				{
 					chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });
 				}
-				if(recordMouse)
+				else if(recordMouse)
 				{
 					chrome.extension.sendRequest({ msg: "mouserecorder::pauseRecording" });
 				}
@@ -68,14 +73,19 @@ function initRecorder()
 			//If recording and paused, send resume message
 			else if(isRecording && isRecordingPaused)
 			{
-				if(recordEye)
+				if(recordEye && recordMouse)
+				{
+					chrome.extension.sendRequest({ msg: "websocket::resumeRecording" });
+					chrome.extension.sendRequest({ msg: "mouserecorder::resumeRecording" });
+				}
+				else if(recordEye)
 				{
 					chrome.extension.sendRequest({ msg: "websocket::resumeRecording" });
 				}
-				if(recordMouse)
+				else if(recordMouse)
 				{
 					chrome.extension.sendRequest({ msg: "mouserecorder::resumeRecording" });
-				}		
+				}	
 			}
 			//This should not be possible, but just in case.
 			else
@@ -139,11 +149,19 @@ function addRecorderMessageListener()
 		//Start received
 		if(i_message.msg == "popup::startReceived")
 		{
-			document.getElementById('start_button').innerHTML = "Pause";
-			isRecording = true;
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecording", recording: isRecording });
-			//renderInfo("Recording started!", "Alert");
-			window.close();
+			if(!isRecording)
+			{
+				document.getElementById('start_button').innerHTML = "Pause";
+				isRecording = true;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecording", recording: isRecording });
+				chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
+				
+				var timer = setTimeout(function()
+				{
+					window.close();
+					clearTimeout(timer);
+				}, 10);
+			}
 		}
 		//Pause received
 		else if(i_message.msg == "popup::pauseReceived")
@@ -154,6 +172,7 @@ function addRecorderMessageListener()
 				isRecordingPaused = true;
 				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecordingPaused", paused: isRecordingPaused });
 				renderInfo("Recording paused!", "Alert");
+				chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
 			}
 		}
 		//Resume received
@@ -164,7 +183,13 @@ function addRecorderMessageListener()
 				document.getElementById('start_button').innerHTML = "Pause";
 				isRecordingPaused = false;
 				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecordingPaused", paused: isRecordingPaused });
-				renderInfo("Recording resumed!", "Alert");
+				chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
+				
+				var timer = setTimeout(function()
+				{
+					window.close();
+					clearTimeout(timer);
+				}, 10);
 			}
 		}
 		//Stop received
@@ -176,6 +201,7 @@ function addRecorderMessageListener()
 			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecording", recording: isRecording });
 			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecordingPaused", paused: isRecordingPaused });
 			renderInfo("Recording Stopped!", "Alert");
+			chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
 		}
 	});
 }

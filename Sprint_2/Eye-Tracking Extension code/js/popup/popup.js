@@ -55,11 +55,11 @@ function initializePopup()
 function initializeTabs()
 {
 	//Initialize tabs
-	document.getElementById('tab1').innerHTML = $("#tab1").load("info.html");
-	document.getElementById('tab2').innerHTML = $("#tab2").load("load.html");
-	document.getElementById('tab3').innerHTML = $("#tab3").load("recorder.html");
-	document.getElementById('tab4').innerHTML = $("#tab4").load("player.html");
-	document.getElementById('tab5').innerHTML = $("#tab5").load("statistics.html");
+	document.getElementById('tab0').innerHTML = $("#tab0").load("info.html");
+	document.getElementById('tab1').innerHTML = $("#tab1").load("load.html");
+	document.getElementById('tab2').innerHTML = $("#tab2").load("recorder.html");
+	document.getElementById('tab3').innerHTML = $("#tab3").load("player.html");
+	document.getElementById('tab4').innerHTML = $("#tab4").load("statistics.html");
 
 	var script = document.createElement("script");
 	script.setAttribute("type", "text/javascript");
@@ -107,25 +107,45 @@ function initializeTabs()
 
 		// Bind the click event handler
 		$(this).on('click', 'a', function(e)
-		{
-			  // Make the old tab inactive.
-			  $active.parent().removeClass('active');
-			  $content.hide();
+		{	
+			//Workaround! Sometimes there are two items with class active.
+			//Only the one that is a LI element should be selected. This
+			//tab and its content is then hidden.
+			var old = document.getElementsByClassName('active')[0];
+			var items = document.getElementsByClassName('active');
+			if(items.length > 1)
+			{
+				if(items[0].nodeName == 'LI')
+				{
+					old = items[0];
+				}
+				else
+				{
+					old = items[1];
+				}
+			}		
+			$(old).removeClass('active');		
+			var content = document.getElementById('tab' + $(old).val());	
+			$(content).hide();
+			
+		    // Make the old tab inactive.
+		    //$active.parent().removeClass('active');
+		    //$content.hide();
 
-			  // Update the variables with the new link and content
-			  $active = $(this);
-			  $content = $(this.hash);
-			  
-			  // Make the tab active.
-			  $active.parent().addClass('active');
-			  $content.show();
-			  
-			  //Save active tab
-			  //activeTab = $active.parent().val();
-			  //chrome.extension.sendRequest({ msg: "persistentpopupvariables::setActiveTab", tab: activeTab });
+		    // Update the variables with the new link and content
+		    $active = $(this);
+		    $content = $(this.hash);
+		  
+		    // Make the tab active.
+		    $active.parent().addClass('active');
+		    $content.show();
+		  
+		    //Save active tab
+		    activeTab = $active.parent().val();
+		    chrome.extension.sendRequest({ msg: "persistentpopupvariables::setActiveTab", tab: activeTab });
 
-			  // Prevent the anchor's default click action
-			  e.preventDefault();
+	  	    // Prevent the anchor's default click action
+		    e.preventDefault();
 		});
 	});
 	
@@ -134,15 +154,17 @@ function initializeTabs()
 
 function setActiveTab(newTab)
 {
-	var old = document.getElementById('tab0');
+	//Get first tab, reset its classname and hide its content
+	var old = document.getElementById('li_0');	
+	$(old).removeClass('active');
+	var content = document.getElementById('tab0');	
+	$(content).hide();
 	
-	console.log("Old parent: " + old.id);
-	
-	var tab = document.getElementById('tab' + newTab);
-	
-	console.log("New parent: " + tab.id);
-	
-	//console.log(tabs.childNodes[1].className);
+	//Get new tab, set its classname to active and show its content
+	var tab = document.getElementById('li_' + newTab);
+	$(tab).addClass('active');
+	content = document.getElementById('tab' + newTab);
+	$(content).show();
 }
 
 function renderInfo(info, type)
@@ -266,7 +288,7 @@ function addPopupMessageListener()
 			document.getElementById("eye_playerbox").checked = i_message.content['playerEyeBox'];
 			document.getElementById("mouse_playerbox").checked = i_message.content['playerMouseBox'];
 			
-			//setActiveTab(i_message.content['activeTab']);
+			setActiveTab(i_message.content['activeTab']);
 		
 			if(!isRecording)
 			{

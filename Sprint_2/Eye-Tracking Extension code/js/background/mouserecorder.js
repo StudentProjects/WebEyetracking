@@ -61,6 +61,8 @@ function pushMousePosition()
 //Start recording mouse movement
 function startMouseRecording()
 {
+	chrome.runtime.sendMessage({msg: 'popup::startReceived'});
+	
 	//Reset currentMouseRecording object.
 	currentMouseRecording['mouseX'] = new Array();
 	currentMouseRecording['mouseY'] = new Array();
