@@ -584,14 +584,14 @@ namespace tieto.education.eyetrackingwebserver
                 m_logType = 0;
                 outputTextProperty = t_messageContent;
                 t_stringToJSON = JObject.Parse(t_messageContent);
-                string t_name = t_stringToJSON.GetValue("Name").Value<string>();
-                string t_age = t_stringToJSON.GetValue("Age").Value<string>();
-                string t_occupation = t_stringToJSON.GetValue("Occupation").Value<string>();
-                string t_location = t_stringToJSON.GetValue("Location").Value<string>();
-                string t_computerusage = t_stringToJSON.GetValue("ComputerUsage").Value<string>();
-                string t_application = t_stringToJSON.GetValue("Application").Value<string>();
-                string t_gender = t_stringToJSON.GetValue("Gender").Value<string>();
-                string t_otherinfo = t_stringToJSON.GetValue("Other").Value<string>();
+                string t_name = t_stringToJSON.GetValue("Name").Value<string>().Trim();
+                string t_age = t_stringToJSON.GetValue("Age").Value<string>().Trim();
+                string t_occupation = t_stringToJSON.GetValue("Occupation").Value<string>().Trim();
+                string t_location = t_stringToJSON.GetValue("Location").Value<string>().Trim();
+                string t_computerusage = t_stringToJSON.GetValue("ComputerUsage").Value<string>().Trim();
+                string t_application = t_stringToJSON.GetValue("Application").Value<string>().Trim();
+                string t_gender = t_stringToJSON.GetValue("Gender").Value<string>().Trim();
+                string t_otherinfo = t_stringToJSON.GetValue("Other").Value<string>().Trim();
 
                 m_recorderInstance.insertUserData(t_name, t_age, t_occupation, t_location, t_computerusage, t_application, t_otherinfo,t_gender);
 
