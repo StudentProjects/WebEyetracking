@@ -38,6 +38,8 @@ function initLoad()
 	});
 	
 	addLoadMessageListener();
+	
+	console.log("load.js initialized!");
 }	
 
 //Create button for every available application
@@ -122,7 +124,6 @@ function createLinkTable(input)
 				{
 					chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", info: JSON.stringify(data)});
 					setCurrentTestInfo(data.Name, data.Application, data.Date, time);
-					setActiveTab(3);
 					
 					//Save testInfo variable in persistantpopupvariables.js
 					var testInfo = new Object();
@@ -182,13 +183,25 @@ function addLoadMessageListener()
 		//loadSucceeded
 		else if(i_message.msg == "load::loadSucceeded")
 		{
-			console.log("Load Succeeded!");
+			//Render info
+			renderInfo("Succeeded loading data!", "Alert");
+			
+			//Parse JSON file
+			var data = JSON.parse(i_message.data);
+			
+			//Load statistics into statistics tab.
+			setStatistics(data['testStatistics']);
+			
+			//Change to player tab.
+			setActiveTab(3);
 		}
 		//loadFailed
 		else if(i_message.msg == "load::loadFailed")
 		{
-			console.log("Load Failed!");
 			renderInfo("Failed to load data, please try again!", "Error");
+			
+			//Reset info in 
+			resetCurrentTestInfo();
 		}
 	});
 }

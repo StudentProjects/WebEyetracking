@@ -1,9 +1,9 @@
 /////////////////////
 //Daniel Lindgren////
-//player.js///////////
+//load.js///////////
 /////////////////////
 //
-//Handles the functionality of the player tab in the extension popup.
+//Handles the functionality of the load tab in the extension popup.
 //
 
 /////////////

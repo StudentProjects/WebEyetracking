@@ -122,8 +122,8 @@ function handleMessage(i_message)
 			}
 			else
 			{
-				chrome.runtime.sendMessage({msg: 'load::loadSucceeded'});
-				setHeatmapData(currentMessage['MessageContent']);	
+				chrome.runtime.sendMessage({msg: 'load::loadSucceeded', data: currentMessage['MessageContent'] });
+				setHeatmapData(currentMessage['MessageContent']);
 			}
 			break;
 		//SubTestResponse
