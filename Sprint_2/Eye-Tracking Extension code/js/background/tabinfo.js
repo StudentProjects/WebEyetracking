@@ -54,6 +54,13 @@ chrome.runtime.onConnect.addListener(function(port)
 			sendMessage(21, msg.address);
 		}
 	});
+	port.onMessage.addListener(function(msg) 
+	{
+		if(msg.message == "tabinfo::stopRequest")
+		{
+			sendMessage(4, "StopRecordingRequest");
+		}
+	});
 });
 
 //Create a listener that waits for a request. 
