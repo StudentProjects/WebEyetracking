@@ -34,6 +34,7 @@ function initRecorder()
 			{
 				//Get current scroll height
 				chrome.extension.sendRequest({ msg: "tabinfo::getScrollHeight"});
+				chrome.extension.sendRequest({ msg: "tabinfo::getDocumentSize"});
 
 				//Decide what to record depending on the checkboxes in the recorder tab.
 				if(recordEye && recordMouse)

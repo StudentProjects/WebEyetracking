@@ -36,4 +36,12 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		var scrollHeight = $(window).scrollTop();
 		sendResponse({message: scrollHeight});	
 	}
+	else if (request.msg == "injectedtabinfo::getDocumentSize")
+	{
+		var data = new Object();
+		data.Width = $(document).width();
+		data.Height = $(document).height();		
+		
+		sendResponse({message: JSON.stringify(data)});	
+	}
 });

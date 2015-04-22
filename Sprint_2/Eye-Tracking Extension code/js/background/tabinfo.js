@@ -72,5 +72,17 @@ chrome.extension.onRequest.addListener
 				});
 			});
 		}
+
+		//getDocumentSize
+	    else if(request.msg == "tabinfo::getDocumentSize") 
+		{
+			chrome.tabs.getSelected(null, function(i_tab) 
+			{
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getDocumentSize"}, function(response) 
+				{
+					sendMessage(25, response.message);
+				});
+			});
+		}
 	}
 );
