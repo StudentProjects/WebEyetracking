@@ -36,15 +36,15 @@ function setStatistics(data)
 	document.getElementById("statistics_timeonpage").innerHTML = "Time on page: " + time[0];
 	
 	//percentageOfPageSeen
-	document.getElementById("statistics_percentageofpageseen").innerHTML = "Percentage of page seen: " + statistics['percentageOfPageSeen'];
+	document.getElementById("statistics_percentageofpageseen").innerHTML = "Percentage of page seen: " + statistics['percentageOfPageSeen'] + "%";
 
 	//firstFixated
-	if(statistics['firstFixated'])
+	if(statistics['firstFixation'])
 	{
-		var x = statistics['firstFixated']['X'];
-		var y = statistics['firstFixated']['Y'];
-		var time = statistics['firstFixated']['fixationTime'];
-		document.getElementById("statistics_firstfixated").innerHTML = "First fixated: |X - " + x + "| Y - " + y + "|Time - " + time + "|";
+		var x = statistics['firstFixation']['X'];
+		var y = statistics['firstFixation']['Y'];
+		var time = statistics['firstFixation']['fixationTime'];
+		document.getElementById("statistics_firstfixation").innerHTML = "First fixation: | X - " + x + " | Y - " + y + " | Time - " + time + " |";
 	}	
 	
 	//mostFixated
