@@ -18,24 +18,6 @@ var xMouseCoords = null; //Array of eye x coordinates.
 var yMouseCoords = null; //Array of eye y coordinates.
 var timeStampMouse = null; //Array of eye time stamps.
 
-var heatmapEyeInstance = h337.create( //Heatmap instance.
-{
-	container: document.querySelector('*'),
-	radius: 45
-});
-
-var heatmapMouseInstance = h337.create( //Heatmap instance.
-{
-	container: document.querySelector('*'),
-	radius: 45,
-	gradient:
-	{
-		'.5': 'blue',
-		'.8': 'red',
-		'.95': 'white'
-	}
-});
-
 var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
 var animating = false; //True if animating.
@@ -356,6 +338,7 @@ function showEye()
 {	
 	if(xEyeCoords && yEyeCoords)
 	{
+		initializeCanvas(false,true);
 		console.log("Show eye heatmap!");
 		
 		var t_size = xEyeCoords.length;
@@ -380,6 +363,7 @@ function showMouse()
 {	
 	if(xMouseCoords && yMouseCoords)
 	{
+		initializeCanvas(true,false);
 		console.log("Show mouse heatmap!");
 		
 		var t_size = xMouseCoords.length;
