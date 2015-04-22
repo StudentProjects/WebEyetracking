@@ -54,6 +54,31 @@ var mouseImage = null;
 //METHODS//
 ///////////
 
+function initializeCanvas(mouse,eye)
+{
+	if(eye)
+	{
+		heatmapEyeInstance = h337.create( //Heatmap instance.
+		{
+			container: document.querySelector('*'),
+			radius: 45
+		});
+	}
+	if(mouse)
+	{
+		heatmapMouseInstance = h337.create( //Heatmap instance.
+		{
+			container: document.querySelector('*'),
+			radius: 45,
+			gradient:
+			{
+				'.5': 'blue',
+				'.8': 'red',
+				'.95': 'white'
+			}
+		});
+	}
+}
 //Update the xCoords and yCoords with the latest collected data.
 function setData(i_data)
 {
@@ -198,6 +223,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			
 			sizeEye = timeStampEYE.length;
 			indexEye = 0;
+			initializeCanvas(false,true);
 			animating = true;
 			animateEye();
 		}
@@ -216,6 +242,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			indexMouse = 0;
 			animating = true;
 			manageMouseDiv(true);
+			initializeCanvas(true,false);
 			animateMouse();
 		}
 		else
@@ -235,6 +262,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			indexMouse = 0;
 			animating = true;
 			manageMouseDiv(true);
+			initializeCanvas(true,true);
 			animateBoth();
 		}
 		else if(timeStampEYE)
@@ -244,6 +272,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			sizeEye = timeStampEYE.length;
 			indexEye = 0;
 			animating = true;
+			initializeCanvas(false,true);
 			animateEye();			
 		}
 		else if(timeStampMouse)
@@ -253,6 +282,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			sizeMouse= timeStampMouse.length;
 			indexMouse = 0;
 			animating = true;
+			initializeCanvas(true,false);
 			manageMouseDiv(true);
 			animateMouse();			
 		}
@@ -374,15 +404,21 @@ function hide()
 {
 	console.log("Hide heatmap!");
 	
-	var t_newData = 
+	if(heatmapEyeInstance != null)
 	{
-		max: 8,
-		min: 0,
-		data: []
-	};
-		  
-	heatmapEyeInstance.setData(t_newData);
-	heatmapMouseInstance.setData(t_newData);
+		//find corresponding canvas element
+		var canvas = heatmapEyeInstance._renderer.canvas;
+		//remove the canvas from DOM
+		$(canvas).remove();
+		heatmapEyeInstance = null;
+	}
+	if(heatmapMouseInstance != null)
+	{
+		var canvas = heatmapMouseInstance._renderer.canvas;
+		//remove the canvas from DOM
+		$(canvas).remove();	
+		heatmapMouseInstance = null;	
+	}
 }
 
 //Listen for messages from displayheatmap.js in extension
