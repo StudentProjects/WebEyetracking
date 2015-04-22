@@ -71,7 +71,7 @@ function initRecorder()
 					}
 					
 					index++;
-				}, 25);
+				}, 50);
 			}
 			//If recording and not paused, send message to pause recording.
 			else if(isRecording && !isRecordingPaused)
