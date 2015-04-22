@@ -32,33 +32,45 @@ function initRecorder()
 			//If not recording, send start message with type depending on which checkboxes are checked
 			if(!isRecording)
 			{
-				//Get current scroll height
-				chrome.extension.sendRequest({ msg: "tabinfo::getScrollHeight"});
-				chrome.extension.sendRequest({ msg: "tabinfo::getDocumentSize"});
-
-				//Wait for 25 milliseconds, so that we know that the tabinfo is sent
-				//before the start request.
-				var timer = setTimeout(function()
+				//Send messages with 25 milliseconds delay, so that the servers buffer 
+				//won't get corrupted
+				var index = 0;
+				var interval = setInterval(function()
 				{
-					//Decide what to record depending on the checkboxes in the recorder tab.
-					if(recordEye && recordMouse)
+					if(index == 0)
 					{
-						chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 2});
+						chrome.extension.sendRequest({ msg: "tabinfo::getScrollHeight"});
 					}
-					else if(recordEye)
+					else if(index == 1)
 					{
-						chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 0});
+						chrome.extension.sendRequest({ msg: "tabinfo::getDocumentSize"});
 					}
-					else if(recordMouse)
+					else if(index == 2)
 					{
-						chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 1});
+						//Decide what to record depending on the checkboxes in the recorder tab.
+						if(recordEye && recordMouse)
+						{
+							chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 2});
+						}
+						else if(recordEye)
+						{
+							chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 0});
+						}
+						else if(recordMouse)
+						{
+							chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 1});
+						}
+						else
+						{
+							renderInfo("Please choose what to record in the checkboxes!", "Error");
+						}
 					}
 					else
 					{
-						renderInfo("Please choose what to record in the checkboxes!", "Error");
+						clearInterval(interval);
 					}
 					
-					clearTimeout(timer);
+					index++;
 				}, 25);
 			}
 			//If recording and not paused, send message to pause recording.
