@@ -34,6 +34,10 @@ var timerMouse = 0; //The delay until rendering next mouse frame.
 
 var mousePointer = null;
 var mouseImage = null;
+
+var heatmapEyeInstance = null;
+var heatmapMouseInstance = null;
+
 ///////////
 //METHODS//
 ///////////
