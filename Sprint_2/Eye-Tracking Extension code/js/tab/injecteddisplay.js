@@ -144,7 +144,7 @@ function animateEye()
 	var nextFrame = 0;
 	if(indexEye > 0)
 	{
-		var nextFrame = timeStampEYE[index] - timeStampEYE[index-1];
+		var nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
 	}
 	
 	animationEye = setTimeout(function()
@@ -175,7 +175,7 @@ function animateMouse()
 	var nextFrame = 0;
 	if(indexMouse > 0)
 	{
-		var nextFrame = timeStampMouse[index] - timeStampMouse[index-1];
+		var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
 	}
 	
 	if(mousePointer != null)

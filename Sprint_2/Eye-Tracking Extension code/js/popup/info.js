@@ -109,7 +109,7 @@ function initInfo()
 		form.elements[12].value = userInfo[6];
 		form.elements[13].value = userInfo[7];
 
-		document.getElementById('other').value = userInfo[6];
+		//document.getElementById('other').value = userInfo[6];
 		
 		//Check which gender radio is true.
 		switch(userInfo[2])
@@ -159,7 +159,6 @@ function initInfo()
 //Send user info to websocket, which forwards it to the server. Also save userInfo in persistentpopupvariables.js.
 function sendUserInfo(input)
 {
-	userInfo = input;
 	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setUserInfo", info: input });
 	chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", info: input});
 }

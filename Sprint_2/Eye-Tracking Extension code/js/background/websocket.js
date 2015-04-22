@@ -175,11 +175,12 @@ function makeJSONfromUserInfo(input)
 	var result = new Object();
 	result.Name = input[0];
 	result.Age = input[1];
-	result.Occupation = input[2];
-	result.Location = input[3];
-	result.ComputerUsage = input[4];
-	result.Application = input[5];
-	result.Other = input[6];
+	result.Gender = input[2];
+	result.Occupation = input[3];
+	result.Location = input[4];
+	result.ComputerUsage = input[5];
+	result.Application = input[6];
+	result.Other = input[7];
 	
 	return JSON.stringify(result);
 }
@@ -239,7 +240,6 @@ chrome.extension.onRequest.addListener
 		else if(request.msg == "websocket::applicationRequest") 
 		{
 			sendMessage(15, request.application);
-			console.log(request.application);
 		}
 		else if(request.msg == "websocket::getAllApplicationsRequest")
 		{
