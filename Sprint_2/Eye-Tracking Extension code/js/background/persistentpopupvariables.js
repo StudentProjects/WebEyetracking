@@ -14,6 +14,7 @@
 var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
 var userInfo = null; //Information about the user
+var testInfo = null;
 var activeTab = 0;
 var recorderEyeBox = false;
 var recorderMouseBox = false;
@@ -32,6 +33,7 @@ function sendPopupVariables()
 	variables.isRecordingPaused = isRecordingPaused;
 	variables.isConnected = isConnected;
 	variables.userInfo = userInfo;
+	variables.testInfo = testInfo;
 	variables.activeTab = activeTab;
 	variables.recorderEyeBox = recorderEyeBox;
 	variables.recorderMouseBox = recorderMouseBox;
@@ -44,6 +46,11 @@ function sendPopupVariables()
 function sendUserInfo()
 {
 	chrome.runtime.sendMessage({msg: 'info::setUserInfo', info: userInfo});
+}
+
+function sendTestInfo()
+{
+	chrome.runtime.sendMessage({msg: 'player::setTestInfo', info: testInfo});
 }
 
 //Create a listener that waits for a requests. 
@@ -81,6 +88,11 @@ chrome.extension.onRequest.addListener
         else if(request.msg == "persistentpopupvariables::setUserInfo") 
 		{
 			userInfo = request.info;
+		}
+		//setTestInfo
+		else if(request.msg == "persistentpopupvariables::setTestInfo") 
+		{
+			testInfo = request.info;
 		}
 		//setCurrentTab
 		else if(request.msg == "persistentpopupvariables::setActiveTab")

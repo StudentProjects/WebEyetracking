@@ -115,6 +115,7 @@ function createLinkTable(input)
 			tempData.Application = data['ApplicationName'];
 			tempData.Id = data['Dates'][i]['Names'][j]['Id'];
 		
+			
 			listItem.addEventListener("click", (function(data, time)
 			{
 				return function()
@@ -122,6 +123,14 @@ function createLinkTable(input)
 					chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", info: JSON.stringify(data)});
 					setCurrentTestInfo(data.Name, data.Application, data.Date, time);
 					setActiveTab(3);
+					
+					//Save testInfo variable in persistantpopupvariables.js
+					var testInfo = new Object();
+					testInfo.Name = data.Name;
+					testInfo.Application = data.Application;
+					testInfo.Date = data.Date;
+					testInfo.Time = time;
+					chrome.extension.sendRequest({ msg: "persistentpopupvariables::setTestInfo", info: testInfo });
 				};
 			}(tempData, data['Dates'][i]['Names'][j]['Time'])));
 			

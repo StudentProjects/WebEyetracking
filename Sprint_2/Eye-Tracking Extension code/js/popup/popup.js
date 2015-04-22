@@ -119,10 +119,6 @@ function initializeTabs()
 			$(old).removeClass('active');		
 			var content = document.getElementById('tab' + $(old).val());	
 			$(content).hide();
-			
-		    // Make the old tab inactive.
-		    //$active.parent().removeClass('active');
-		    //$content.hide();
 
 		    // Update the variables with the new link and content
 		    $active = $(this);
@@ -171,6 +167,8 @@ function setActiveTab(newTab)
 	$(tab).addClass('active');
 	content = document.getElementById('tab' + newTab);
 	$(content).show();
+	
+	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setActiveTab", tab: newTab });
 }
 
 function renderInfo(info, type)
@@ -281,10 +279,15 @@ function addPopupMessageListener()
 		//Set variables
 		else if(i_message.msg == "popup::variables")
 		{
-			//Set 
 			isRecording = i_message.content['isRecording'];
 			isRecordingPaused = i_message.content['isRecordingPaused'];
 			isConnected = i_message.content['isConnected'];
+			
+			if(i_message.content['testInfo'])
+			{
+				setCurrentTestInfo(i_message.content['testInfo'].Name, i_message.content['testInfo'].Application, 
+								   i_message.content['testInfo'].Date, i_message.content['testInfo'].Time);
+			}
 			
 			//Mark selected boxes
 			document.getElementById("eye_recordbox").checked = i_message.content['recorderEyeBox'];
