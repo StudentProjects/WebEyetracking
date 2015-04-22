@@ -252,7 +252,7 @@ namespace tieto.education.eyetrackingwebserver
                                     int t_currentTimestampFixation = (int)i_fixationEvent.Timestamp - m_currentFixationPoint.timeStampFixation;
                                     m_currentFixationPoint.timeStampFixation = t_currentTimestampFixation;
 
-                                    m_currentFixationPoint.fixationTime = t_currentTimestampFixation.ToString() + " milliseconds";
+                                    m_currentFixationPoint.fixationTime = t_currentTimestampFixation.ToString();
                                     m_currentFixationPoint.fixationOrder = m_currentFixationIndex;
 
                                     m_fixationPoints.Add(m_currentFixationPoint);
