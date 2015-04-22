@@ -90,7 +90,6 @@ function handleMessage(i_message)
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
 				chrome.runtime.sendMessage({ msg: "popup::stopReceived" });
-				stopMouseRecording();
 				console.log("Recording stopped!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")

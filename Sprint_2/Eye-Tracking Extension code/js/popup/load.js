@@ -106,7 +106,7 @@ function createLinkTable(input)
 			}
 			
 			var listItem = document.createElement('li');
-			listItem.innerHTML = '<a href="#" id="load_button_' + i + '">' + userName + '_' + data['Dates'][i]['Date'] + '_' + data['Dates'][i]['Names'][j]['Time'] + '</a>';
+			listItem.innerHTML = '<a href="#" id="load_button_' + i + '">' + userName + ' - ' + data['Dates'][i]['Date'] + ' - ' + data['Dates'][i]['Names'][j]['Time'] + '</a>';
 			listItem.className = "list-group-item";
 			
 			var tempData = new Object();
@@ -121,6 +121,7 @@ function createLinkTable(input)
 				{
 					chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", info: JSON.stringify(data)});
 					setCurrentTestInfo(data.Name, data.Application, data.Date, time);
+					setActiveTab(3);
 				};
 			}(tempData, data['Dates'][i]['Names'][j]['Time'])));
 			

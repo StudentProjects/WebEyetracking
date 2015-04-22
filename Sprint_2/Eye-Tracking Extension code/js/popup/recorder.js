@@ -227,6 +227,11 @@ function addRecorderMessageListener()
 			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecordingPaused", paused: isRecordingPaused });
 			renderInfo("Recording Stopped!", "Alert");
 			chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
+		
+			if(document.getElementById("mouse_recordbox").checked)
+			{
+				chrome.extension.sendRequest({ msg: "mouserecorder::stopRecording" });
+			}
 		}
 	});
 }

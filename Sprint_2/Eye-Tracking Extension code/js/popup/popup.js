@@ -146,10 +146,24 @@ function initializeTabs()
 
 function setActiveTab(newTab)
 {
-	//Get first tab, reset its classname and hide its content
-	var old = document.getElementById('li_0');	
-	$(old).removeClass('active');
-	var content = document.getElementById('tab0');	
+	//Workaround! Sometimes there are two items with class active.
+	//Only the one that is a LI element should be selected. This
+	//tab and its content is then hidden.
+	var old = document.getElementsByClassName('active')[0];
+	var items = document.getElementsByClassName('active');
+	if(items.length > 1)
+	{
+		if(items[0].nodeName == 'LI')
+		{
+			old = items[0];
+		}
+		else
+		{
+			old = items[1];
+		}
+	}		
+	$(old).removeClass('active');		
+	var content = document.getElementById('tab' + $(old).val());	
 	$(content).hide();
 	
 	//Get new tab, set its classname to active and show its content

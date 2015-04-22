@@ -98,6 +98,7 @@ function setCurrentTestInfo(user, application, date, time)
 		}
 	}
 	
+	document.getElementById("player_testheader").innerHTML = "Current test";
 	document.getElementById("player_user").innerHTML = "Name: " + userName;
 	document.getElementById("player_application").innerHTML = "Application: " + application;
 	document.getElementById("player_date").innerHTML = "Date: " + date;
@@ -106,10 +107,11 @@ function setCurrentTestInfo(user, application, date, time)
 
 function resetCurrentTestInfo()
 {
-	document.getElementById("player_user").innerHTML = "Name:";
-	document.getElementById("player_application").innerHTML = "Application:";
-	document.getElementById("player_date").innerHTML = "Date:";
-	document.getElementById("player_time").innerHTML = "Time:";
+	document.getElementById("player_testheader").innerHTML = "No test loaded";
+	document.getElementById("player_user").innerHTML = "";
+	document.getElementById("player_application").innerHTML = "";
+	document.getElementById("player_date").innerHTML = "";
+	document.getElementById("player_time").innerHTML = "";
 }
 
 //Add a listener that listens for messages.
