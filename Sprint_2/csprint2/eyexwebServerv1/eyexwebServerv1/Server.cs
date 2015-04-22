@@ -590,7 +590,7 @@ namespace tieto.education.eyetrackingwebserver
                 string t_location = t_stringToJSON.GetValue("Location").Value<string>();
                 string t_computerusage = t_stringToJSON.GetValue("ComputerUsage").Value<string>();
                 string t_application = t_stringToJSON.GetValue("Application").Value<string>();
-                string t_gender = "Male";
+                string t_gender = t_stringToJSON.GetValue("Gender").Value<string>();
                 string t_otherinfo = t_stringToJSON.GetValue("Other").Value<string>();
 
                 m_recorderInstance.insertUserData(t_name, t_age, t_occupation, t_location, t_computerusage, t_application, t_otherinfo,t_gender);
