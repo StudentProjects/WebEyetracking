@@ -73,6 +73,45 @@ function initPlayer()
 	console.log("player.js initialized!");
 }
 
+//Show information inside the player about the 
+//currently loaded test.
+function setCurrentTestInfo(user, application, date, time)
+{
+	//Split users name and make upper case of first letter in
+	//each part of the name.
+	var userName = "";
+	var userSplitArray = user.split(" ");
+	console.log(userSplitArray);
+	for(i = 0; i < userSplitArray.length; i++)
+	{
+		var first = userSplitArray[i].substring(0, 1);
+		var rest = userSplitArray[i].substring(1);
+		userSplitArray[i] = first.toUpperCase() + rest;
+		
+		if(i < (userSplitArray.length - 1))
+		{
+			userName += userSplitArray[i] + " ";
+		}
+		else
+		{
+			userName += userSplitArray[i];
+		}
+	}
+	
+	document.getElementById("player_user").innerHTML = "Name: " + userName;
+	document.getElementById("player_application").innerHTML = "Application: " + application;
+	document.getElementById("player_date").innerHTML = "Date: " + date;
+	document.getElementById("player_time").innerHTML = "Time: " + time;
+}
+
+function resetCurrentTestInfo()
+{
+	document.getElementById("player_user").innerHTML = "Name:";
+	document.getElementById("player_application").innerHTML = "Application:";
+	document.getElementById("player_date").innerHTML = "Date:";
+	document.getElementById("player_time").innerHTML = "Time:";
+}
+
 //Add a listener that listens for messages.
 function addLoadMessageListener()
 {

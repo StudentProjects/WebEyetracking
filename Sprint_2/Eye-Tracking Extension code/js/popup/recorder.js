@@ -171,6 +171,11 @@ function addRecorderMessageListener()
 		{
 			if(!isRecording)
 			{
+				if(document.getElementById("mouse_recordbox").checked)
+				{
+					chrome.extension.sendRequest({ msg: "mouserecorder::startRecording" });
+				}
+				
 				document.getElementById('start_button').innerHTML = "Pause";
 				isRecording = true;
 				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecording", recording: isRecording });

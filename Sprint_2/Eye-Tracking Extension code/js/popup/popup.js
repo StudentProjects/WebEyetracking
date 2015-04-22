@@ -14,14 +14,6 @@
 
 //popup
 var isConnected = false; //Are we connected to the server?
-var checkConnection = setInterval(function()
-{
-	if(!isConnected)
-	{
-		renderInfo("No server connection, please restart server!", "Error");
-		chrome.extension.sendRequest({ msg: "websocket::connectWebSocket" });
-	}
-}, 15000);
 
 var debugQueue = new Array();
 
@@ -229,8 +221,6 @@ function placeInQueue(info, type)
 	var debugMessage = new Object();
 	debugMessage['info'] = info;
 	debugMessage['type'] = type;
-	
-	console.log(debugQueue.length);
 	
 	var exists = false;
 	for(i = 0; i < debugQueue.length; i++)

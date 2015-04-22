@@ -25,17 +25,6 @@ var currentTime = 0;
 //METHODS//
 ///////////
 
-//Inject scripts into current tab.
-function injectMouseRecorder()
-{
-	chrome.tabs.getSelected(null, function(i_tab)
-	{ 
-		//chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
-	
-		//chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedmouserecorder.js'});
-	});	
-}
-
 //Update mouse position
 function updateMousePosition(newX, newY)
 {

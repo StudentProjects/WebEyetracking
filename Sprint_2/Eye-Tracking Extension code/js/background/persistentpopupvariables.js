@@ -13,7 +13,6 @@
 
 var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
-var isConnected = false; //Are we connected to the server?
 var userInfo = null; //Information about the user
 var activeTab = 0;
 var recorderEyeBox = false;

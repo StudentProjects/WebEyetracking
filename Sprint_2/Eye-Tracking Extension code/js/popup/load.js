@@ -69,7 +69,9 @@ function createApplicationTable(input)
 	}
 }
 
-//Create button for every recording matching a specific application name
+//Create button for every recording matching a specific application name.
+//Each recording becomes a list item with the name of the user and
+//the date it was recorded.
 function createLinkTable(input)
 {
 	var list = document.getElementById('search_list');
@@ -85,8 +87,26 @@ function createLinkTable(input)
 		var names = data['Dates'][i]['Names'];
 		for(j = 0; j < sizeName; j++)
 		{
+			var userSplitArray = data['Dates'][i]['Names'][j]['Name'].split(" ");
+			var userName = "";
+			for(k = 0; k < userSplitArray.length; k++)
+			{
+				var first = userSplitArray[k].substring(0, 1);
+				var rest = userSplitArray[k].substring(1);
+				userSplitArray[k] = first.toUpperCase() + rest;
+				
+				if(k < (userSplitArray.length - 1))
+				{
+					userName += userSplitArray[k] + " ";
+				}
+				else
+				{
+					userName += userSplitArray[k];
+				}
+			}
+			
 			var listItem = document.createElement('li');
-			listItem.innerHTML = '<a href="#" id="load_button_' + i + '">' + data['Dates'][i]['Names'][j]['Name'] + '_' + data['Dates'][i]['Names'][j]['Time'] + '</a>';
+			listItem.innerHTML = '<a href="#" id="load_button_' + i + '">' + userName + '_' + data['Dates'][i]['Date'] + '_' + data['Dates'][i]['Names'][j]['Time'] + '</a>';
 			listItem.className = "list-group-item";
 			
 			var tempData = new Object();
@@ -95,13 +115,14 @@ function createLinkTable(input)
 			tempData.Application = data['ApplicationName'];
 			tempData.Id = data['Dates'][i]['Names'][j]['Id'];
 		
-			listItem.addEventListener("click", (function(data)
+			listItem.addEventListener("click", (function(data, time)
 			{
 				return function()
 				{
-					chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", info: data});
+					chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", info: JSON.stringify(data)});
+					setCurrentTestInfo(data.Name, data.Application, data.Date, time);
 				};
-			}(JSON.stringify(tempData))));
+			}(tempData, data['Dates'][i]['Names'][j]['Time'])));
 			
 			list.appendChild(listItem);
 		}

@@ -11,6 +11,16 @@
 /////////////
 
 var websocket = null; //WebSocket variable
+var isConnected = false; //Are we connected to the server?
+
+//Check if the isConnected variable in persistantpopupvariables is 
+var checkConnection = setInterval(function()
+{
+	if(!isConnected)
+	{
+		connectWebSocket();
+	}
+}, 15000);
 
 ///////////
 //METHODS//
@@ -29,12 +39,18 @@ var connectWebSocket = function()
 	//Happens when a connection is established.
 	websocket.onopen = function(event) 
 	{
+		isConnected = true;
+		
 		//Send message to popup.js, telling it that we have connected.
 		chrome.runtime.sendMessage({msg: 'popup::connected'});
+		
+		//Inject scripts
 		injectTabInfo(); //tabinfo.js
 		injectHeatmap(); //displayheatmap.js
-		injectMouseRecorder(); //mouserecorder.js	
+		
+		//Get applications
 		sendMessage(17, "GetAllApplicationsRequest"); //Get all applications
+		
 	};
 	
 	//Happens when a connection is closed.
@@ -46,6 +62,7 @@ var connectWebSocket = function()
 		{
 			console.log("ERROR: Could not connect to server.");
 		}
+		isConnected = false;
 	};
 	
 	//Happens when a message is received.
