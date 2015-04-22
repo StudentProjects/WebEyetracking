@@ -25,10 +25,12 @@ var animating = false; //True if animating.
 var indexEye = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeEye = 0; //Size of coordinate arrays.
+var timerEye = 0; //The delay until rendering next eye frame.
 
 var indexMouse = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeMouse = 0; //Size of coordinate arrays.
+var timerMouse = 0; //The delay until rendering next mouse frame.
 
 var mousePointer = null;
 var mouseImage = null;
@@ -134,10 +136,14 @@ function setData(i_data)
 //Animate the result of the collected eye data. Recursive function that runs
 //as long as index is less than the size of the timeStampEYE array.
 function animateEye()
-{	
-	console.log("Animating eye...");
+{
+	var nextFrame = 0;
+	if(indexEye > 0)
+	{
+		var nextFrame = timeStampEYE[index] - timeStampEYE[index-1];
+	}
 	
-	animationEye = setInterval(function()
+	animationEye = setTimeout(function()
 	{	
 		if(indexEye >= sizeEye)
 		{
@@ -153,17 +159,24 @@ function animateEye()
 		});
 		
 		indexEye++;
-	}, 16.67);
+		animateEye();
+		
+	}, nextFrame);
 }
 
 //Animate the result of the collected mouse data. Recursive function that runs
 //as long as index is less than the size of the timeStampMouse array.
 function animateMouse()
 {	
-	console.log("Totally drawing");
+	var nextFrame = 0;
+	if(indexMouse > 0)
+	{
+		var nextFrame = timeStampMouse[index] - timeStampMouse[index-1];
+	}
+	
 	if(mousePointer != null)
 	{
-		animationMouse = setInterval(function()
+		animationMouse = setTimeout(function()
 		{	
 			if(indexMouse >= sizeMouse)
 			{
@@ -173,8 +186,11 @@ function animateMouse()
 		
 			mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 			mousePointer.style.top = yMouseCoords[indexMouse]+'px';
-			indexMouse++;
-		}, 16.67);	
+			
+			indexMouse++;	
+			animateMouse();
+			
+		}, nextFrame);	
 	}
 }
 
@@ -198,6 +214,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			
 			sizeEye = timeStampEYE.length;
 			indexEye = 0;
+			timerEye = 0;
 			initializeCanvas(false,true);
 			animating = true;
 			animateEye();
@@ -215,6 +232,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			
 			sizeMouse = timeStampMouse.length;
 			indexMouse = 0;
+			timerMouse = 0;
 			animating = true;
 			manageMouseDiv(true);
 			initializeCanvas(true,false);
@@ -233,8 +251,10 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			
 			sizeEye = xEyeCoords.length;
 			indexEye = 0;
+			timerEye = 0;
 			sizeMouse = timeStampMouse.length;
 			indexMouse = 0;
+			timerMouse = 0;
 			animating = true;
 			manageMouseDiv(true);
 			initializeCanvas(true,true);
@@ -246,6 +266,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			
 			sizeEye = timeStampEYE.length;
 			indexEye = 0;
+			timerEye = 0;
 			animating = true;
 			initializeCanvas(false,true);
 			animateEye();			
@@ -256,6 +277,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			
 			sizeMouse= timeStampMouse.length;
 			indexMouse = 0;
+			timerMouse = 0;
 			animating = true;
 			initializeCanvas(true,false);
 			manageMouseDiv(true);
@@ -277,12 +299,12 @@ function stopAnimation()
 	indexMouse = 0;
 	if(animationEye)
 	{
-		clearInterval(animationEye);
+		clearTimeout(animationEye);
 		animationEye = null;
 	}
 	if(animationMouse)
 	{
-		clearInterval(animationMouse);
+		clearTimeout(animationMouse);
 		animationMouse = null;
 		manageMouseDiv(false);
 	}

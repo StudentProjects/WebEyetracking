@@ -27,10 +27,10 @@ function initInfo()
 		var form = document.getElementById('userform');
 		var result = new Array();
 		var computerUsage = null;
+		var gender = null;
 		
 		
-		
-		if(form.elements[0].value && form.elements[9].value)
+		if(form.elements[0].value && form.elements[12].value)
 		{   
 			//Find checked box
 			for(var i = 2; i < 5; i++)
