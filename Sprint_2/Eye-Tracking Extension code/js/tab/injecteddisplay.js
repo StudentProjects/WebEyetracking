@@ -170,13 +170,6 @@ function animateMouse()
 				stopAnimation();
 				return;
 			}
-			
-			/*heatmapMouseInstance.addData(
-			{
-				x: xMouseCoords[indexMouse],
-				y: yMouseCoords[indexMouse],
-				value: 1
-			});*/
 		
 			mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 			mousePointer.style.top = yMouseCoords[indexMouse]+'px';
