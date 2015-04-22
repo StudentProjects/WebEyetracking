@@ -36,23 +36,30 @@ function initRecorder()
 				chrome.extension.sendRequest({ msg: "tabinfo::getScrollHeight"});
 				chrome.extension.sendRequest({ msg: "tabinfo::getDocumentSize"});
 
-				//Decide what to record depending on the checkboxes in the recorder tab.
-				if(recordEye && recordMouse)
+				//Wait for 25 milliseconds, so that we know that the tabinfo is sent
+				//before the start request.
+				var timer = setTimeout(function()
 				{
-					chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 2});
-				}
-				else if(recordEye)
-				{
-					chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 0});
-				}
-				else if(recordMouse)
-				{
-					chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 1});
-				}
-				else
-				{
-					renderInfo("Please choose what to record in the checkboxes!", "Error");
-				}
+					//Decide what to record depending on the checkboxes in the recorder tab.
+					if(recordEye && recordMouse)
+					{
+						chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 2});
+					}
+					else if(recordEye)
+					{
+						chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 0});
+					}
+					else if(recordMouse)
+					{
+						chrome.extension.sendRequest({ msg: "websocket::startRecording", record: 1});
+					}
+					else
+					{
+						renderInfo("Please choose what to record in the checkboxes!", "Error");
+					}
+					
+					clearTimeout(timer);
+				}, 25);
 			}
 			//If recording and not paused, send message to pause recording.
 			else if(isRecording && !isRecordingPaused)
