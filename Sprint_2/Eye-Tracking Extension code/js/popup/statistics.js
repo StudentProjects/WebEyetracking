@@ -44,7 +44,7 @@ function setStatistics(data)
 		var x = statistics['firstFixation']['X'];
 		var y = statistics['firstFixation']['Y'];
 		var time = statistics['firstFixation']['fixationTime'];
-		document.getElementById("statistics_firstfixation").innerHTML = "First fixation: | X - " + x + " | Y - " + y + " | Time - " + time + "ms |";
+		document.getElementById("statistics_firstfixation").innerHTML = "First fixation: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
 	}	
 	
 	//mostFixated
@@ -53,7 +53,7 @@ function setStatistics(data)
 		x = statistics['mostFixated']['X'];
 		y = statistics['mostFixated']['Y'];
 		time = statistics['mostFixated']['fixationTime'];
-		document.getElementById("statistics_mostfixated").innerHTML = "Most fixated: | X - " + x + " | Y - " + y + " | Time - " + time + "ms |";
+		document.getElementById("statistics_mostfixated").innerHTML = "Most fixated: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
 	}
 	
 	//nrOfFixations
