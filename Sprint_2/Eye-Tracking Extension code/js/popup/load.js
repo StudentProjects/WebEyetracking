@@ -193,7 +193,7 @@ function addLoadMessageListener()
 			setStatistics(data['testStatistics']);
 			
 			//Change to player tab.
-			setActiveTab(3);
+			setActiveTab(2);
 		}
 		//loadFailed
 		else if(i_message.msg == "load::loadFailed")

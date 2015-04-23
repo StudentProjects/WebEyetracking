@@ -101,8 +101,8 @@ function initializeTabs()
 			//Workaround! Sometimes there are two items with class active.
 			//Only the one that is a LI element should be selected. This
 			//tab and its content is then hidden.
-			var old = document.getElementsByClassName('active')[0];
 			var items = document.getElementsByClassName('active');
+			var old = items[0];
 			if(items.length > 1)
 			{
 				if(items[0].nodeName == 'LI')
@@ -143,8 +143,8 @@ function setActiveTab(newTab)
 	//Workaround! Sometimes there are two items with class active.
 	//Only the one that is a LI element should be selected. This
 	//tab and its content is then hidden.
-	var old = document.getElementsByClassName('active')[0];
 	var items = document.getElementsByClassName('active');
+	old = items[0];
 	if(items.length > 1)
 	{
 		if(items[0].nodeName == 'LI')
