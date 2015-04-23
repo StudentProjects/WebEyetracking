@@ -16,10 +16,10 @@ var isRecordingPaused = false; //Is the recording paused?
 var userInfo = null; //Information about the user
 var testInfo = null;
 var activeTab = 0;
-var recorderEyeBox = false;
-var recorderMouseBox = false;
-var playerEyeBox = false;
-var playerMouseBox = false;
+var recorderEyeBox = true;
+var recorderMouseBox = true;
+var playerEyeBox = true;
+var playerMouseBox = true;
 
 ///////////
 //METHODS//
