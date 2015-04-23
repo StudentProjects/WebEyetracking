@@ -93,7 +93,7 @@ tabInfoTimer = setInterval(function()
 						if(URLstart[0] != "chrome:")
 						{
 							//Check if this was the last error message, if so, do not log again!
-							//if(tabInfoError != "Error: Unable to contact content script (injectedtabinfo.js) inside " + tabs[0].url + ", reinjecting!")
+							if(tabInfoError != "Error: Unable to contact content script (injectedtabinfo.js) inside " + tabs[0].url + ", reinjecting!")
 							{
 								tabInfoError = "Error: Unable to contact content script (injectedtabinfo.js) inside " + tabs[0].url + ", reinjecting!";
 								console.log(tabInfoError);
@@ -103,7 +103,7 @@ tabInfoTimer = setInterval(function()
 						else
 						{	
 							//Check if this was the last error message, if so, do not log again!
-							//if(tabInfoError != "Error: Not allowed to inject injectedtabinfo.js into " + tabs[0].url)
+							if(tabInfoError != "Error: Not allowed to inject injectedtabinfo.js into " + tabs[0].url)
 							{
 								tabInfoError = "Error: Not allowed to inject injectedtabinfo.js into " + tabs[0].url;
 								console.log(tabInfoError);
@@ -113,7 +113,7 @@ tabInfoTimer = setInterval(function()
 					catch(e)
 					{
 						//Check if this was the last error message, if so, do not log again!
-						//if(tabInfoError != "Error: No tab selected!")
+						if(tabInfoError != "Error: No tab selected!")
 						{
 							tabInfoError = "Error: No tab selected!";
 							console.log(tabInfoError);

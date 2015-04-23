@@ -142,7 +142,7 @@ displayTimer = setInterval(function()
 						if(URLstart[0] != "chrome:")
 						{
 							//Check if this was the last error message, if so, do not log again!
-							//if(displayError != "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!")
+							if(displayError != "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!")
 							{
 								displayError = "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!";
 								console.log(displayError);
@@ -153,7 +153,7 @@ displayTimer = setInterval(function()
 						else
 						{	
 							//Check if this was the last error message, if so, do not log again!
-							//if(displayError != "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url)
+							if(displayError != "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url)
 							{
 								displayError = "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url;
 								console.log(displayError);
@@ -163,7 +163,7 @@ displayTimer = setInterval(function()
 					catch(err2)
 					{
 						//Check if this was the last error message, if so, do not log again!
-						//if(displayError != "Error: No tab selected!")
+						if(displayError != "Error: No tab selected!")
 						{
 							displayError = "Error: No tab selected!";
 							console.log(displayError);
