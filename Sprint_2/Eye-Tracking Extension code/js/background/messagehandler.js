@@ -304,5 +304,20 @@ chrome.extension.onRequest.addListener
 		{
 			manageMessage(19, request.data);
 		}
+		//Handled in display.js
+        else if(request.msg == "display::animate") 
+		{
+			var data = request.data;
+			animateHeatmap(data.Eye, data.Mouse);
+		}
+        else if(request.msg == "display::show") 
+		{
+			var data = request.data;
+			showHeatmap(data.Eye, data.Mouse);
+		}
+		else if(request.msg == "display::hide") 
+		{
+			hideHeatmap();
+		}
 	}
 );
