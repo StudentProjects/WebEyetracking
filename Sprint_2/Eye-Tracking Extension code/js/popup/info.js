@@ -18,10 +18,16 @@ var userInfo;
 
 initInfo();
 
+function updateInfo()
+{
+	
+}
+
 function initInfo()
 {
 	//When send_button is pressed, gather form data from userform and
 	//send it to the parent windows function sendUserInfo
+	/*
 	document.getElementById('save_button').addEventListener("click", function(event)
 	{
 		var form = document.getElementById('userform');
@@ -73,6 +79,7 @@ function initInfo()
 		}
 
 	});
+	*/
 
 	//Close window if cancel_button is pressed.
 	document.getElementById('reset_button').addEventListener("click", function()

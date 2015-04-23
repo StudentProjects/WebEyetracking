@@ -8,7 +8,7 @@
 <input type="checkbox" id="mouse_recordbox" checked="true"/>Record Mouse Data
 <hr>
 <form id="userform">
-	<div class="form-group">
+	<div class="form-group" id="div_app">
 	    <h2 for="application"> Application: </h2>
 	<input title="Enter the name of the application you are testing." type="text" class="form-control" id="application" placeholder="Application name">
 	</div>
@@ -16,7 +16,10 @@
 	    <h2 for="name">Name:</h2>
 	    <input title="Enter your name." type="text" class="form-control" id="name" placeholder="Name">
 	</div>
-	<div class="form-group">
+	
+	
+	<div id="optionalinfo" class="collapse">
+	<div class="form-group" id="div_age">
 	    <h2 for="age"> Age: (Optional)</h2>
 	    <input title="Enter your age." type="text" class="form-control" id="age" placeholder="Age">
 	</div>
@@ -46,6 +49,9 @@
 	    <h2 for="application"> Other information: (Optional)</h2>
 	    <input title="Enter any additional information." type="text" class="form-control" id="other" placeholder="Other information">
 	</div>
-	<a href="#" id="save_button" class="btn btn-default btn-primary">Save</a>
+	</div>
+	<a href="#" id="toggleinfo_button" class="collapse-line" data-toggle="collapse" data-target="#optionalinfo">Show optional info</a>
+	<br>
+	<br>
 	<a href="#" id="reset_button" class="btn btn-default btn-primary">Reset</a>
 </form>
