@@ -404,5 +404,28 @@ chrome.extension.onRequest.addListener
 		{
 			sendUserInfo();
 		}
+		//Handled in tabinfo.js
+		//getScrollHeight
+        else if(request.msg == "tabinfo::getScrollHeight") 
+		{
+			chrome.tabs.getSelected(null, function(i_tab) 
+			{
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getScrollHeight"}, function(response) 
+				{
+					manageMessage(13, response.data);
+				});
+			});
+		}
+		//getDocumentSize
+	    else if(request.msg == "tabinfo::getDocumentSize") 
+		{
+			chrome.tabs.getSelected(null, function(i_tab) 
+			{
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getDocumentSize"}, function(response) 
+				{
+					manageMessage(25, response.data);
+				});
+			});
+		}
 	}
 );

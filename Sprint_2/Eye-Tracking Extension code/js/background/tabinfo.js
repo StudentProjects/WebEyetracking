@@ -34,7 +34,7 @@ chrome.runtime.onConnect.addListener(function(port)
 	{
 		if(msg.message == "tabinfo::scrollHeight")
 		{
-			sendMessage(13, msg.scroll);
+			manageMessage(13, msg.scroll);
 		}
 	});
 	
@@ -51,45 +51,14 @@ chrome.runtime.onConnect.addListener(function(port)
 	{
 		if(msg.message == "tabinfo::httpRequest")
 		{
-			sendMessage(21, msg.address);
+			manageMessage(21, msg.address);
 		}
 	});
 	port.onMessage.addListener(function(msg) 
 	{
 		if(msg.message == "tabinfo::stopRequest")
 		{
-			sendMessage(4, "StopRecordingRequest");
+			manageMessage(4, "StopRecordingRequest");
 		}
 	});
 });
-
-//Create a listener that waits for a request. 
-chrome.extension.onRequest.addListener
-(
-	function(request, sender, sendResponse)
-	{
-		//getScrollHeight
-        if(request.msg == "tabinfo::getScrollHeight") 
-		{
-			chrome.tabs.getSelected(null, function(i_tab) 
-			{
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getScrollHeight"}, function(response) 
-				{
-					sendMessage(13, response.message);
-				});
-			});
-		}
-
-		//getDocumentSize
-	    else if(request.msg == "tabinfo::getDocumentSize") 
-		{
-			chrome.tabs.getSelected(null, function(i_tab) 
-			{
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getDocumentSize"}, function(response) 
-				{
-					sendMessage(25, response.message);
-				});
-			});
-		}
-	}
-);
