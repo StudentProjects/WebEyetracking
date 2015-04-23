@@ -246,16 +246,19 @@ chrome.extension.onRequest.addListener
 		//Connect
         if(request.msg == "websocket::connectWebSocket") 
 		{
+			//Handled in websocket.js
 			connectWebSocket();
 		}
 		//Disconnect
 		else if(request.msg == "websocket::disconnectWebSocket") 
 		{
+			//Handled in websocket.js
 			disconnectWebSocket();
 		}
 		//Close websocket
 		else if(request.msg == "websocket::closeWebSocket") 
 		{
+			//Handled in websocket.js
 			closeWebSocket();
 		}
 		//Start
