@@ -24,11 +24,13 @@ function initPlayer()
 	//Send animate request to display.js
 	document.getElementById('animatedata_button').addEventListener("click", function()
 	{	
-		var eyeBox = document.getElementById("eye_playerbox");
-		var mouseBox = document.getElementById("mouse_playerbox");
+		var toSend = new object();
+		toSend.Eye = document.getElementById("eye_playerbox").checked;
+		toSend.Mouse = document.getElementById("mouse_playerbox").checked;
+		
 		if(eyeBox.checked || mouseBox.checked)
 		{
-			chrome.extension.sendRequest({ msg: "display::animate", eye: eyeBox.checked, mouse: mouseBox.checked });
+			chrome.extension.sendRequest({ msg: "display::animate", data: toSend });
 		}
 		else
 		{
@@ -39,12 +41,13 @@ function initPlayer()
 	//Send show request to display.js
 	document.getElementById('showdata_button').addEventListener("click", function()
 	{
-		var eyeBox = document.getElementById("eye_playerbox");
-		var mouseBox = document.getElementById("mouse_playerbox");
+		var toSend = new object();
+		toSend.Eye = document.getElementById("eye_playerbox").checked;
+		toSend.Mouse = document.getElementById("mouse_playerbox").checked;
 		
 		if(eyeBox.checked || mouseBox.checked)
 		{
-			chrome.extension.sendRequest({ msg: "display::show", eye: eyeBox.checked, mouse: mouseBox.checked });
+			chrome.extension.sendRequest({ msg: "display::show", data: toSend });
 		}
 		else
 		{
@@ -61,13 +64,13 @@ function initPlayer()
 	//If changed, send eye_playerbox checked value
 	document.getElementById("eye_playerbox").addEventListener("change", function()
 	{
-		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBox", box: document.getElementById("eye_playerbox").checked });
+		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBox", data: document.getElementById("eye_playerbox").checked });
 	});
 	
 	//If changed, send mouse_playerbox checked value
 	document.getElementById("mouse_playerbox").addEventListener("change", function()
 	{
-		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBox", box: document.getElementById("mouse_playerbox").checked });
+		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBox", data: document.getElementById("mouse_playerbox").checked });
 	});
 	
 	console.log("player.js initialized!");

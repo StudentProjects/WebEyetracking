@@ -78,7 +78,7 @@ function initInfo()
 	document.getElementById('reset_button').addEventListener("click", function()
 	{
 		userInfo = null;
-		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setUserInfo", info: userInfo });
+		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setUserInfo", data: userInfo });
 		
 		var form = document.getElementById('userform');
 		form.elements[0].value = "";
@@ -159,7 +159,7 @@ function initInfo()
 //Send user info to websocket, which forwards it to the server. Also save userInfo in persistentpopupvariables.js.
 function sendUserInfo(input)
 {
-	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setUserInfo", info: input });
+	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setUserInfo", data: input });
 	chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", data: input});
 }
 

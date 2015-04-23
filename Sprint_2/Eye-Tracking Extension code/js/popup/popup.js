@@ -14,7 +14,6 @@
 
 //popup
 var isConnected = false; //Are we connected to the server?
-
 var debugQueue = new Array();
 
 //player
@@ -47,11 +46,10 @@ function initializePopup()
 function initializeTabs()
 {
 	//Initialize tabs
-	document.getElementById('tab0').innerHTML = $("#tab0").load("info.html");
+	document.getElementById('tab0').innerHTML = $("#tab0").load("recorder.html");
 	document.getElementById('tab1').innerHTML = $("#tab1").load("load.html");
-	document.getElementById('tab2').innerHTML = $("#tab2").load("recorder.html");
-	document.getElementById('tab3').innerHTML = $("#tab3").load("player.html");
-	document.getElementById('tab4').innerHTML = $("#tab4").load("statistics.html");
+	document.getElementById('tab2').innerHTML = $("#tab2").load("player.html");
+	document.getElementById('tab3').innerHTML = $("#tab3").load("statistics.html");
 
 	var script = document.createElement("script");
 	script.setAttribute("type", "text/javascript");
@@ -60,12 +58,12 @@ function initializeTabs()
 
 	script = document.createElement("script");
 	script.setAttribute("type", "text/javascript");
-	script.setAttribute("src", "../js/popup/load.js");
+	script.setAttribute("src", "../js/popup/recorder.js");
 	document.getElementById("main_body").appendChild(script);
 
 	script = document.createElement("script");
 	script.setAttribute("type", "text/javascript");
-	script.setAttribute("src", "../js/popup/recorder.js");
+	script.setAttribute("src", "../js/popup/load.js");
 	document.getElementById("main_body").appendChild(script);
 
 	script = document.createElement("script");
@@ -130,7 +128,7 @@ function initializeTabs()
 		  
 		    //Save active tab
 		    activeTab = $active.parent().val();
-		    chrome.extension.sendRequest({ msg: "persistentpopupvariables::setActiveTab", tab: activeTab });
+		    chrome.extension.sendRequest({ msg: "persistentpopupvariables::setActiveTab", data: activeTab });
 
 	  	    // Prevent the anchor's default click action
 		    e.preventDefault();
@@ -168,7 +166,7 @@ function setActiveTab(newTab)
 	content = document.getElementById('tab' + newTab);
 	$(content).show();
 	
-	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setActiveTab", tab: newTab });
+	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setActiveTab", data: newTab });
 }
 
 function renderInfo(info, type)
@@ -260,7 +258,7 @@ function addPopupMessageListener()
 		if(i_message.msg == "popup::connected")
 		{
 			isConnected = true;
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsConnected", connected: isConnected });
+			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsConnected", data: isConnected });
 			var span = document.getElementById('extension_header');
 			span.innerHTML = "Online";
 			span.className = "h1-success";
@@ -270,7 +268,7 @@ function addPopupMessageListener()
 		else if(i_message.msg == "popup::disconnected")
 		{
 			isConnected = false;
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsConnected", connected: isConnected });
+			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsConnected", data: isConnected });
 			var span = document.getElementById('extension_header');
 			span.innerHTML = "Offline";
 			span.className = "h1-fail";

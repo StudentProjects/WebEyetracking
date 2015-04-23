@@ -131,7 +131,7 @@ function createLinkTable(input)
 					testInfo.Application = data.Application;
 					testInfo.Date = data.Date;
 					testInfo.Time = time;
-					chrome.extension.sendRequest({ msg: "persistentpopupvariables::setTestInfo", info: testInfo });
+					chrome.extension.sendRequest({ msg: "persistentpopupvariables::setTestInfo", data: testInfo });
 				};
 			}(tempData, data['Dates'][i]['Names'][j]['Time'])));
 			
