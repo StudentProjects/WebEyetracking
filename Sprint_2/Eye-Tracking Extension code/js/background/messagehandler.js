@@ -246,16 +246,19 @@ chrome.extension.onRequest.addListener
 		//Connect
         if(request.msg == "websocket::connectWebSocket") 
 		{
+			//Handled in websocket.js
 			connectWebSocket();
 		}
 		//Disconnect
 		else if(request.msg == "websocket::disconnectWebSocket") 
 		{
+			//Handled in websocket.js
 			disconnectWebSocket();
 		}
 		//Close websocket
 		else if(request.msg == "websocket::closeWebSocket") 
 		{
+			//Handled in websocket.js
 			closeWebSocket();
 		}
 		//Start
@@ -300,6 +303,41 @@ chrome.extension.onRequest.addListener
 		else if(request.msg == "websocket::getSpecificDataRequest")
 		{
 			manageMessage(19, request.data);
+		}
+		//Handled in display.js
+        else if(request.msg == "display::animate") 
+		{
+			var data = request.data;
+			animateHeatmap(data.Eye, data.Mouse);
+		}
+        else if(request.msg == "display::show") 
+		{
+			var data = request.data;
+			showHeatmap(data.Eye, data.Mouse);
+		}
+		else if(request.msg == "display::hide") 
+		{
+			hideHeatmap();
+		}
+		//Handled in mouserecorder.js
+		else if(request.msg == "mouserecorder::startRecording") 
+		{
+			startMouseRecording();
+		}
+		//startRecording		
+        else if(request.msg == "mouserecorder::pauseRecording") 
+		{
+			pauseMouseRecording();
+		}
+		//startRecording		
+        else if(request.msg == "mouserecorder::resumeRecording") 
+		{
+			resumeMouseRecording();
+		}
+		//stopRecording
+        else if(request.msg == "mouserecorder::stopRecording") 
+		{
+			stopMouseRecording();
 		}
 	}
 );

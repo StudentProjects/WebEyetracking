@@ -114,27 +114,3 @@ function hideHeatmap()
 		});
 	});
 }
-
-//Create a listener that waits for a request. 
-//Calls the requested function.
-chrome.extension.onRequest.addListener
-(
-	function(request, sender, sendResponse)
-	{
-		//Animate
-        if(request.msg == "display::animate") 
-		{
-			animateHeatmap(request.eye, request.mouse);
-		}
-		//Show
-        else if(request.msg == "display::show") 
-		{
-			showHeatmap(request.eye, request.mouse);
-		}
-		//Hide
-		else if(request.msg == "display::hide") 
-		{
-			hideHeatmap();
-		}
-	}
-);

@@ -95,31 +95,3 @@ function stopMouseRecording()
 	
 	sendMessage(23, JSON.stringify(currentMouseRecording));
 }
-
-//Create a listener that waits for a request. 
-chrome.extension.onRequest.addListener
-(
-	function(request, sender, sendResponse)
-		//startRecording		
-	{	
-        if(request.msg == "mouserecorder::startRecording") 
-		{
-			startMouseRecording();
-		}
-		//startRecording		
-        else if(request.msg == "mouserecorder::pauseRecording") 
-		{
-			pauseMouseRecording();
-		}
-		//startRecording		
-        else if(request.msg == "mouserecorder::resumeRecording") 
-		{
-			resumeMouseRecording();
-		}
-		//stopRecording
-        else if(request.msg == "mouserecorder::stopRecording") 
-		{
-			stopMouseRecording();
-		}
-	}
-);
