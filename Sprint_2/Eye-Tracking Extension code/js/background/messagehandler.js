@@ -319,5 +319,25 @@ chrome.extension.onRequest.addListener
 		{
 			hideHeatmap();
 		}
+		//Handled in mouserecorder.js
+		else if(request.msg == "mouserecorder::startRecording") 
+		{
+			startMouseRecording();
+		}
+		//startRecording		
+        else if(request.msg == "mouserecorder::pauseRecording") 
+		{
+			pauseMouseRecording();
+		}
+		//startRecording		
+        else if(request.msg == "mouserecorder::resumeRecording") 
+		{
+			resumeMouseRecording();
+		}
+		//stopRecording
+        else if(request.msg == "mouserecorder::stopRecording") 
+		{
+			stopMouseRecording();
+		}
 	}
 );
