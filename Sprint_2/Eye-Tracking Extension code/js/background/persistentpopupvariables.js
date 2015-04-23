@@ -53,78 +53,57 @@ function sendTestInfo()
 	chrome.runtime.sendMessage({msg: 'player::setTestInfo', info: testInfo});
 }
 
-//Create a listener that waits for a requests. 
-//Calls the requested functionality.
-chrome.extension.onRequest.addListener
-(
-	function(request, sender, sendResponse)
-	{
-		//getVariables
-        if(request.msg == "persistentpopupvariables::getVariables") 
-		{
-			sendPopupVariables();
-		}
-		//setIsRecording
-        else if(request.msg == "persistentpopupvariables::setIsRecording") 
-		{
-			isRecording = request.recording;
-		}
-		//setIsRecordingPaused
-        else if(request.msg == "persistentpopupvariables::setIsRecordingPaused") 
-		{
-			isRecordingPaused = request.paused;
-		}
-		//setIsConnected
-        else if(request.msg == "persistentpopupvariables::setIsConnected") 
-		{
-			isConnected = request.connected;
-		}
-		//setDebugText
-        else if(request.msg == "persistentpopupvariables::setDebugText") 
-		{
-			debugText = request.text;
-		}
-		//setUserInfo
-        else if(request.msg == "persistentpopupvariables::setUserInfo") 
-		{
-			userInfo = request.info;
-		}
-		//setTestInfo
-		else if(request.msg == "persistentpopupvariables::setTestInfo") 
-		{
-			testInfo = request.info;
-		}
-		//setCurrentTab
-		else if(request.msg == "persistentpopupvariables::setActiveTab")
-		{	
-			activeTab = request.tab;
-			console.log("To set " + request.tab);
-			console.log("Set tab " + activeTab);
-		}
-		//setRecorderEyeBox
-		else if(request.msg == "persistentpopupvariables::setRecorderEyeBox")
-		{
-			recorderEyeBox = request.box;
-		}
-		//setRecorderMouseBox
-		else if(request.msg == "persistentpopupvariables::setRecorderMouseBox")
-		{
-			recorderMouseBox = request.box;
-		}
-		//setPlayerEyeBox
-		else if(request.msg == "persistentpopupvariables::setPlayerEyeBox")
-		{
-			playerEyeBox = request.box;
-		}
-		//setPlayerMouseBox
-		else if(request.msg == "persistentpopupvariables::setPlayerMouseBox")
-		{
-			playerMouseBox = request.box;
-		}
-		//getUserInfo
-		else if(request.msg == "persistentpopupvariables::getUserInfo") 
-		{
-			sendUserInfo();
-		}
-	}
-);
+function setIsRecording(status)
+{
+	isRecording = status;
+}
+
+function setIsRecordingPaused(status)
+{
+	isRecordingPaused = status;
+}
+
+function setIsConnected(connectionStatus)
+{
+	isConnected = connectionStatus;
+}
+
+function setDebugText(newDebugText)
+{
+	debugText = newDebugText;
+}
+
+function setUserInfo(newUserInfo)
+{
+	userInfo = newUserInfo;
+}
+
+function setTestInfo(newTestInfo)
+{
+	testInfo = newTestInfo;
+}
+
+function setActiveTab(newTab)
+{
+	activeTab = newTab;
+}
+
+function setRecorderEyeBox(status)
+{
+	recorderEyeBox = status;
+}
+
+function setRecorderMouseBox(status)
+{
+	recorderMouseBox = status;
+}
+
+function setPlayerEyeBox(status)
+{
+	playerEyeBox = status;
+}
+
+function setPlayerMouseBox(status)
+{
+	playerMouseBox = status;
+}

@@ -339,5 +339,70 @@ chrome.extension.onRequest.addListener
 		{
 			stopMouseRecording();
 		}
+		//Handled in persistentpopupvariables.js
+		else if(request.msg == "persistentpopupvariables::getVariables") 
+		{
+			sendPopupVariables();
+		}
+		//setIsRecording
+        else if(request.msg == "persistentpopupvariables::setIsRecording") 
+		{
+			setIsRecording(request.data);
+		}
+		//setIsRecordingPaused
+        else if(request.msg == "persistentpopupvariables::setIsRecordingPaused") 
+		{
+			setIsRecordingPaused(request.data);
+		}
+		//setIsConnected
+        else if(request.msg == "persistentpopupvariables::setIsConnected") 
+		{
+			setIsConnected(request.data);
+		}
+		//setDebugText
+        else if(request.msg == "persistentpopupvariables::setDebugText") 
+		{
+			setDebugText(request.data);
+		}
+		//setUserInfo
+        else if(request.msg == "persistentpopupvariables::setUserInfo") 
+		{
+			setUserInfo(request.data);
+		}
+		//setTestInfo
+		else if(request.msg == "persistentpopupvariables::setTestInfo") 
+		{
+			setTestInfo(request.data);
+		}
+		//setCurrentTab
+		else if(request.msg == "persistentpopupvariables::setActiveTab")
+		{	
+			setActiveTab(request.data);
+		}
+		//setRecorderEyeBox
+		else if(request.msg == "persistentpopupvariables::setRecorderEyeBox")
+		{
+			setRecorderEyeBox(request.data);
+		}
+		//setRecorderMouseBox
+		else if(request.msg == "persistentpopupvariables::setRecorderMouseBox")
+		{
+			setRecorderMouseBox(request.data);
+		}
+		//setPlayerEyeBox
+		else if(request.msg == "persistentpopupvariables::setPlayerEyeBox")
+		{
+			setPlayerEyeBox(request.data);
+		}
+		//setPlayerMouseBox
+		else if(request.msg == "persistentpopupvariables::setPlayerMouseBox")
+		{
+			setPlayerMouseBox(request.data);
+		}
+		//getUserInfo
+		else if(request.msg == "persistentpopupvariables::getUserInfo") 
+		{
+			sendUserInfo();
+		}
 	}
 );
