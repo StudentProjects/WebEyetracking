@@ -28,7 +28,7 @@ var checkConnection = setInterval(function()
 
 //Connect to local websocket server using port 5746.
 //Setup callback functions for websocket
-var connectWebSocket = function()
+function connectWebSocket()
 {	 
 	//Connect WebSocket to server
 	websocket = new WebSocket("ws://localhost:5746");
@@ -49,7 +49,7 @@ var connectWebSocket = function()
 		injectHeatmap(); //displayheatmap.js
 		
 		//Get applications
-		sendMessage(17, "GetAllApplicationsRequest"); //Get all applications
+		manageMessage(17, "GetAllApplicationsRequest");
 		
 	};
 	
@@ -73,181 +73,23 @@ var connectWebSocket = function()
 		//Called from messagehandler.js
 		handleMessage(event.data); 
 	}; 
-};
+}
 
 //Disconnect from websocket
-var disconnectWebSocket = function()
+function disconnectWebSocket()
 {
 	chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Disconnecting..."});
-	sendMessage(11, "RequestDisconnect");
-};
+	manageMessage(11, "RequestDisconnect");
+}
 
 //Close websocket
-var closeWebSocket = function()
+function closeWebSocket()
 {
 	chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Closing WebSocket..."});
 	websocket.close();
-};
-
-//Send a message to the server with type (integer) 
-//i_messageType and content (string) i_messageContent.
-function sendMessage(i_messageType, i_messageContent)
-{
-	//If message is of type 23, it has the possibility
-	//of being to big for the server to handle as a single
-	//message. Therefore, in case of messagetype 23, the 
-	//message is being split up into smaller peices, which
-	//is sent one by one, 0.025 seconds apart.
-	if(i_messageType == 23)
-	{
-		//Set message size and calculate how many messages 
-		//will be needed.
-		var messageSize = 4096;
-		var nrOfMessages = Math.ceil(i_messageContent.length / messageSize);
-		var messageArray = new Array();
-		
-		//If more than one message is needed,
-		if(nrOfMessages > 1)
-		{
-			for(i = 0; i < nrOfMessages; i++)
-			{
-				var message = new Object();
-				var currentSubString; 
-				
-				//Opcode is 0 for the first message, 2 for the
-				//last message, and 1 for all other.
-				var currentOpcode;
-				if(i == 0)
-				{
-					currentOpcode = 0;
-					currentSubString = i_messageContent.substring(i * messageSize, (i + 1) * messageSize);
-				}
-				else if(i != nrOfMessages - 1)
-				{
-					currentOpcode = 1;
-					currentSubString = i_messageContent.substring(i * messageSize, (i + 1) * messageSize);
-				}
-				else if(i == nrOfMessages - 1)
-				{
-					currentOpcode = 2;
-					currentSubString = i_messageContent.substring(i * messageSize, i_messageContent.length);
-				}
-				
-				//Set message info
-				message['MessageType'] = 23;
-				message['Opcode'] = currentOpcode;
-				message['MessageContent'] = currentSubString;
-				
-				//Push message into array
-				messageArray.push(JSON.stringify({MessageType: i_messageType, Opcode: currentOpcode, MessageContent: currentSubString}));
-			}
-			
-			//Every 25th millisecond, send a message until
-			//there is no more messages to send.
-			var index = 0;
-			var timer = setInterval(function()
-			{
-				if(index == nrOfMessages)
-				{
-					clearInterval(timer);
-					return;
-				}
-				websocket.send(messageArray[index]);
-				index++;	
-			}, 25);
-		}
-		//If only one message is needed, set opcode to 3.
-		else
-		{
-			websocket.send(JSON.stringify({MessageType: i_messageType, Opcode: 3, MessageContent: i_messageContent}));
-		}
-	}
-	//For all other message types than 23.
-	else
-	{
-		websocket.send(JSON.stringify({MessageType: i_messageType, MessageContent: i_messageContent}));
-	}
 }
 
-//Takes an array of user info and creates a JSON string from it.
-function makeJSONfromUserInfo(input)
+function sendWebsocketMessage(i_message) 
 {
-	var result = new Object();
-	result.Name = input[0];
-	result.Age = input[1];
-	result.Gender = input[2];
-	result.Occupation = input[3];
-	result.Location = input[4];
-	result.ComputerUsage = input[5];
-	result.Application = input[6];
-	result.Other = input[7];
-	
-	return JSON.stringify(result);
+	websocket.send(i_message);
 }
-
-//Create a listener that waits for a request. 
-//Calls the requested function.
-chrome.extension.onRequest.addListener
-(
-	function(request, sender, sendResponse)
-	{
-		//Connect
-        if(request.msg == "websocket::connectWebSocket") 
-		{
-			connectWebSocket();
-		}
-		//Disconnect
-		else if(request.msg == "websocket::disconnectWebSocket") 
-		{
-			disconnectWebSocket();
-		}
-		//Close websocket
-		else if(request.msg == "websocket::closeWebSocket") 
-		{
-			closeWebSocket();
-		}
-		//Start
-		else if(request.msg == "websocket::startRecording") 
-		{
-			sendMessage(1, request.record);
-		}
-		//Pause
-		else if(request.msg == "websocket::pauseRecording") 
-		{
-			sendMessage(2, "PauseRecordingRequest");
-		}
-		//Resume
-		else if(request.msg == "websocket::resumeRecording") 
-		{
-			sendMessage(3, "ResumeRecordingRequest");
-		}
-		//Stop
-		else if(request.msg == "websocket::stopRecording") 
-		{
-			sendMessage(4, "StopRecordingRequest");
-		}
-		//RecordedDataRequest
-		else if(request.msg == "websocket::recordedDataRequest") 
-		{
-			sendMessage(5, "RecordedDataRequest");
-		}
-		//SendUserInfo
-		else if(request.msg == "websocket::sendUserInfo") 
-		{
-			sendMessage(14, makeJSONfromUserInfo(request.info));
-		}
-		//ApplicationRequest
-		else if(request.msg == "websocket::applicationRequest") 
-		{
-			sendMessage(15, request.application);
-		}
-		else if(request.msg == "websocket::getAllApplicationsRequest")
-		{
-			sendMessage(17, "GetAllApplicationsRequest");
-		}
-		else if(request.msg == "websocket::getSpecificDataRequest")
-		{
-			sendMessage(19, request.info);
-		}
-	}
-);

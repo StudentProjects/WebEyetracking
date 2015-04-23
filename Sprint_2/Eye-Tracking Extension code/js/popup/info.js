@@ -160,7 +160,7 @@ function initInfo()
 function sendUserInfo(input)
 {
 	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setUserInfo", info: input });
-	chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", info: input});
+	chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", data: input});
 }
 
 //Send user info to websocket, which forwards it to the server

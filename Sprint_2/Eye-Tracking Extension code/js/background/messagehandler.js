@@ -153,4 +153,153 @@ function handleMessage(i_message)
 		console.log("Unable to parse string to JSON when receiving message "+err.message);
 		chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to parse message from server!", type: "Error"});
 	}
-};
+}
+
+function handleLargeMessage(data)
+{
+		//Set message size and calculate how many messages 
+		//will be needed.
+		var messageSize = 4096;
+		var nrOfMessages = Math.ceil(data.length / messageSize);
+		var messageArray = new Array();
+		
+		//If more than one message is needed,
+		if(nrOfMessages > 1)
+		{
+			for(i = 0; i < nrOfMessages; i++)
+			{
+				var message = new Object();
+				var currentSubString; 
+				
+				//Opcode is 0 for the first message, 2 for the
+				//last message, and 1 for all other.
+				var currentOpcode;
+				if(i == 0)
+				{
+					currentOpcode = 0;
+					currentSubString = data.substring(i * messageSize, (i + 1) * messageSize);
+				}
+				else if(i != nrOfMessages - 1)
+				{
+					currentOpcode = 1;
+					currentSubString = data.substring(i * messageSize, (i + 1) * messageSize);
+				}
+				else if(i == nrOfMessages - 1)
+				{
+					currentOpcode = 2;
+					currentSubString = data.substring(i * messageSize, i_messageContent.length);
+				}
+				
+				//Set message info
+				message['MessageType'] = 23;
+				message['Opcode'] = currentOpcode;
+				message['MessageContent'] = currentSubString;
+				
+				//Push message into array
+				messageArray.push(JSON.stringify({MessageType: i_messageType, Opcode: currentOpcode, MessageContent: currentSubString}));
+			}
+			
+			//Every 25th millisecond, send a message until
+			//there is no more messages to send.
+			var index = 0;
+			var timer = setInterval(function()
+			{
+				if(index == nrOfMessages)
+				{
+					clearInterval(timer);
+					return;
+				}
+				sendWebsocketMessage(messageArray[index]);
+				index++;	
+			}, 25);
+		}
+		//If only one message is needed, set opcode to 3.
+		else
+		{
+			sendWebsocketMessage(JSON.stringify({MessageType: i_messageType, Opcode: 3, MessageContent: data}));
+		}
+}
+
+//Send a message to the server with type (integer) 
+//i_messageType and content (string) i_messageContent.
+function manageMessage(i_messageType, i_messageContent)
+{
+	//If the message type is a send mouse coordinates message (type 23)
+	// Handle message as large message
+	if(i_messageType == 23)
+	{
+		handleLargeMessage(i_messageContent);
+	}
+	//For all other message types than 23.
+	else
+	{
+		sendWebsocketMessage(JSON.stringify({MessageType: i_messageType, MessageContent: i_messageContent}));
+	}
+}
+
+//Create a listener that waits for a request. 
+//Calls the requested function.
+chrome.extension.onRequest.addListener
+(
+	function(request, sender, sendResponse)
+	{
+		//Connect
+        if(request.msg == "websocket::connectWebSocket") 
+		{
+			connectWebSocket();
+		}
+		//Disconnect
+		else if(request.msg == "websocket::disconnectWebSocket") 
+		{
+			disconnectWebSocket();
+		}
+		//Close websocket
+		else if(request.msg == "websocket::closeWebSocket") 
+		{
+			closeWebSocket();
+		}
+		//Start
+		else if(request.msg == "websocket::startRecording") 
+		{
+			manageMessage(1, request.data);
+		}
+		//Pause
+		else if(request.msg == "websocket::pauseRecording") 
+		{
+			manageMessage(2, "PauseRecordingRequest");
+		}
+		//Resume
+		else if(request.msg == "websocket::resumeRecording") 
+		{
+			manageMessage(3, "ResumeRecordingRequest");
+		}
+		//Stop
+		else if(request.msg == "websocket::stopRecording") 
+		{
+			manageMessage(4, "StopRecordingRequest");
+		}
+		//RecordedDataRequest
+		else if(request.msg == "websocket::recordedDataRequest") 
+		{
+			manageMessage(5, "RecordedDataRequest");
+		}
+		//SendUserInfo
+		else if(request.msg == "websocket::sendUserInfo") 
+		{
+			manageMessage(14, request.data);
+		}
+		//ApplicationRequest
+		else if(request.msg == "websocket::applicationRequest") 
+		{
+			manageMessage(15, request.data);
+		}
+		else if(request.msg == "websocket::getAllApplicationsRequest")
+		{
+			manageMessage(17, "GetAllApplicationsRequest");
+		}
+		else if(request.msg == "websocket::getSpecificDataRequest")
+		{
+			manageMessage(19, request.data);
+		}
+	}
+);

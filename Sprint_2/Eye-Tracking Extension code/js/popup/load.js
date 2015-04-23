@@ -29,7 +29,7 @@ function initLoad()
 		
 		if(data)
 		{
-			chrome.extension.sendRequest({ msg: "websocket::applicationRequest", application: data});
+			chrome.extension.sendRequest({ msg: "websocket::applicationRequest", data: data});
 		}
 		else
 		{
@@ -63,7 +63,7 @@ function createApplicationTable(input)
 		{
 			return function()
 			{
-				chrome.extension.sendRequest({ msg: "websocket::applicationRequest", application: data});
+				chrome.extension.sendRequest({ msg: "websocket::applicationRequest", data: data});
 			};
 		}(applications[i])));	
 				
@@ -122,7 +122,7 @@ function createLinkTable(input)
 			{
 				return function()
 				{
-					chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", info: JSON.stringify(data)});
+					chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", data: JSON.stringify(data)});
 					setCurrentTestInfo(data.Name, data.Application, data.Date, time);
 					
 					//Save testInfo variable in persistantpopupvariables.js
