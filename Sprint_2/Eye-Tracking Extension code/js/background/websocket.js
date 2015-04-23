@@ -20,7 +20,7 @@ var checkConnection = setInterval(function()
 	{
 		connectWebSocket();
 	}
-}, 15000);
+}, 5000);
 
 ///////////
 //METHODS//
@@ -33,7 +33,7 @@ function connectWebSocket()
 	//Connect WebSocket to server
 	websocket = new WebSocket("ws://localhost:5746");
 
-	console.log("Connecting!");
+	console.log("Looking for server...");
 	chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Connecting...", type: "Alert"});		
 	
 	//Happens when a connection is established.
@@ -51,13 +51,14 @@ function connectWebSocket()
 	//Happens when a connection is closed.
 	websocket.onclose = function(event) 
 	{
+		isConnected = false;
+		
 		//Send message to popup.js, telling it that we have disconnected.
 		chrome.runtime.sendMessage({msg: 'popup::disconnected'});
 		if(event.code > 1000)
 		{
 			console.log("ERROR: Could not connect to server.");
 		}
-		isConnected = false;
 	};
 	
 	//Happens when a message is received.

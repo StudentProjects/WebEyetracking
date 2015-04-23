@@ -258,7 +258,6 @@ function addPopupMessageListener()
 		if(i_message.msg == "popup::connected")
 		{
 			isConnected = true;
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsConnected", data: isConnected });
 			var span = document.getElementById('extension_header');
 			span.innerHTML = "Online";
 			span.className = "h1-success";
@@ -267,8 +266,7 @@ function addPopupMessageListener()
 		//Disconnected
 		else if(i_message.msg == "popup::disconnected")
 		{
-			isConnected = false;
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsConnected", data: isConnected });
+			isConnected = false;;
 			var span = document.getElementById('extension_header');
 			span.innerHTML = "Offline";
 			span.className = "h1-fail";

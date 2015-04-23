@@ -12,6 +12,7 @@
 /////////////
 
 var displayTimer = null;
+var displayError = "";
 
 ///////////
 //METHODS//
@@ -28,37 +29,59 @@ function injectDisplay()
 	});
 }
 
-//Check if the injected scripts are alive
+//Check if the injected scripts are alive, if not
+//try to inject them. Also handles errors like 
+//permission denied or browser window not selected.
+//This check is done every two seconds.
 displayTimer = setInterval(function()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{		
+		//Send message to tab.
 		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
 		{
 			try
 			{
 				response.message;
 			}
-			catch(err)
+			catch(err1)
 			{
-				
+				//If there is no response, check if we have persmission to inject 
+				//a script. If so, do it.
 				chrome.tabs.query({currentWindow: true, active: true}, function(tabs)
 				{
 					try
 					{
-						if(tabs[0].url != "chrome://extensions/")
+						var URLstart = tabs[0].url.split("/");
+						if(URLstart[0] != "chrome:")
 						{
-							console.log("Error: Unable to contact content script (injecteddisplay.js), trying to reinject!");
+							//Check if this was the last error message, if so, do not log again!
+							if(displayError != "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!")
+							{
+								displayError = "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!";
+								console.log(displayError);
+							}
+							
 							injectDisplay();
 						}
 						else
 						{	
-							console.log("Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url);
+							//Check if this was the last error message, if so, do not log again!
+							if(displayError != "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url)
+							{
+								displayError = "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url;
+								console.log(displayError);
+							}
 						}
 					}
-					catch(e)
+					catch(err2)
 					{
-						console.log("Error: No tab selected!");
+						//Check if this was the last error message, if so, do not log again!
+						if(displayError != "Error: No tab selected!")
+						{
+							displayError = "Error: No tab selected!";
+							console.log(displayError);
+						}	
 					}
 				});
 			}
