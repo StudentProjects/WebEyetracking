@@ -41,13 +41,17 @@ function initRecorder()
 				{
 					if(index == 0)
 					{
-						chrome.extension.sendRequest({ msg: "tabinfo::getScrollHeight"});
+						chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", data: input});
 					}
 					else if(index == 1)
 					{
-						chrome.extension.sendRequest({ msg: "tabinfo::getDocumentSize"});
+						chrome.extension.sendRequest({ msg: "tabinfo::getScrollHeight"});
 					}
 					else if(index == 2)
+					{
+						chrome.extension.sendRequest({ msg: "tabinfo::getDocumentSize"});
+					}
+					else if(index == 3)
 					{
 						//Decide what to record depending on the checkboxes in the recorder tab.
 						if(recordEye && recordMouse)
