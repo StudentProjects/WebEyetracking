@@ -38,6 +38,8 @@ var mouseImage = null;
 var heatmapEyeInstance = null;
 var heatmapMouseInstance = null;
 
+var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
+
 ///////////
 //METHODS//
 ///////////
@@ -219,6 +221,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 	{
 		if(timeStampEYE)
 		{
+			port.postMessage({message: "display::animationStarted"});
 			console.log("Start eye animation!");
 			
 			sizeEye = timeStampEYE.length;
@@ -237,6 +240,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 	{
 		if(timeStampMouse)
 		{
+			port.postMessage({message: "display::animationStarted"});
 			console.log("Start mouse animation!");
 			
 			sizeMouse = timeStampMouse.length;
@@ -256,6 +260,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 	{
 		if(timeStampEYE && timeStampMouse)
 		{
+			port.postMessage({message: "display::animationStarted"});
 			console.log("Start eye & mouse animation!");
 			
 			sizeEye = xEyeCoords.length;
@@ -271,6 +276,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 		}
 		else if(timeStampEYE)
 		{
+			port.postMessage({message: "display::animationStarted"});
 			console.log("No mouse data to animate, animating eye only!");
 			
 			sizeEye = timeStampEYE.length;
@@ -282,6 +288,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 		}
 		else if(timeStampMouse)
 		{
+			port.postMessage({message: "display::animationStarted"});
 			console.log("No eye data to animate, animating mouse only!");
 			
 			sizeMouse= timeStampMouse.length;
@@ -303,6 +310,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 function stopAnimation()
 {
 	console.log("Stop animation!");
+	port.postMessage({message: "display::animationFinished"});
 	indexEye = 0;
 	indexMouse = 0;
 	if(animationEye)

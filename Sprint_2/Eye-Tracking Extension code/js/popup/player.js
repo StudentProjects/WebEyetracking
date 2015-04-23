@@ -73,6 +73,8 @@ function initPlayer()
 		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBox", data: document.getElementById("mouse_playerbox").checked });
 	});
 	
+	addPlayerMessageListener();
+	
 	console.log("player.js initialized!");
 }
 
@@ -118,7 +120,7 @@ function resetCurrentTestInfo()
 }
 
 //Add a listener that listens for messages.
-function addLoadMessageListener()
+function addPlayerMessageListener()
 {
 	//This tells the script to listen
 	//for messages from our extension.
@@ -141,6 +143,14 @@ function addLoadMessageListener()
 		{
 			document.getElementById("player_testheader").innerHTML = "Current test";
 			renderInfo("Hiding data...", "Alert");
+		}
+		else if(i_message.msg == "player::animationStarted")
+		{
+			document.getElementById("player_testheader").innerHTML = "Animating data..";
+		}
+		else if(i_message.msg == "player::animationFinished")
+		{
+			document.getElementById("player_testheader").innerHTML = "Finished animating";
 		}
 	});
 }

@@ -18,6 +18,22 @@ var displayError = "";
 //METHODS//
 ///////////
 
+//Add a listener on port: "tabinfo"
+chrome.runtime.onConnect.addListener(function(port) 
+{
+	port.onMessage.addListener(function(msg) 
+	{
+		if(msg.message == "display::animationStarted")
+		{
+			chrome.runtime.sendMessage({msg: 'player::animationStarted'});
+		}
+		else if(msg.message == "display::animationFinished")
+		{
+			chrome.runtime.sendMessage({msg: 'player::animationFinished'});
+		}
+	});
+});
+
 //Inject scripts into the current tab
 function injectDisplay()
 {
@@ -114,6 +130,8 @@ function hideHeatmap()
 		});
 	});
 }
+
+
 
 //Check if the injected scripts are alive, if not
 //try to inject them. Also handles errors like 
