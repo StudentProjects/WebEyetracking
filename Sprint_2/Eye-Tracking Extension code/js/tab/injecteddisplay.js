@@ -67,6 +67,7 @@ function initializeCanvas(mouse,eye)
 		});
 	}
 }
+
 //Update the xCoords and yCoords with the latest collected data.
 function setData(i_data)
 {
@@ -134,6 +135,11 @@ function setData(i_data)
 		{
 			console.log("X and Y mouse coords do not match!");
 		}
+	}
+	//If test data exists
+	if(t_data['testStatistics'])
+	{
+		var t_fixationPointsX = new Array();
 	}
 }
 
