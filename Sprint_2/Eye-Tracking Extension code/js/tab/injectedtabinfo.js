@@ -28,6 +28,8 @@ $(window).mousemove(function(event)
 	port.postMessage({message: "tabinfo::mouseCoords", xCoord: event.pageX, yCoord: event.pageY});
 });
 
+
+
 //Listen for messages from tabinfo.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
 {
