@@ -59,6 +59,12 @@ H2
   font-size: 18px;
 }
 
+H3 
+{
+	font-size: 16px;
+	color: #2AABD2;
+}
+
 .h1-success
 {
  color:#0b8d1a;
@@ -108,3 +114,11 @@ H2
   border-bottom-right-radius: 2px;
   border-bottom-left-radius: 2px;
 }
+
+.collapse-line
+{
+    font-size: 14px;
+	color: #337ab7;
+	margin-bottom: 14px;
+}
+
