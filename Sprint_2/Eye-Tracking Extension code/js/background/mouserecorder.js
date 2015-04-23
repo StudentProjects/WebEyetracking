@@ -50,7 +50,7 @@ function pushMousePosition()
 //Start recording mouse movement
 function startMouseRecording()
 {
-	chrome.runtime.sendMessage({msg: 'popup::startReceived'});
+	chrome.runtime.sendMessage({msg: 'recorder::startReceived'});
 	
 	//Reset currentMouseRecording object.
 	currentMouseRecording['mouseX'] = new Array();
@@ -77,13 +77,13 @@ function startMouseRecording()
 
 function pauseMouseRecording()
 {
-	chrome.runtime.sendMessage({msg: 'popup::pauseReceived'});
+	chrome.runtime.sendMessage({msg: 'recorder::pauseReceived'});
 	isPaused = true;
 }
 
 function resumeMouseRecording()
 {
-	chrome.runtime.sendMessage({msg: 'popup::resumeReceived'});
+	chrome.runtime.sendMessage({msg: 'recorder::resumeReceived'});
 	isPaused = false;
 }
 

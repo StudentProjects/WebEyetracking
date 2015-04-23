@@ -38,7 +38,7 @@ function handleMessage(i_message)
 		case 7:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
-				chrome.runtime.sendMessage({ msg: "popup::startReceived" });
+				chrome.runtime.sendMessage({ msg: "recorder::startReceived" });
 				console.log("Recording started!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")
@@ -55,7 +55,7 @@ function handleMessage(i_message)
 		case 8:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
-				chrome.runtime.sendMessage({ msg: "popup::pauseReceived" });
+				chrome.runtime.sendMessage({ msg: "recorder::pauseReceived" });
 				console.log("Recording paused!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")
@@ -72,7 +72,7 @@ function handleMessage(i_message)
 		case 9:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
-				chrome.runtime.sendMessage({ msg: "popup::resumeReceived" });
+				chrome.runtime.sendMessage({ msg: "recorder::resumeReceived" });
 				console.log("Recording resumed!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")
@@ -89,7 +89,7 @@ function handleMessage(i_message)
 		case 10:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
-				chrome.runtime.sendMessage({ msg: "popup::stopReceived" });
+				chrome.runtime.sendMessage({ msg: "recorder::stopReceived" });
 				console.log("Recording stopped!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")

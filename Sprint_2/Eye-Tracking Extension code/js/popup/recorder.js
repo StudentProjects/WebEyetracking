@@ -197,7 +197,7 @@ function addRecorderMessageListener()
 	chrome.extension.onMessage.addListener(function(i_message, i_messageSender, i_sendResponse) 
 	{
 		//Start received
-		if(i_message.msg == "popup::startReceived")
+		if(i_message.msg == "recorder::startReceived")
 		{
 			if(!isRecording)
 			{
@@ -219,7 +219,7 @@ function addRecorderMessageListener()
 			}
 		}
 		//Pause received
-		else if(i_message.msg == "popup::pauseReceived")
+		else if(i_message.msg == "recorder::pauseReceived")
 		{
 			if(!isRecordingPaused)
 			{
@@ -231,7 +231,7 @@ function addRecorderMessageListener()
 			}
 		}
 		//Resume received
-		else if(i_message.msg == "popup::resumeReceived")
+		else if(i_message.msg == "recorder::resumeReceived")
 		{
 			if(isRecordingPaused)
 			{
@@ -248,7 +248,7 @@ function addRecorderMessageListener()
 			}
 		}
 		//Stop received
-		else if(i_message.msg == "popup::stopReceived")
+		else if(i_message.msg == "recorder::stopReceived")
 		{
 			document.getElementById('start_button').innerHTML = "Start";
 			isRecording = false;
