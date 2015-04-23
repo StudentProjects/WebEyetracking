@@ -33,7 +33,11 @@ $(window).mousemove(function(event)
 //Listen for messages from tabinfo.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
 {
-	if (request.msg == "injectedtabinfo::getScrollHeight")
+	if (request.msg == "injectedtabinfo::alive")
+	{
+		sendResponse({message: true});	
+	}
+	else if (request.msg == "injectedtabinfo::getScrollHeight")
 	{
 		var scrollHeight = $(window).scrollTop();
 		sendResponse({message: scrollHeight});	

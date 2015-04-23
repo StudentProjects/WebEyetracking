@@ -433,7 +433,11 @@ function hide()
 //Listen for messages from displayheatmap.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
 {
-	if (request.msg == "injecteddisplay::animate")
+	if (request.msg == "injecteddisplay::alive")
+	{
+		sendResponse({message: true});	
+	}
+	else if (request.msg == "injecteddisplay::animate")
 	{
 		hide(); //Hide before starting animation
 		startAnimation(request.eye, request.mouse);

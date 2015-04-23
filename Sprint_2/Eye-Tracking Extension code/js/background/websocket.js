@@ -44,13 +44,8 @@ function connectWebSocket()
 		//Send message to popup.js, telling it that we have connected.
 		chrome.runtime.sendMessage({msg: 'popup::connected'});
 		
-		//Inject scripts
-		injectTabInfo(); //tabinfo.js
-		injectHeatmap(); //displayheatmap.js
-		
 		//Get applications
-		manageMessage(17, "GetAllApplicationsRequest");
-		
+		manageMessage(17, "GetAllApplicationsRequest");	
 	};
 	
 	//Happens when a connection is closed.

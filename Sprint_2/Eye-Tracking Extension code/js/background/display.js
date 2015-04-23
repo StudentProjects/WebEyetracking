@@ -11,14 +11,14 @@
 //Variables//
 /////////////
 
-//None
+var displayTimer = null;
 
 ///////////
 //METHODS//
 ///////////
 
 //Inject scripts into the current tab
-function injectHeatmap()
+function injectDisplay()
 {
 	chrome.tabs.getSelected(null, function(i_tab)
 	{ 
@@ -27,6 +27,45 @@ function injectHeatmap()
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
 	});
 }
+
+//Check if the injected scripts are alive
+displayTimer = setInterval(function()
+{
+	chrome.tabs.getSelected(null, function(i_tab) 
+	{		
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
+		{
+			try
+			{
+				response.message;
+			}
+			catch(err)
+			{
+				
+				chrome.tabs.query({currentWindow: true, active: true}, function(tabs)
+				{
+					try
+					{
+						if(tabs[0].url != "chrome://extensions/")
+						{
+							console.log("Error: Unable to contact content script (injecteddisplay.js), trying to reinject!");
+							injectDisplay();
+						}
+						else
+						{	
+							console.log("Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url);
+						}
+					}
+					catch(e)
+					{
+						console.log("Error: No tab selected!");
+					}
+				});
+			}
+		});
+	});
+}, 2000);
+
 
 //Tell injecteddisplay.js to set new data.
 function setHeatmapData(i_data)
@@ -71,7 +110,6 @@ function animateHeatmap(animateEye, animateMouse)
 		});
 	});
 }
-
 
 //Tell injecteddisplay.js to show heatmap of data.
 function showHeatmap(showEye, showMouse)
