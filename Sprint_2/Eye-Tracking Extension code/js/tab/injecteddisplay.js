@@ -76,8 +76,7 @@ function setData(i_data)
 	//If eye data exists
 	if(t_data['timeStampEYE'])
 	{
-		console.log("Update eye data!");
-		
+		console.log("Update eye data!");		
 		t_xEyeCoords = new Array();
 		t_yEyeCoords = new Array();
 		t_timeStampEye = new Array();
@@ -304,7 +303,6 @@ function startAnimation(animateEyeBool, animateMouseBool)
 function stopAnimation()
 {
 	console.log("Stop animation!");
-	
 	indexEye = 0;
 	indexMouse = 0;
 	if(animationEye)

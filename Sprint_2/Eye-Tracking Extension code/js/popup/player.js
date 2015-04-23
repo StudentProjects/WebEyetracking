@@ -24,11 +24,11 @@ function initPlayer()
 	//Send animate request to display.js
 	document.getElementById('animatedata_button').addEventListener("click", function()
 	{	
-		var toSend = new object();
+		var toSend = new Object();
 		toSend.Eye = document.getElementById("eye_playerbox").checked;
 		toSend.Mouse = document.getElementById("mouse_playerbox").checked;
 		
-		if(eyeBox.checked || mouseBox.checked)
+		if(toSend.Eye|| toSend.Mouse)
 		{
 			chrome.extension.sendRequest({ msg: "display::animate", data: toSend });
 		}
@@ -41,11 +41,11 @@ function initPlayer()
 	//Send show request to display.js
 	document.getElementById('showdata_button').addEventListener("click", function()
 	{
-		var toSend = new object();
+		var toSend = new Object();
 		toSend.Eye = document.getElementById("eye_playerbox").checked;
 		toSend.Mouse = document.getElementById("mouse_playerbox").checked;
 		
-		if(eyeBox.checked || mouseBox.checked)
+		if(toSend.Eye || toSend.Mouse)
 		{
 			chrome.extension.sendRequest({ msg: "display::show", data: toSend });
 		}
@@ -127,16 +127,19 @@ function addLoadMessageListener()
 		//animateHeatmap
 		if(i_message.msg == "player::animateHeatmap")
 		{
+			document.getElementById("player_testheader").innerHTML = "Animating data";
 			renderInfo("Animating data...", "Alert");
 		}
 		//showHeatmap
 		else if(i_message.msg == "player::showHeatmap")
 		{
+			document.getElementById("player_testheader").innerHTML = "Displaying data";
 			renderInfo("Showing data...", "Alert");
 		}
 		//hideHeatmap
 		else if(i_message.msg == "player::hideHeatmap")
 		{
+			document.getElementById("player_testheader").innerHTML = "Current test";
 			renderInfo("Hiding data...", "Alert");
 		}
 	});
