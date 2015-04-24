@@ -402,7 +402,7 @@ function showMouse()
 {	
 	if(xMouseCoords && yMouseCoords)
 	{
-		//port.postMessage({message: "display::displayingData"});
+		port.postMessage({message: "display::displayingData"});
 		initializeCanvas(true,false);
 		console.log("Show mouse heatmap!");
 		
