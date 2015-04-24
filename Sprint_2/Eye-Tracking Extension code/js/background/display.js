@@ -34,11 +34,11 @@ chrome.runtime.onConnect.addListener(function(port)
 		else if(msg.message == "display::displayingData")
 		{
 			chrome.runtime.sendMessage({msg: 'player::displayingData'});
-		}/*
+		}
 		else if(msg.message == "display::setHeaderToDefault")
 		{
 			chrome.runtime.sendMessage({msg: 'player::setHeaderToDefault'});
-		}*/
+		}
 	});
 });
 

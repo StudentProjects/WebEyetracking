@@ -420,7 +420,7 @@ function showMouse()
 function hide()
 {
 	console.log("Hide heatmap!");
-	//port.postMessage({message: "display::setHeaderToDefault"});
+	port.postMessage({message: "display::setHeaderToDefault"});
 	if(heatmapEyeInstance != null)
 	{
 		//find corresponding canvas element
