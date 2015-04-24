@@ -723,7 +723,7 @@ namespace tieto.education.eyetrackingwebserver
         /// <param name="arg"></param>
         private void dataSavedEvent(object e,EventArgs arg)
         {
-            m_messageHandler.serverNotificationToClient(25, getAllApplicationData());
+            m_messageHandler.serverNotificationToClient(18, getAllApplicationData());
         }
         /// <summary>
         /// Event Handler handling events received from recorder
