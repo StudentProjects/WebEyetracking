@@ -79,4 +79,18 @@ namespace tieto.education.eyetrackingwebserver
             get { return _eventText; }
         }
     }
+
+    public class SavedArgs : EventArgs
+    {
+        private readonly string _messageContent;
+
+        public SavedArgs(string i_messageContent)
+        {
+            _messageContent = i_messageContent;
+        }
+        public string getMessageContent
+        {
+            get {return _messageContent;}
+        }
+    }
 }

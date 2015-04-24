@@ -53,6 +53,7 @@ namespace tieto.education.eyetrackingwebserver
        // EVENTS
 
         public event EventHandler onTextUpdate = delegate { };
+        public event EventHandler onDataSaved = delegate { };
 
        // MEMBER OBJECT VARIABLES
         private TestData m_dataCurrentTest;
@@ -561,6 +562,7 @@ namespace tieto.education.eyetrackingwebserver
 
                // Tell file saver to save files
                m_fileSaver.saveAllData(m_currentTestUserInfo.Application, m_currentTestUserInfo.TestDate, m_dataCurrentTest, m_currentTestUserInfo);
+               onDataSaved(this, new SavedArgs("Data"));
 
                //Saving current test data in string if user requests it
                m_convertedTestData = JsonConvert.SerializeObject(m_dataCurrentTest, Newtonsoft.Json.Formatting.None);
@@ -584,6 +586,7 @@ namespace tieto.education.eyetrackingwebserver
            m_fileSaver.saveAllData(m_currentTestUserInfo.Application, m_currentTestUserInfo.TestDate, m_dataCurrentTest, m_currentTestUserInfo);
            //Saving current test data in string if user requests it
            m_convertedTestData = JsonConvert.SerializeObject(m_dataCurrentTest, Newtonsoft.Json.Formatting.None);
+           onDataSaved(this, new SavedArgs("Data"));
 
            clearPreviousTest(0);
        }

@@ -160,5 +160,15 @@ function addPlayerMessageListener()
 		{
 			document.getElementById("player_testheader").innerHTML = "Current test";
 		}
+		else if(i_message.msg == "player::noEyeData")
+		{
+			document.getElementById("eye_playerbox").checked = false;
+			document.getElementById("eye_playerbox").disabled = true;
+		}
+		else if(i_message.msg == "player::noMouseData")
+		{
+			document.getElementById("mouse_playerbox").checked = false;
+			document.getElementById("mouse_playerbox").disabled = true;
+		}
 	});
 }

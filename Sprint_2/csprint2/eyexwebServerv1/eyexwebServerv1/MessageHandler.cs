@@ -413,6 +413,14 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        public void serverNotificationToClient(int i_messageType,string i_dataMessage = "")
+        {
+            if(i_messageType == 18)
+            {
+                constructResponseMessage(18, true, i_dataMessage);
+            }
+        }
+
 
         /// <summary>
         /// Constructing a response message with messagetype and messagecontent based on the message type in the received message

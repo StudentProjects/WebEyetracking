@@ -39,6 +39,14 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			chrome.runtime.sendMessage({msg: 'player::setHeaderToDefault'});
 		}
+		else if(msg.message == "display::noEyeData")
+		{
+			chrome.runtime.sendMessage({msg: 'player::noEyeData'});
+		}
+		else if(msg.message == "display::noMouseData")
+		{
+			chrome.runtime.sendMessage({msg: 'player::noMouseData'});
+		}
 	});
 });
 

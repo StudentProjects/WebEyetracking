@@ -77,8 +77,7 @@ function setData(i_data)
 	
 	//If eye data exists
 	if(t_data['timeStampEYE'])
-	{
-		console.log("Update eye data!");		
+	{		
 		t_xEyeCoords = new Array();
 		t_yEyeCoords = new Array();
 		t_timeStampEye = new Array();
@@ -105,12 +104,16 @@ function setData(i_data)
 			console.log("X and Y eye coords do not match!");
 		}
 	}
+	else 
+	{
+		port.postMessage({message: "display::noEyeData"});
+	}
 	
 	//If mouse data exists
 	if(t_data['timeStampMouse'])
 	{
-		console.log("Update mouse data!");
-		
+		port.
+		console.log("Update mouse data!");		
 		t_xMouseCoords = new Array();
 		t_yMouseCoords = new Array();
 		t_timeStampMouse = new Array();
@@ -136,6 +139,10 @@ function setData(i_data)
 		{
 			console.log("X and Y mouse coords do not match!");
 		}
+	}
+	else 
+	{
+		port.postMessage({message: "display::noMouseData"});
 	}
 	//If test data exists
 	if(t_data['testStatistics'])
