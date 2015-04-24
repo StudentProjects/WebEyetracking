@@ -369,6 +369,7 @@ function showEye()
 {	
 	if(xEyeCoords && yEyeCoords)
 	{
+		port.postMessage({message: "display::displayingData"});
 		initializeCanvas(false,true);
 		console.log("Show eye heatmap!");
 		
@@ -394,6 +395,7 @@ function showMouse()
 {	
 	if(xMouseCoords && yMouseCoords)
 	{
+		//port.postMessage({message: "display::displayingData"});
 		initializeCanvas(true,false);
 		console.log("Show mouse heatmap!");
 		
@@ -418,7 +420,7 @@ function showMouse()
 function hide()
 {
 	console.log("Hide heatmap!");
-	
+	port.postMessage({message: "display::setHeaderToDefault"});
 	if(heatmapEyeInstance != null)
 	{
 		//find corresponding canvas element

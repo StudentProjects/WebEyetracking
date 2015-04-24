@@ -152,5 +152,13 @@ function addPlayerMessageListener()
 		{
 			document.getElementById("player_testheader").innerHTML = "Finished animating";
 		}
+		else if(i_message.msg == "player::displayingData")
+		{
+			document.getElementById("player_testheader").innerHTML = "Displaying data";
+		}
+		else if(i_message.msg == "player::setHeaderToDefault")
+		{
+			document.getElementById("player_testheader").innerHTML = "Current test";
+		}
 	});
 }
