@@ -189,57 +189,60 @@ function createLinkTable(input)
 	var dates = data['Dates'];
 	for(i = 0; i < sizeDate; i++)
 	{
-		sizeName = data['Dates'][i]['Names'].length;
-		var names = data['Dates'][i]['Names'];
-		for(j = 0; j < sizeName; j++)
+		if(data['Dates'][i]['Date'] == currentDate)
 		{
-			var userSplitArray = data['Dates'][i]['Names'][j]['Name'].split(" ");
-			var userName = "";
-			for(k = 0; k < userSplitArray.length; k++)
+			sizeName = data['Dates'][i]['Names'].length;
+			var names = data['Dates'][i]['Names'];
+			for(j = 0; j < sizeName; j++)
 			{
-				var first = userSplitArray[k].substring(0, 1);
-				var rest = userSplitArray[k].substring(1);
-				userSplitArray[k] = first.toUpperCase() + rest;
-				
-				if(k < (userSplitArray.length - 1))
+				var userSplitArray = data['Dates'][i]['Names'][j]['Name'].split(" ");
+				var userName = "";
+				for(k = 0; k < userSplitArray.length; k++)
 				{
-					userName += userSplitArray[k] + " ";
-				}
-				else
-				{
-					userName += userSplitArray[k];
-				}
-			}
-			
-			var listItem = document.createElement('li');
-			listItem.innerHTML = '<a href="#" id="load_button_' + i + '">' + userName + ' - ' + data['Dates'][i]['Names'][j]['Time'] + '</a>';
-			listItem.className = "list-group-item";
-			
-			var tempData = new Object();
-			tempData.Name = data['Dates'][i]['Names'][j]['Name'];
-			tempData.Date =	data['Dates'][i]['Date'];
-			tempData.Application = data['ApplicationName'];
-			tempData.Id = data['Dates'][i]['Names'][j]['Id'];
-		
-			
-			listItem.addEventListener("click", (function(data, time)
-			{
-				return function()
-				{
-					chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", data: JSON.stringify(data)});
-					setCurrentTestInfo(data.Name, data.Application, data.Date, time);
+					var first = userSplitArray[k].substring(0, 1);
+					var rest = userSplitArray[k].substring(1);
+					userSplitArray[k] = first.toUpperCase() + rest;
 					
-					//Save testInfo variable in persistantpopupvariables.js
-					var testInfo = new Object();
-					testInfo.Name = data.Name;
-					testInfo.Application = data.Application;
-					testInfo.Date = data.Date;
-					testInfo.Time = time;
-					chrome.extension.sendRequest({ msg: "persistentpopupvariables::setTestInfo", data: testInfo });
-				};
-			}(tempData, data['Dates'][i]['Names'][j]['Time'])));
+					if(k < (userSplitArray.length - 1))
+					{
+						userName += userSplitArray[k] + " ";
+					}
+					else
+					{
+						userName += userSplitArray[k];
+					}
+				}
+				
+				var listItem = document.createElement('li');
+				listItem.innerHTML = '<a href="#" id="load_button_' + i + '">' + userName + ' - ' + data['Dates'][i]['Names'][j]['Time'] + '</a>';
+				listItem.className = "list-group-item";
+				
+				var tempData = new Object();
+				tempData.Name = data['Dates'][i]['Names'][j]['Name'];
+				tempData.Date =	data['Dates'][i]['Date'];
+				tempData.Application = data['ApplicationName'];
+				tempData.Id = data['Dates'][i]['Names'][j]['Id'];
 			
-			list.appendChild(listItem);
+				
+				listItem.addEventListener("click", (function(data, time)
+				{
+					return function()
+					{
+						chrome.extension.sendRequest({ msg: "websocket::getSpecificDataRequest", data: JSON.stringify(data)});
+						setCurrentTestInfo(data.Name, data.Application, data.Date, time);
+						
+						//Save testInfo variable in persistantpopupvariables.js
+						var testInfo = new Object();
+						testInfo.Name = data.Name;
+						testInfo.Application = data.Application;
+						testInfo.Date = data.Date;
+						testInfo.Time = time;
+						chrome.extension.sendRequest({ msg: "persistentpopupvariables::setTestInfo", data: testInfo });
+					};
+				}(tempData, data['Dates'][i]['Names'][j]['Time'])));
+				
+				list.appendChild(listItem);
+			}
 		}
 	}
 	
