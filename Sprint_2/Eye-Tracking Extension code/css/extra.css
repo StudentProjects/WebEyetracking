@@ -77,6 +77,13 @@ H3
  color:#8d0b1a;
 }
 
+.link-row
+{
+	font-size: 18px;
+	color: #337ab7;
+	text-align: left;
+}
+
 .well 
 {
   max-height: 470px;
