@@ -170,6 +170,7 @@ namespace tieto.education.eyetrackingwebserver
 
             // Listening to recorder log messages
             m_recorderInstance.onTextUpdate += new EventHandler(this.updateOutputOnRecorderEvent);
+            m_recorderInstance.onDataSaved += new EventHandler(this.dataSavedEvent);
         }
 
         /// <summary>
@@ -713,6 +714,16 @@ namespace tieto.education.eyetrackingwebserver
 
             m_logType = t_logType;
             outputTextProperty = t_logMessage;
+        }
+
+        /// <summary>
+        /// Triggered when a test is saved in recorder. Sends application info to server
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="arg"></param>
+        private void dataSavedEvent(object e,EventArgs arg)
+        {
+            m_messageHandler.serverNotificationToClient(25, getAllApplicationData());
         }
         /// <summary>
         /// Event Handler handling events received from recorder

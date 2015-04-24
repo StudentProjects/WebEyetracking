@@ -413,6 +413,14 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        public void serverNotificationToClient(int i_messageType,string i_dataMessage = "")
+        {
+            if(i_messageType == 25)
+            {
+                constructResponseMessage(25, true, i_dataMessage);
+            }
+        }
+
 
         /// <summary>
         /// Constructing a response message with messagetype and messagecontent based on the message type in the received message
@@ -586,6 +594,12 @@ namespace tieto.education.eyetrackingwebserver
                     t_responseObject.MessageContent = "Failed";
                 }
                 t_messageToSend = JsonConvert.SerializeObject(t_responseObject, Formatting.None);
+            }
+            // New application data
+            else if(i_messageType == 25)
+            {
+                t_responseObject.MessageType = 25;
+                t_responseObject.MessageContent = i_dataMessage;
             }
                 // error message
             else if(i_messageType == 99)
