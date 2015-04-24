@@ -25,62 +25,6 @@ function updateInfo()
 
 function initInfo()
 {
-	//When send_button is pressed, gather form data from userform and
-	//send it to the parent windows function sendUserInfo
-	/*
-	document.getElementById('save_button').addEventListener("click", function(event)
-	{
-		var form = document.getElementById('userform');
-		var result = new Array();
-		var computerUsage = null;
-		var gender = null;
-		
-		
-		if(form.elements[0].value && form.elements[12].value)
-		{   
-			//Find checked box
-			for(var i = 2; i < 5; i++)
-			{
-				if(form.elements[i].checked)
-				{
-					gender = form.elements[i].value;
-					break;
-				}
-			}
-			
-			//Find checked box
-			for(var i = 7; i < 12; i++)
-			{
-				if(form.elements[i].checked)
-				{
-					//Gives a value between 1-5, 5 being highest computer usage  
-					//and 1 being lowest computer usage.
-					computerUsage = 12 - i;
-					break;
-				}
-			}
-			
-			//Fill array.
-			result[0] = form.elements[0].value;
-			result[1] = form.elements[1].value;
-			result[2] = gender;
-			result[3] = form.elements[5].value;
-			result[4] = form.elements[6].value;
-			result[5] = computerUsage;
-			result[6] = form.elements[12].value;
-			result[7] = form.elements[13].value;
-	
-			sendUserInfo(result);
-			renderInfo("User information has been saved!", "Alert");
-		}
-		else
-		{
-			renderInfo("Please enter Name and Application!", "Error");
-		}
-
-	});
-	*/
-	
 	var form = document.getElementById('userform');
 	for(i = 0; i < form.elements.length; i++)
 	{
@@ -174,8 +118,6 @@ function initInfo()
 
 function saveInfo()
 {
-	console.log("WORKS!!");
-	
 	var form = document.getElementById('userform');
 	var result = new Array();
 	var computerUsage = null;
@@ -214,6 +156,8 @@ function saveInfo()
 		result[5] = form.elements[7].value;
 		result[6] = computerUsage;	
 		result[7] = form.elements[13].value;
+		
+		userInfo = result;
 
 		sendUserInfo(result);
 	}

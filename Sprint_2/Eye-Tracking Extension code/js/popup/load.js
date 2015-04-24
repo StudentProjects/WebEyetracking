@@ -28,13 +28,20 @@ function initLoad()
 	console.log("load.js initialized!");
 }
 
+//Creates navigation links above the test links, for
+//easy navigation in the tab.
 function createNavigationLinks(state)
 {
+	//Reset links
 	var tablerow = document.getElementById("link-tablerow");
 	tablerow.innerHTML = "";
 	
+	//Make application link that takes the user
+	//back to the "all applications" state.
 	var tabledata = document.createElement("td");
-	tabledata.innerHTML = '<a href="#">Search</a>';
+	tabledata.innerHTML = '<a href="#">Applications</a>';
+	tabledata.className = "link-tabledata";
+	
 	tabledata.addEventListener("click", (function()
 	{
 		createApplicationTable(allApplications);
@@ -42,6 +49,8 @@ function createNavigationLinks(state)
 	
 	tablerow.appendChild(tabledata);
 	
+	//If state is higher that 0, we are to enter stage 1
+	//which creates a link for the current application.
 	if(state > 0)
 	{
 		tabledata = document.createElement("td");
@@ -51,24 +60,30 @@ function createNavigationLinks(state)
 		
 		tabledata = document.createElement("td");
 		tabledata.innerHTML = '<a href="#">' + currentApplication + '</a>';
+		tabledata.className = "link-tabledata";
+		
 		tabledata.addEventListener("click", (function()
 		{
-			chrome.extension.sendRequest({ msg: "websocket::applicationRequest", data: currentApplication});
+			createDateTable(currentData);
 		}));	
 		
 		tablerow.appendChild(tabledata);
 	}
+	
+	//If state is higher that 1, we are to enter stage 2
+	//which creates a link for the current date.
 	if(state > 1)
 	{
 		tabledata = document.createElement("td");
 		tabledata.innerHTML = " >> ";
+		tabledata.className = "link-tabledata";
 		
 		tablerow.appendChild(tabledata);
 		
 		tabledata = document.createElement("td");
 		tabledata.innerHTML = '<a href="#">' + currentDate + '</a>';
-		
-		
+		tabledata.className = "link-tabledata";
+	
 		tablerow.appendChild(tabledata);
 	}
 	
@@ -90,6 +105,8 @@ function createApplicationTable(input)
 	list.innerHTML = "";
 	var data = null;
 	
+	//Check if value is a JSON-string or not, and depending
+	//on which, handle input differently.
 	try
 	{
 		data = JSON.parse(input);
@@ -107,10 +124,11 @@ function createApplicationTable(input)
 	//Save for later, so we don't have to ask the server each time
 	allApplications = data;
 	
+	//Build link list of applications
 	for(i = 0; i < sizeData; i++)
 	{
 		var listItem = document.createElement('li');
-		listItem.innerHTML = '<a href="#">' + applications[i] + '</a>';;
+		listItem.innerHTML = '<a href="#">' + applications[i] + '</a>';
 		listItem.className = "list-group-item";
 
 		listItem.addEventListener("click", (function(data)
@@ -135,6 +153,8 @@ function createDateTable(input)
 	list.innerHTML = "";	
 	var data = null;
 	
+	//Check if value is a JSON-string or not, and depending
+	//on which, handle input differently.
 	try
 	{
 		data = JSON.parse(input);
@@ -146,12 +166,13 @@ function createDateTable(input)
 		currentData = input;
 	}
 	
+	//Build link list of dates.
 	var sizeDate = data['Dates'].length;
 	var dates = data['Dates'];
 	for(i = 0; i < sizeDate; i++)
 	{
 		var listItem = document.createElement('li');
-		listItem.innerHTML = '<a href="#">' + dates[i]['Date'] + '</a>';;
+		listItem.innerHTML = '<a href="#">' + dates[i]['Date'] + '</a>';
 		listItem.className = "list-group-item";
 
 		listItem.addEventListener("click", (function(date)
@@ -189,6 +210,7 @@ function createLinkTable(input)
 		currentData = input;
 	}
 	
+	//Build link list of tests.
 	var sizeDate = data['Dates'].length;
 	var dates = data['Dates'];
 	for(i = 0; i < sizeDate; i++)

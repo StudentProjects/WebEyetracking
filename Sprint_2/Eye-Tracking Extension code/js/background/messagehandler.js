@@ -416,6 +416,7 @@ chrome.extension.onRequest.addListener
 			{
 				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getDocumentSize"}, function(response) 
 				{
+					console.log(response.data);
 					manageMessage(25, response.data);
 				});
 			});

@@ -41,7 +41,29 @@ function initRecorder()
 				{
 					if(index == 0)
 					{
-						chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", data: input});
+						var data = new Object();
+						data.Application = userInfo[0];
+						data.Name = userInfo[1];
+						data.Age = userInfo[2];
+						
+						data.Gender = userInfo[3];
+						if(!data.Gender)
+						{
+							data.Gender = "";
+						}	
+						
+						data.Occupation = userInfo[4];
+						data.Location = userInfo[5];
+						
+						data.ComputerUsage = userInfo[6];
+						if(!data.ComputerUsage)
+						{
+							data.ComputerUsage = "";
+						}		
+						
+						data.Other = userInfo[7];
+						
+						chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", data: JSON.stringify(data)});
 					}
 					else if(index == 1)
 					{

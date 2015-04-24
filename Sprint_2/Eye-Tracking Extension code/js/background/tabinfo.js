@@ -57,6 +57,7 @@ chrome.runtime.onConnect.addListener(function(port)
 			manageMessage(21, msg.address);
 		}
 	});
+	
 	port.onMessage.addListener(function(msg) 
 	{
 		if(msg.message == "tabinfo::stopRequest")
