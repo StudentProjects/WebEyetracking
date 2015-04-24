@@ -112,7 +112,6 @@ function setData(i_data)
 	//If mouse data exists
 	if(t_data['timeStampMouse'])
 	{
-		port.
 		console.log("Update mouse data!");		
 		t_xMouseCoords = new Array();
 		t_yMouseCoords = new Array();
