@@ -155,7 +155,7 @@ function handleMessage(i_message)
 	}
 }
 
-function handleLargeMessage(data)
+function handleLargeMessage(data,type)
 {
 		//Set message size and calculate how many messages 
 		//will be needed.
@@ -187,7 +187,7 @@ function handleLargeMessage(data)
 				else if(i == nrOfMessages - 1)
 				{
 					currentOpcode = 2;
-					currentSubString = data.substring(i * messageSize, i_messageContent.length);
+					currentSubString = data.substring(i * messageSize, data.length);
 				}
 				
 				//Set message info
@@ -196,7 +196,7 @@ function handleLargeMessage(data)
 				message['MessageContent'] = currentSubString;
 				
 				//Push message into array
-				messageArray.push(JSON.stringify({MessageType: i_messageType, Opcode: currentOpcode, MessageContent: currentSubString}));
+				messageArray.push(JSON.stringify({MessageType: type, Opcode: currentOpcode, MessageContent: currentSubString}));
 			}
 			
 			//Every 25th millisecond, send a message until
@@ -209,7 +209,7 @@ function handleLargeMessage(data)
 		//If only one message is needed, set opcode to 3.
 		else
 		{
-			sendWebsocketMessage(JSON.stringify({MessageType: i_messageType, Opcode: 3, MessageContent: data}));
+			sendWebsocketMessage(JSON.stringify({MessageType: type, Opcode: 3, MessageContent: data}));
 		}
 }
 
@@ -221,7 +221,7 @@ function manageMessage(i_messageType, i_messageContent)
 	// Handle message as large message
 	if(i_messageType == 23)
 	{
-		handleLargeMessage(i_messageContent);
+		handleLargeMessage(i_messageContent,i_messageType);
 	}
 	//For all other message types than 23.
 	else
