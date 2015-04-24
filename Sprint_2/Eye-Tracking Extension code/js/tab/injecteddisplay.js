@@ -358,7 +358,7 @@ function manageMouseDiv(create)
 		mousePointer.style.height = "24px";
 		mousePointer.style.zIndex = "1";
 	    mouseImage = document.createElement('img');
-		mouseImage.src = chrome.runtime.getURL("../../img/mousepointer.png");
+		mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
 		mousePointer.appendChild(mouseImage);
 		document.body.appendChild(mousePointer);
 	}

@@ -33,58 +33,54 @@ function initLoad()
 function createNavigationLinks(state)
 {
 	//Reset links
-	var tablerow = document.getElementById("link-tablerow");
-	tablerow.innerHTML = "";
+	var linkList = document.getElementById("link-tablerow");
+	linkList.innerHTML = "";
 	
 	//Make application link that takes the user
 	//back to the "all applications" state.
-	var tabledata = document.createElement("td");
-	tabledata.innerHTML = '<a href="#">Applications</a>';
-	tabledata.className = "link-tabledata";
+	var link = document.createElement("li");
+	link.innerHTML = '<a href="#">Applications</a>';
 	
-	tabledata.addEventListener("click", (function()
+	link.addEventListener("click", (function()
 	{
 		createApplicationTable(allApplications);
 	}));	
 	
-	tablerow.appendChild(tabledata);
+	linkList.appendChild(link);
 	
 	//If state is higher that 0, we are to enter stage 1
 	//which creates a link for the current application.
 	if(state > 0)
 	{
-		tabledata = document.createElement("td");
-		tabledata.innerHTML = " >> ";
+		link = document.createElement("li");
+		link.innerHTML = " >> ";
 		
-		tablerow.appendChild(tabledata);
+		linkList.appendChild(link);
 		
-		tabledata = document.createElement("td");
-		tabledata.innerHTML = '<a href="#">' + currentApplication + '</a>';
-		tabledata.className = "link-tabledata";
+		link = document.createElement("li");
+		link.innerHTML = '<a href="#">' + currentApplication + '</a>';
 		
-		tabledata.addEventListener("click", (function()
+		link.addEventListener("click", (function()
 		{
 			createDateTable(currentData);
 		}));	
 		
-		tablerow.appendChild(tabledata);
+		linkList.appendChild(link);
 	}
 	
 	//If state is higher that 1, we are to enter stage 2
 	//which creates a link for the current date.
 	if(state > 1)
 	{
-		tabledata = document.createElement("td");
-		tabledata.innerHTML = " >> ";
-		tabledata.className = "link-tabledata";
+		link = document.createElement("li");
+		link.innerHTML = " >> ";
 		
-		tablerow.appendChild(tabledata);
+		linkList.appendChild(link);
 		
-		tabledata = document.createElement("td");
-		tabledata.innerHTML = '<a href="#">' + currentDate + '</a>';
-		tabledata.className = "link-tabledata";
+		link = document.createElement("li");
+		link.innerHTML = '<a href="#">' + currentDate + '</a>';
 	
-		tablerow.appendChild(tabledata);
+		linkList.appendChild(link);
 	}
 	
 	if(state == 0)
