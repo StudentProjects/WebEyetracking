@@ -108,7 +108,7 @@ function handleMessage(i_message)
 			break;
 		//ApplicationResponse
 		case 16:
-			chrome.runtime.sendMessage({msg: 'load::createLinkTable', data: currentMessage['MessageContent']});
+			chrome.runtime.sendMessage({msg: 'load::createDateTable', data: currentMessage['MessageContent']});
 			break;
 		//GetAllApplicationsResponse
 		case 18:

@@ -10,7 +10,9 @@
 //Variables//
 /////////////
 
-var loadData;
+var currentData;
+var currentApplication = "";
+var currentDate = "";
 
 ///////////
 //METHODS//
@@ -20,35 +22,83 @@ initLoad();
 
 function initLoad()
 {
-	//When search_button is pressed, gather application name from input
-	//and send to server, requesting matching user data.
-	document.getElementById('search_button').addEventListener("click", function(event)
-	{
-		var input = document.getElementById('load_input');
-		var data = input.value;
-		
-		if(data)
-		{
-			chrome.extension.sendRequest({ msg: "websocket::applicationRequest", data: data});
-		}
-		else
-		{
-			chrome.extension.sendRequest({ msg: "websocket::getAllApplicationsRequest"});
-		}
-	});
-	
 	addLoadMessageListener();
 	
 	console.log("load.js initialized!");
-}	
+}
+
+function createNavigationLinks(state)
+{
+	var tablerow = document.getElementById("link-tablerow");
+	tablerow.innerHTML = "";
+	
+	var tabledata = document.createElement("td");
+	tabledata.innerHTML = '<a href="#">Search</a>';
+	tabledata.addEventListener("click", (function()
+	{
+		chrome.extension.sendRequest({ msg: "websocket::getAllApplicationsRequest"});
+	}));	
+	
+	tablerow.appendChild(tabledata);
+	
+	if(state > 0)
+	{
+		tabledata = document.createElement("td");
+		tabledata.innerHTML = " >> ";
+		
+		tablerow.appendChild(tabledata);
+		
+		tabledata = document.createElement("td");
+		tabledata.innerHTML = '<a href="#">' + currentApplication + '</a>';
+		tabledata.addEventListener("click", (function()
+		{
+			chrome.extension.sendRequest({ msg: "websocket::applicationRequest", data: currentApplication});
+		}));	
+		
+		tablerow.appendChild(tabledata);
+	}
+	if(state > 1)
+	{
+		tabledata = document.createElement("td");
+		tabledata.innerHTML = " >> ";
+		
+		tablerow.appendChild(tabledata);
+		
+		tabledata = document.createElement("td");
+		tabledata.innerHTML = '<a href="#">' + currentDate + '</a>';
+		
+		
+		tablerow.appendChild(tabledata);
+	}
+	
+	if(state == 0)
+	{
+		currentApplication = "";
+		currentDate = "";
+	}
+	else if(state == 1)
+	{
+		currentDate = "";
+	}
+}
 
 //Create button for every available application
 function createApplicationTable(input)
 {
 	var list = document.getElementById('search_list');
 	list.innerHTML = "";
+	var data = null;
 	
-	var data = JSON.parse(input);
+	try
+	{
+		data = JSON.parse(input);
+		currentData = data;
+	}
+	catch(err)
+	{
+		data = input;
+		currentData = input;
+	}
 	
 	var sizeData = data['ApplicationName'].length;
 	var applications = data['ApplicationName'];
@@ -63,12 +113,56 @@ function createApplicationTable(input)
 		{
 			return function()
 			{
+				currentApplication = data;
 				chrome.extension.sendRequest({ msg: "websocket::applicationRequest", data: data});
 			};
 		}(applications[i])));	
 				
 		list.appendChild(listItem);
 	}
+	
+	createNavigationLinks(0);
+}
+
+//Create button for every available application
+function createDateTable(input)
+{
+	var list = document.getElementById('search_list');
+	list.innerHTML = "";	
+	var data = null;
+	
+	try
+	{
+		data = JSON.parse(input);
+		currentData = data;
+	}
+	catch(err)
+	{
+		data = input;
+		currentData = input;
+	}
+	
+	var sizeDate = data['Dates'].length;
+	var dates = data['Dates'];
+	for(i = 0; i < sizeDate; i++)
+	{
+		var listItem = document.createElement('li');
+		listItem.innerHTML = '<a href="#">' + dates[i]['Date'] + '</a>';;
+		listItem.className = "list-group-item";
+
+		listItem.addEventListener("click", (function(date)
+		{
+			return function()
+			{
+				currentDate = date;
+				createLinkTable(currentData);
+			};
+		}(dates[i]['Date'])));	
+				
+		list.appendChild(listItem);
+	}
+	
+	createNavigationLinks(1);
 }
 
 //Create button for every recording matching a specific application name.
@@ -78,8 +172,18 @@ function createLinkTable(input)
 {
 	var list = document.getElementById('search_list');
 	list.innerHTML = "";
+	var data = null;
 	
-	var data = JSON.parse(input);
+	try
+	{
+		data = JSON.parse(input);
+		currentData = data;
+	}
+	catch(err)
+	{
+		data = input;
+		currentData = input;
+	}
 	
 	var sizeDate = data['Dates'].length;
 	var dates = data['Dates'];
@@ -108,7 +212,7 @@ function createLinkTable(input)
 			}
 			
 			var listItem = document.createElement('li');
-			listItem.innerHTML = '<a href="#" id="load_button_' + i + '">' + userName + ' - ' + data['Dates'][i]['Date'] + ' - ' + data['Dates'][i]['Names'][j]['Time'] + '</a>';
+			listItem.innerHTML = '<a href="#" id="load_button_' + i + '">' + userName + ' - ' + data['Dates'][i]['Names'][j]['Time'] + '</a>';
 			listItem.className = "list-group-item";
 			
 			var tempData = new Object();
@@ -138,6 +242,8 @@ function createLinkTable(input)
 			list.appendChild(listItem);
 		}
 	}
+	
+	createNavigationLinks(2);
 }
 
 //If no data was found, print that out.
@@ -166,8 +272,8 @@ function addLoadMessageListener()
 				renderInfo("Successfully loaded application list!", "Alert");
 			}
 		}
-		//createLinkTable
-		else if(i_message.msg == "load::createLinkTable")
+		//createDateTable
+		else if(i_message.msg == "load::createDateTable")
 		{
 			if(i_message.data == "NoData")
 			{
@@ -176,7 +282,8 @@ function addLoadMessageListener()
 			}
 			else
 			{
-				createLinkTable(i_message.data);
+				
+				createDateTable(i_message.data);
 				renderInfo("Successfully loaded test list!", "Alert");
 			}
 		}
