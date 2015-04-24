@@ -11,6 +11,7 @@
 /////////////
 
 var currentData;
+var allApplications = null;
 var currentApplication = "";
 var currentDate = "";
 
@@ -36,7 +37,7 @@ function createNavigationLinks(state)
 	tabledata.innerHTML = '<a href="#">Search</a>';
 	tabledata.addEventListener("click", (function()
 	{
-		chrome.extension.sendRequest({ msg: "websocket::getAllApplicationsRequest"});
+		createApplicationTable(allApplications);
 	}));	
 	
 	tablerow.appendChild(tabledata);
@@ -102,6 +103,9 @@ function createApplicationTable(input)
 	
 	var sizeData = data['ApplicationName'].length;
 	var applications = data['ApplicationName'];
+	
+	//Save for later, so we don't have to ask the server each time
+	allApplications = data;
 	
 	for(i = 0; i < sizeData; i++)
 	{
