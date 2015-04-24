@@ -421,63 +421,71 @@ namespace tieto.education.eyetrackingwebserver
         /// </summary>
         private void listenForConnection()
         {
-            // Blocking signal waiting for a client to connect
-            m_connectedClient = m_socketListener.AcceptTcpClient();
-            // Moving forward if client connected
-            m_logType = 1;
-            outputTextProperty = "Server: A client connected!";
-            m_logType = 0;
-            outputTextProperty = "Server: Performing handshake with new client";
-            // Getting the client stream so that the server can read and write data to it
-            NetworkStream t_clientStream = m_connectedClient.GetStream();
-            while (true)
+            try
             {
-                // Wait until handshake data is available
-                while (!t_clientStream.DataAvailable);
-                Byte[] bytes = new Byte[m_connectedClient.Available];
-                t_clientStream.Read(bytes, 0, bytes.Length);
-
-                // Convert recieved bytes to string with UTF-8 standard
-                String t_messageData = Encoding.UTF8.GetString(bytes);
-
-                // HANDSHAKE BETWEEN SERVER AND CLIENT //
-                // Handshaking session started
-                // Checking if the request message is correct
-                if (new Regex("^GET").IsMatch(t_messageData))
+                // Blocking signal waiting for a client to connect
+                m_connectedClient = m_socketListener.AcceptTcpClient();
+                // Moving forward if client connected
+                m_logType = 1;
+                outputTextProperty = "Server: A client connected!";
+                m_logType = 0;
+                outputTextProperty = "Server: Performing handshake with new client";
+                // Getting the client stream so that the server can read and write data to it
+                NetworkStream t_clientStream = m_connectedClient.GetStream();
+                while (true)
                 {
-                    // Constructing handshake response message to send to the client
-                    // Adding magic key
-                    Byte[] response = constructHandshakeMessage(t_messageData);
+                    // Wait until handshake data is available
+                    while (!t_clientStream.DataAvailable) ;
+                    Byte[] bytes = new Byte[m_connectedClient.Available];
+                    t_clientStream.Read(bytes, 0, bytes.Length);
 
-                    // Write response on client stream and finalize handshake process
-                    t_clientStream.Write(response, 0, response.Length);
-                    // Handshake is done
-                    m_logType = 1;
-                    outputTextProperty = "Server: Handshake with client done!";
-                    clientConnectedProperty = true;
-                    break;
+                    // Convert recieved bytes to string with UTF-8 standard
+                    String t_messageData = Encoding.UTF8.GetString(bytes);
+
+                    // HANDSHAKE BETWEEN SERVER AND CLIENT //
+                    // Handshaking session started
+                    // Checking if the request message is correct
+                    if (new Regex("^GET").IsMatch(t_messageData))
+                    {
+                        // Constructing handshake response message to send to the client
+                        // Adding magic key
+                        Byte[] response = constructHandshakeMessage(t_messageData);
+
+                        // Write response on client stream and finalize handshake process
+                        t_clientStream.Write(response, 0, response.Length);
+                        // Handshake is done
+                        m_logType = 1;
+                        outputTextProperty = "Server: Handshake with client done!";
+                        clientConnectedProperty = true;
+                        break;
+                    }
+                    else
+                    {
+                        // If the handshake failed it is just printed to the log
+                        m_logType = 2;
+                        outputTextProperty = "Server: Failed on handshake.. Retrying";
+                    }
                 }
-                else
-                {
-                    // If the handshake failed it is just printed to the log
-                    m_logType = 2;
-                    outputTextProperty = "Server: Failed on handshake.. Retrying";
-                }
+
+                m_logType = 0;
+                outputTextProperty = "Server: Terminating handshake thread! Started client reader thread!";
+                clientTextProperty = 0;
+
+                // Starting client listening thread
+                // resetting variables which handles the thread safe killing control every time a new client connects
+                resetThreadSpecificVariables();
+                m_recieveDataThread = new Thread(new ThreadStart(readClientData));
+                m_recieveDataThread.Start();
+                // Set as background thread so it will exit when the main thread dies
+                m_recieveDataThread.IsBackground = true;
+                // Closing this thread because the handshake is done and a client is connected to the server
+                m_listeningThread.Abort();
             }
-
-            m_logType = 0;
-            outputTextProperty = "Server: Terminating handshake thread! Started client reader thread!";
-            clientTextProperty = 0;
-
-            // Starting client listening thread
-            // resetting variables which handles the thread safe killing control every time a new client connects
-            resetThreadSpecificVariables();
-            m_recieveDataThread = new Thread(new ThreadStart(readClientData));
-            m_recieveDataThread.Start();
-            // Set as background thread so it will exit when the main thread dies
-            m_recieveDataThread.IsBackground = true;
-            // Closing this thread because the handshake is done and a client is connected to the server
-            m_listeningThread.Abort();
+            catch(Exception)
+            {
+                m_logType = 2;
+                outputTextProperty = "Server: Fatal error when client connected!";
+            }
         }
 
         /// <summary>
@@ -485,57 +493,65 @@ namespace tieto.education.eyetrackingwebserver
         /// </summary>
         private void readClientData()
         {
-            //Only run if this thread is not supposed to terminate
-            if(!m_isTerminatingListeningThread)
+            try
             {
-                // Is client still connected?
-                if (m_connectedClient.Connected)
+                //Only run if this thread is not supposed to terminate
+                if(!m_isTerminatingListeningThread)
                 {
-                    NetworkStream t_incomingStream = m_connectedClient.GetStream();
-                    while (true)
+                    // Is client still connected?
+                    if (m_connectedClient.Connected)
                     {
-                        while (!t_incomingStream.DataAvailable)
-                        {               
-                            if(m_isTerminatingListeningThread && m_safeToDisconnectClient)
-                            {
-                                break;
-                            }
-                            else if(!IsConnected())
-                            {
-                                handleClientDisconnectRequest();
-                            }
-                        }
-                        if (!m_isTerminatingListeningThread)
+                        NetworkStream t_incomingStream = m_connectedClient.GetStream();
+                        while (true)
                         {
-                            m_logType = 0;
-                            outputTextProperty = "Server: Message received from client!";
-                            // Read all available data and store it in an array
-                            Byte[] t_receivedBytes = new Byte[m_connectedClient.Available];
-                            t_incomingStream.Read(t_receivedBytes, 0, t_receivedBytes.Length);
-                            //t_incomingStream.Flush();
-                            // Send decrypted string to HandleMessage which will do something with the message
-                            // Setting safe to exit to false so that the thread doesn't get killed while handling messages
-                            m_safeToDisconnectClient = false;
-                            // Sending the message to messagehandler
-                            m_messageHandler.decryptMessage(t_receivedBytes);
-                            // The thread can successfully exit when the message has been handled
-                            m_safeToDisconnectClient = true;
-                        }
-                        else
-                        {
-                            if(m_safeToDisconnectClient)
-                            {
-                                // Closing client socket
-                                // if exit is possible
-                                m_connectedClient.Close();
-                                break;  
+                            while (!t_incomingStream.DataAvailable)
+                            {               
+                                if(m_isTerminatingListeningThread && m_safeToDisconnectClient)
+                                {
+                                    break;
+                                }
+                                else if(!IsConnected())
+                                {
+                                    handleClientDisconnectRequest();
+                                }
                             }
+                            if (!m_isTerminatingListeningThread)
+                            {
+                                m_logType = 0;
+                                outputTextProperty = "Server: Message received from client!";
+                                // Read all available data and store it in an array
+                                Byte[] t_receivedBytes = new Byte[m_connectedClient.Available];
+                                t_incomingStream.Read(t_receivedBytes, 0, t_receivedBytes.Length);
+                                //t_incomingStream.Flush();
+                                // Send decrypted string to HandleMessage which will do something with the message
+                                // Setting safe to exit to false so that the thread doesn't get killed while handling messages
+                                m_safeToDisconnectClient = false;
+                                // Sending the message to messagehandler
+                                m_messageHandler.decryptMessage(t_receivedBytes);
+                                // The thread can successfully exit when the message has been handled
+                                m_safeToDisconnectClient = true;
+                            }
+                            else
+                            {
+                                if(m_safeToDisconnectClient)
+                                {
+                                    // Closing client socket
+                                    // if exit is possible
+                                    m_connectedClient.Close();
+                                    break;  
+                                }
                             
+                            }
                         }
-                    }
 
-                } 
-            }              
+                    } 
+                }
+            }    
+            catch(Exception)
+            {
+                m_isTerminatingListeningThread = true;
+                m_connectedClient.Close();
+            }
         }
 
       
@@ -750,18 +766,25 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns>Bool, if the client is connected or not</returns>
         bool IsConnected()
         {
-            if (m_connectedClient.Client.Connected)
+            try
             {
-                if ((m_connectedClient.Client.Poll(0, SelectMode.SelectWrite)) && (!m_connectedClient.Client.Poll(0, SelectMode.SelectError)))
+                if (m_connectedClient.Client.Connected)
                 {
-                    byte[] buffer = new byte[1];
-                    if (m_connectedClient.Client.Receive(buffer, SocketFlags.Peek) == 0)
+                    if ((m_connectedClient.Client.Poll(0, SelectMode.SelectWrite)) && (!m_connectedClient.Client.Poll(0, SelectMode.SelectError)))
                     {
-                        return false;
+                        byte[] buffer = new byte[1];
+                        if (m_connectedClient.Client.Receive(buffer, SocketFlags.Peek) == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
                     }
                     else
                     {
-                        return true;
+                        return false;
                     }
                 }
                 else
@@ -769,7 +792,7 @@ namespace tieto.education.eyetrackingwebserver
                     return false;
                 }
             }
-            else
+            catch(SocketException)
             {
                 return false;
             }
