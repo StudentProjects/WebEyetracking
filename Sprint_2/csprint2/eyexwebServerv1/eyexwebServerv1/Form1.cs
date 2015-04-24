@@ -221,83 +221,85 @@ namespace tieto.education.eyetrackingwebserver
                 int t_type = t_eventContent.getType;
                 // Adding logmessage to listbox
 
-                
-                if(t_logMessage.Length > 115)
+                if(t_eventContent != null && t_logMessage != null)
                 {
-                    int t_totalLines = Convert.ToInt32(Math.Ceiling(t_logMessage.Length / 115.0));
-                    for (int i = 0; i < t_totalLines; i++)
+                    if (t_logMessage.Length > 115)
                     {
-                        string t_subString;
-                        if(i != (t_totalLines-1))
+                        int t_totalLines = Convert.ToInt32(Math.Ceiling(t_logMessage.Length / 115.0));
+                        for (int i = 0; i < t_totalLines; i++)
                         {
-                            t_subString = t_logMessage.Substring(i * 115, 115);
+                            string t_subString;
+                            if (i != (t_totalLines - 1))
+                            {
+                                t_subString = t_logMessage.Substring(i * 115, 115);
+                            }
+                            else
+                            {
+                                int index = t_logMessage.Length - (i * 115);
+                                t_subString = t_logMessage.Substring(i * 115, index);
+                            }
+                            if (t_type == 0)
+                            {
+                                lvOutput.Items.Add(t_subString);
+                                lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.White;
+                                lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.Black;
+                            }
+                            // Positive notification
+                            else if (t_type == 1)
+                            {
+                                lvOutput.Items.Add(t_subString);
+                                lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Green;
+                                lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.White;
+                            }
+                            //Error message
+                            else if (t_type == 2)
+                            {
+                                lvOutput.Items.Add(t_subString);
+                                lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Red;
+                                lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.White;
+                            }
+                            //Warning message
+                            else if (t_type == 3)
+                            {
+                                lvOutput.Items.Add(t_subString);
+                                lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Yellow;
+                                lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.Black;
+                            }
                         }
-                        else
-                        {
-                            int index = t_logMessage.Length - (i*115);
-                            t_subString = t_logMessage.Substring(i * 115,index);
-                        }
+                    }
+                    else
+                    {
                         if (t_type == 0)
                         {
-                            lvOutput.Items.Add(t_subString);
+                            lvOutput.Items.Add(t_logMessage);
                             lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.White;
                             lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.Black;
                         }
                         // Positive notification
                         else if (t_type == 1)
                         {
-                            lvOutput.Items.Add(t_subString);
+                            lvOutput.Items.Add(t_logMessage);
                             lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Green;
                             lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.White;
                         }
                         //Error message
                         else if (t_type == 2)
                         {
-                            lvOutput.Items.Add(t_subString);
+                            lvOutput.Items.Add(t_logMessage);
                             lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Red;
                             lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.White;
                         }
                         //Warning message
                         else if (t_type == 3)
                         {
-                            lvOutput.Items.Add(t_subString);
+                            lvOutput.Items.Add(t_logMessage);
                             lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Yellow;
                             lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.Black;
                         }
                     }
+                    //Always latest index visible
+                    lvOutput.Items[lvOutput.Items.Count - 1].EnsureVisible();
                 }
-                else
-                {
-                    if (t_type == 0)
-                    {
-                        lvOutput.Items.Add(t_logMessage);
-                        lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.White;
-                        lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.Black;
-                    }
-                    // Positive notification
-                    else if (t_type == 1)
-                    {
-                        lvOutput.Items.Add(t_logMessage);
-                        lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Green;
-                        lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.White;
-                    }
-                    //Error message
-                    else if (t_type == 2)
-                    {
-                        lvOutput.Items.Add(t_logMessage);
-                        lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Red;
-                        lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.White;
-                    }
-                    //Warning message
-                    else if (t_type == 3)
-                    {
-                        lvOutput.Items.Add(t_logMessage);
-                        lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.Yellow;
-                        lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.Black;
-                    }
-                }
-                //Always latest index visible
-                lvOutput.Items[lvOutput.Items.Count - 1].EnsureVisible();
             }
         }
 

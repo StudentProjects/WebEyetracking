@@ -41,7 +41,7 @@ function initRecorder()
 				{
 					if(index == 0)
 					{
-						chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", data: input});
+						chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", data: userInfo});
 					}
 					else if(index == 1)
 					{
