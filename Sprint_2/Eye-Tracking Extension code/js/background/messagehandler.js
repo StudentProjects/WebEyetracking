@@ -201,17 +201,10 @@ function handleLargeMessage(data)
 			
 			//Every 25th millisecond, send a message until
 			//there is no more messages to send.
-			var index = 0;
-			var timer = setInterval(function()
+			for(var i=0;i<nrOfMessages;i++)
 			{
-				if(index == nrOfMessages)
-				{
-					clearInterval(timer);
-					return;
-				}
-				sendWebsocketMessage(messageArray[index]);
-				index++;	
-			}, 25);
+				sendWebsocketMessage(messageArray[i]);
+			}
 		}
 		//If only one message is needed, set opcode to 3.
 		else
