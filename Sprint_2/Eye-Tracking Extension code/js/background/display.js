@@ -47,10 +47,12 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::noEyeData")
 		{
+			setPlayerEyeBox(false);
 			chrome.runtime.sendMessage({msg: 'player::noEyeData'});
 		}
 		else if(msg.message == "display::noMouseData")
 		{
+			setPlayerMouseBox(false);
 			chrome.runtime.sendMessage({msg: 'player::noMouseData'});
 		}
 	});

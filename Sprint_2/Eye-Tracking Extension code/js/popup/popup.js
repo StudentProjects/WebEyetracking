@@ -292,7 +292,9 @@ function addPopupMessageListener()
 			document.getElementById("eye_recordbox").checked = i_message.content['recorderEyeBox'];
 			document.getElementById("mouse_recordbox").checked = i_message.content['recorderMouseBox'];
 			document.getElementById("eye_playerbox").checked = i_message.content['playerEyeBox'];
+			document.getElementById("eye_playerbox").disabled = !i_message.content['playerEyeBox'];
 			document.getElementById("mouse_playerbox").checked = i_message.content['playerMouseBox'];
+			document.getElementById("mouse_playerbox").disabled = !i_message.content['playerMouseBox'];
 			
 			setActiveTab(i_message.content['activeTab']);
 		
@@ -340,10 +342,6 @@ function addPopupMessageListener()
 			if(isRecording)
 			{
 				chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });
-			}
-			else if(isRendering)
-			{
-				// pause rendering
 			}
 			else
 			{
