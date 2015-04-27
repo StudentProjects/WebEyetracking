@@ -17,7 +17,6 @@ namespace tieto.education.eyetrackingwebserver
         public Server m_activeServerInstance;
         string t_tempMessageContent;
 
-
         /// <summary>
         /// Initializes class variables
         /// </summary>

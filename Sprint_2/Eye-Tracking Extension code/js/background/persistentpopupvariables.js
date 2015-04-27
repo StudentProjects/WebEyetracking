@@ -20,7 +20,6 @@ var recorderEyeBox = true;
 var recorderMouseBox = true;
 var playerEyeBox = true;
 var playerMouseBox = true;
-
 ///////////
 //METHODS//
 ///////////

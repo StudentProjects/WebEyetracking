@@ -48,6 +48,7 @@ function initializeCanvas(mouse,eye)
 {
 	if(eye)
 	{
+		console.log("Initializing canvas for Eye!");
 		heatmapEyeInstance = h337.create( //Heatmap instance.
 		{
 			container: document.querySelector('*'),
@@ -453,9 +454,19 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if (request.msg == "injecteddisplay::animate")
 	{
-		hide(); //Hide before starting animation
-		startAnimation(request.eye, request.mouse);
-		sendResponse({message: "Animating heatmap!"});	
+		if(!animating)
+		{
+			if(timeStampEYE || timeStampMouse)
+			{
+				hide(); //Hide before starting animation
+				startAnimation(request.eye, request.mouse);
+				sendResponse({message: "Animating heatmap!"});	
+			}		
+			else
+			{
+				sendResponse({message: "Failedstart"});	
+			}
+		}
 	}
 	else if (request.msg == "injecteddisplay::show")
 	{

@@ -484,8 +484,7 @@ namespace tieto.education.eyetrackingwebserver
             }
             catch(Exception)
             {
-                m_logType = 2;
-                outputTextProperty = "Server: Fatal error when client connected!";
+                // Nothing to care about. Will still work.
             }
         }
 

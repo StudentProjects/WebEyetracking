@@ -13,6 +13,7 @@
 
 var displayTimer = null;
 var displayError = "";
+var currentData = null;
 
 ///////////
 //METHODS//
@@ -65,7 +66,7 @@ function injectDisplay()
 function setHeatmapData(i_data)
 {
 	console.log("setHeatmapData");
-	
+	currentData = i_data;
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
 		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::setData", data: i_data}, function(response) 
@@ -93,8 +94,20 @@ function animateHeatmap(animateEye, animateMouse)
 		{
 			try
 			{
-				console.log(response.message);
-				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});
+				if(response.message != "Failedstart")
+				{
+					console.log(response.message);
+					chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});	
+				}
+				else
+				{
+					if(currentData != null)
+					{
+						console.log(response.message);
+						setHeatmapData(currentData);	
+						animateHeatmap(animateEye,animateMouse);
+					}
+				}
 			}
 			catch(err)
 			{
