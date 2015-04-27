@@ -25,6 +25,13 @@ function initLoad()
 {
 	addLoadMessageListener();
 	
+	//Add event listener for load_input, calling filterApplications
+	//when value is changed
+	document.getElementById('load_input').addEventListener("input", function()
+	{
+		filterApplications(document.getElementById('load_input').value);
+	});
+	
 	console.log("load.js initialized!");
 }
 
@@ -92,6 +99,49 @@ function createNavigationLinks(state)
 	{
 		currentDate = "";
 	}
+}
+
+//Filter only application names that contain the
+//substring in the search field.
+function filterApplications(input)
+{	
+	//Filter applications.
+	var applications = new Array();
+	var index = 0;
+	var sizeData = allApplications['ApplicationName'].length;
+	for(i = 0; i < sizeData; i++)
+	{
+		if(allApplications['ApplicationName'][i].indexOf(input) > -1)
+		{
+			applications[index] = allApplications['ApplicationName'][i];
+			index++;		
+		}
+	}
+	
+	var list = document.getElementById('search_list');
+	list.innerHTML = "";
+	
+	//Build link list of applications
+	sizeData = applications.length;
+	for(i = 0; i < sizeData; i++)
+	{
+		var listItem = document.createElement('li');
+		listItem.innerHTML = '<a href="#">' + applications[i] + '</a>';
+		listItem.className = "list-group-item";
+
+		listItem.addEventListener("click", (function(data)
+		{
+			return function()
+			{
+				currentApplication = data;
+				chrome.extension.sendRequest({ msg: "websocket::applicationRequest", data: data});
+			};
+		}(applications[i])));	
+				
+		list.appendChild(listItem);
+	}
+	
+	createNavigationLinks(0);
 }
 
 //Create button for every available application

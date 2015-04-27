@@ -28,7 +28,7 @@ function initInfo()
 	var form = document.getElementById('userform');
 	for(i = 0; i < form.elements.length; i++)
 	{
-		form.elements[i].addEventListener("change", function()
+		form.elements[i].addEventListener("input", function()
 		{
 			saveInfo();
 		});
