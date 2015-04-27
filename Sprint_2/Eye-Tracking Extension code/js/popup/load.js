@@ -89,16 +89,6 @@ function createNavigationLinks(state)
 	
 		linkList.appendChild(link);
 	}
-	
-	if(state == 0)
-	{
-		currentApplication = "";
-		currentDate = "";
-	}
-	else if(state == 1)
-	{
-		currentDate = "";
-	}
 }
 
 //Filter only application names that contain the

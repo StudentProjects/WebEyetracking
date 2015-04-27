@@ -103,8 +103,28 @@ function setCurrentTestInfo(user, application, date, time)
 		}
 	}
 	
+	//Create link for application name that, when clicked,
+	//sends the user back to the load tab, with that applications
+	//dates listed.
+	var appLink = document.createElement('a');
+	appLink.innerHTML = '<a href="#">' + application + '</a>';
+
+	appLink.addEventListener("click", (function(data)
+	{
+		return function()
+		{
+			currentApplication = data;
+			chrome.extension.sendRequest({ msg: "websocket::applicationRequest", data: data});
+			
+			createNavigationLinks(1);
+			
+			setActiveTab(1);
+		};
+	}(application)));	
+	
 	document.getElementById("player_testheader").innerHTML = "Current test";
-	document.getElementById("player_user").innerHTML = "Name: " + userName;
+	document.getElementById("player_user").innerHTML = "Name: ";
+	document.getElementById("player_user").appendChild(appLink);
 	document.getElementById("player_application").innerHTML = "Application: " + application;
 	document.getElementById("player_date").innerHTML = "Date: " + date;
 	document.getElementById("player_time").innerHTML = "Time: " + time;

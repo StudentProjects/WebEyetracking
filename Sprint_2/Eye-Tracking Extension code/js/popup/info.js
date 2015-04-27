@@ -18,11 +18,6 @@ var userInfo;
 
 initInfo();
 
-function updateInfo()
-{
-	
-}
-
 function initInfo()
 {
 	var form = document.getElementById('userform');
