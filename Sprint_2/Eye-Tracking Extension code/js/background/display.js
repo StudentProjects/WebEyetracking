@@ -64,6 +64,7 @@ function pauseRendering()
 		{
 			try
 			{
+				setIsRenderingPaused(true);
 				console.log(response.message);
 			}
 			catch(err)
@@ -82,6 +83,7 @@ function resumeRendering()
 		{
 			try
 			{
+				setIsRenderingPaused(false);
 				console.log(response.message);
 			}
 			catch(err)

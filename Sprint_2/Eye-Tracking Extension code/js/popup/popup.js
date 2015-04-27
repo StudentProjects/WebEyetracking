@@ -309,15 +309,20 @@ function addPopupMessageListener()
 				document.getElementById('start_button').innerHTML = "Resume";
 			}
 			
-			if(isRendering)
+			if(!isRendering)
+			{
+				document.getElementById('animatedata_button').innerHTML = "Animate";
+				document.getElementById('animatedata_button').title = "Press to animate";
+			}
+			else if(isRendering && !isRenderingPaused)
 			{
 				document.getElementById('animatedata_button').innerHTML = "Pause";
 				document.getElementById('animatedata_button').title = "Press to pause";
 			}
 			else
 			{
-				document.getElementById('animatedata_button').innerHTML = "Animate";
-				document.getElementById('animatedata_button').title = "Press to animate";
+				document.getElementById('animatedata_button').innerHTML = "Resume";
+				document.getElementById('animatedata_button').title = "Press to resume";
 			}
 			
 			if(!isConnected)
