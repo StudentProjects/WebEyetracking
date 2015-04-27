@@ -683,6 +683,7 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns></returns>
         public string getApplicationData(string i_applicationName)
         {
+            clientConnectedProperty = true;
             return m_fileLoader.getApplicationData(i_applicationName);
         }
 
