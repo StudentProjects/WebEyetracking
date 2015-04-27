@@ -122,9 +122,9 @@ function setCurrentTestInfo(user, application, date, time)
 	}(application)));	
 	
 	document.getElementById("player_testheader").innerHTML = "Current test";
-	document.getElementById("player_user").innerHTML = "Name: ";
-	document.getElementById("player_user").appendChild(appLink);
-	document.getElementById("player_application").innerHTML = "Application: " + application;
+	document.getElementById("player_application").innerHTML = "Application: ";
+	document.getElementById("player_application").appendChild(appLink);
+	document.getElementById("player_user").innerHTML = "Name: " + user;
 	document.getElementById("player_date").innerHTML = "Date: " + date;
 	document.getElementById("player_time").innerHTML = "Time: " + time;
 }

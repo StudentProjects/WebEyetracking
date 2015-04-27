@@ -205,7 +205,7 @@ function createDateTable(input)
 	//Build link list of dates.
 	var sizeDate = data['Dates'].length;
 	var dates = data['Dates'];
-	for(i = 0; i < sizeDate; i++)
+	for(i = sizeDate-1; i >= 0; i--)
 	{
 		var listItem = document.createElement('li');
 		listItem.innerHTML = '<a href="#">' + dates[i]['Date'] + '</a>';
@@ -249,7 +249,7 @@ function createLinkTable(input)
 	//Build link list of tests.
 	var sizeDate = data['Dates'].length;
 	var dates = data['Dates'];
-	for(i = 0; i < sizeDate; i++)
+	for(i = sizeDate-1; i >= 0; i--)
 	{
 		if(data['Dates'][i]['Date'] == currentDate)
 		{
@@ -280,7 +280,7 @@ function createLinkTable(input)
 				listItem.className = "list-group-item";
 				
 				var tempData = new Object();
-				tempData.Name = data['Dates'][i]['Names'][j]['Name'];
+				tempData.Name = userName;
 				tempData.Date =	data['Dates'][i]['Date'];
 				tempData.Application = data['ApplicationName'];
 				tempData.Id = data['Dates'][i]['Names'][j]['Id'];
