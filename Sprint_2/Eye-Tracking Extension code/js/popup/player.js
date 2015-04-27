@@ -30,7 +30,7 @@ function initPlayer()
 		if(toSend.Eye|| toSend.Mouse)
 		{
 			chrome.extension.sendRequest({ msg: "display::animate", data: toSend });
-		}
+		} 
 		else
 		{
 			renderInfo("Please use the checkboxes to select what to animate!", "Error");

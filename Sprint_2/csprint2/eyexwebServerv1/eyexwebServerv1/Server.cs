@@ -426,6 +426,7 @@ namespace tieto.education.eyetrackingwebserver
             {
                 // Blocking signal waiting for a client to connect
                 m_connectedClient = m_socketListener.AcceptTcpClient();
+                DateTime connectionTime = DateTime.Now;
                 // Moving forward if client connected
                 m_logType = 1;
                 outputTextProperty = "Server: A client connected!";
@@ -436,7 +437,17 @@ namespace tieto.education.eyetrackingwebserver
                 while (true)
                 {
                     // Wait until handshake data is available
-                    while (!t_clientStream.DataAvailable) ;
+                    while (!t_clientStream.DataAvailable)
+                    {
+                        TimeSpan timeSinceConnection = DateTime.Now - connectionTime;
+                        if((int)timeSinceConnection.TotalSeconds >= 2)
+                        {
+                            m_logType = 0;
+                            outputTextProperty = "Server: Too long time to perform handshake. Disconnecting client";
+                            handleClientDisconnectRequest();
+                            break;
+                        }
+                    }
                     Byte[] bytes = new Byte[m_connectedClient.Available];
                     t_clientStream.Read(bytes, 0, bytes.Length);
 
@@ -681,6 +692,7 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns>A parsed JSON string containing all the applications</returns>
         public string getAllApplicationData()
         {
+            clientConnectedProperty = true;
             return m_fileLoader.getAllApplicationData();
         }
 
