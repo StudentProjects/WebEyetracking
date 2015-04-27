@@ -39,6 +39,8 @@ var heatmapMouseInstance = null;
 
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
 
+var isPaused = false;
+
 ///////////
 //METHODS//
 ///////////
@@ -154,8 +156,8 @@ function setData(i_data)
 //as long as index is less than the size of the timeStampEYE array.
 function animateEye()
 {
-	//if(!isRenderingPaused)
-	//{
+	if(!isPaused)
+	{
 		var nextFrame = 0;
 		if(indexEye > 0)
 		{
@@ -181,36 +183,39 @@ function animateEye()
 			animateEye();
 			
 		}, nextFrame);	
-	//}
+	}
 }
 
 //Animate the result of the collected mouse data. Recursive function that runs
 //as long as index is less than the size of the timeStampMouse array.
 function animateMouse()
 {	
-	var nextFrame = 0;
-	if(indexMouse > 0)
+	if(!isPaused)
 	{
-		var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
-	}
-	
-	if(mousePointer != null)
-	{
-		animationMouse = setTimeout(function()
-		{	
-			if(indexMouse >= sizeMouse)
-			{
-				stopAnimation();
-				return;
-			}
+		var nextFrame = 0;
+		if(indexMouse > 0)
+		{
+			var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
+		}
 		
-			mousePointer.style.left = xMouseCoords[indexMouse]+'px';
-			mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+		if(mousePointer != null)
+		{
+			animationMouse = setTimeout(function()
+			{	
+				if(indexMouse >= sizeMouse)
+				{
+					stopAnimation();
+					return;
+				}
 			
-			indexMouse++;	
-			animateMouse();
-			
-		}, nextFrame);	
+				mousePointer.style.left = xMouseCoords[indexMouse]+'px';
+				mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+				
+				indexMouse++;	
+				animateMouse();
+				
+			}, nextFrame);	
+		}
 	}
 }
 
@@ -469,6 +474,27 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 				sendResponse({message: "Failedstart"});	
 			}
 		}
+		else if(animating && !isPaused)
+		{
+			if(timeStampEYE)
+			{
+				animateEye();	
+			}
+			if(timeStampMouse)
+			{
+				animateMouse();
+			}
+		}
+	}
+	else if(request.msg == "injecteddisplay::pauseRendering")
+	{
+		isPaused = true;
+		sendResponse({message: "Paused!"});	
+	}
+	else if(request.msg == "injecteddisplay::resumeRendering")
+	{
+		isPaused = false;
+		sendResponse({message: "Resumed!"});	
 	}
 	else if (request.msg == "injecteddisplay::show")
 	{

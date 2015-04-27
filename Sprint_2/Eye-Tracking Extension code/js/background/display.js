@@ -33,6 +33,7 @@ chrome.runtime.onConnect.addListener(function(port)
 		else if(msg.message == "display::animationFinished")
 		{
 			setIsRendering(false);
+			setIsRenderingPaused(false);
 			chrome.browserAction.setIcon({path: "../../img/play-icon16.png"});
 			chrome.runtime.sendMessage({msg: 'player::animationFinished'});
 		}
@@ -54,6 +55,42 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 	});
 });
+
+function pauseRendering()
+{
+	chrome.tabs.getSelected(null, function(i_tab) 
+	{
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::pauseRendering"}, function(response) 
+		{
+			try
+			{
+				console.log(response.message);
+			}
+			catch(err)
+			{	
+				console.log("Error: " + err.message);
+			}
+		});
+	});
+}
+
+function resumeRendering()
+{
+	chrome.tabs.getSelected(null, function(i_tab) 
+	{
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::resumeRendering"}, function(response) 
+		{
+			try
+			{
+				console.log(response.message);
+			}
+			catch(err)
+			{	
+				console.log("Error: " + err.message);
+			}
+		});
+	});
+}
 
 //Inject scripts into the current tab
 function injectDisplay()
