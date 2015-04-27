@@ -151,7 +151,6 @@ namespace tieto.education.eyetrackingwebserver
             int t_messageType = getMessageType(i_decryptedMessage);
             m_activeServerInstance.setLogType(0);
             m_activeServerInstance.setOutputTextProperty("MessageHandler: Got message of type from client: " + t_messageType.ToString());
-            m_activeServerInstance.setOutputTextProperty(i_decryptedMessage);
             if(t_messageType != -1)
             {
                 // Client requesting start of eye tracker
