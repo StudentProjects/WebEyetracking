@@ -38,7 +38,7 @@ function handleMessage(i_message)
 		case 7:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
-				chrome.runtime.sendMessage({ msg: "recorder::startReceived" });
+				handleStartReceived();
 				console.log("Recording started!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")
@@ -55,7 +55,7 @@ function handleMessage(i_message)
 		case 8:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
-				chrome.runtime.sendMessage({ msg: "recorder::pauseReceived" });
+				handlePauseReceived();
 				console.log("Recording paused!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")
@@ -72,7 +72,7 @@ function handleMessage(i_message)
 		case 9:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
-				chrome.runtime.sendMessage({ msg: "recorder::resumeReceived" });
+				handleResumeReceived();
 				console.log("Recording resumed!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")
@@ -89,7 +89,7 @@ function handleMessage(i_message)
 		case 10:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
-				chrome.runtime.sendMessage({ msg: "recorder::stopReceived" });
+				handleStopReceived();
 				console.log("Recording stopped!");
 			}
 			else if(currentMessage['MessageContent'] == "Failed")
@@ -257,12 +257,12 @@ chrome.extension.onRequest.addListener
 		//Start
 		else if(request.msg == "websocket::startRecording") 
 		{
-			manageMessage(1, request.data);
+			handleStartRecording();
 		}
 		//Pause
 		else if(request.msg == "websocket::pauseRecording") 
 		{
-			manageMessage(2, "PauseRecordingRequest");
+			handlePauseRecording();
 		}
 		//Resume
 		else if(request.msg == "websocket::resumeRecording") 
@@ -272,7 +272,7 @@ chrome.extension.onRequest.addListener
 		//Stop
 		else if(request.msg == "websocket::stopRecording") 
 		{
-			manageMessage(4, "StopRecordingRequest");
+			handleStopRecording();
 		}
 		//RecordedDataRequest
 		else if(request.msg == "websocket::recordedDataRequest") 
@@ -416,7 +416,6 @@ chrome.extension.onRequest.addListener
 			{
 				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getDocumentSize"}, function(response) 
 				{
-					console.log(response.data);
 					manageMessage(25, response.data);
 				});
 			});

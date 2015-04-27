@@ -28,6 +28,27 @@
   		"img/*.png"
 	],
 	
+	"commands": 
+	{
+		"togglerendering" : 
+		{
+			"suggested_key": 
+			{
+				 "default": "Alt+A" 
+			},
+			"description": "Toggle animation on/off"
+		},
+		
+		"togglerecording" : 
+		{
+			"suggested_key": 
+			{
+				 "default": "Alt+R"
+			},
+			"description": "Toggle recording on/off"
+		}
+	},
+	
 	"permissions": 
 	[      
         "webRequest",

@@ -47,6 +47,7 @@ function initPlayer()
 		if(toSend.Eye || toSend.Mouse)
 		{
 			chrome.extension.sendRequest({ msg: "display::show", data: toSend });
+			document.getElementById("main_body").style.cursor = "wait";
 		}
 		else
 		{
@@ -85,7 +86,6 @@ function setCurrentTestInfo(user, application, date, time)
 	//each part of the name.
 	var userName = "";
 	var userSplitArray = user.split(" ");
-	console.log(userSplitArray);
 	for(i = 0; i < userSplitArray.length; i++)
 	{
 		var first = userSplitArray[i].substring(0, 1);
@@ -182,6 +182,7 @@ function addPlayerMessageListener()
 		else if(i_message.msg == "player::displayingData")
 		{
 			document.getElementById("player_testheader").innerHTML = "Displaying data";
+			document.getElementById("main_body").style.cursor = "default";
 		}
 		else if(i_message.msg == "player::setHeaderToDefault")
 		{

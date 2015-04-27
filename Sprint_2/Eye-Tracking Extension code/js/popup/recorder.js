@@ -27,113 +27,20 @@ function initRecorder()
 		//Execute only if connected
 		if(isConnected)
 		{
-			//Get checkbox values
-			var recordEye = document.getElementById("eye_recordbox").checked;
-			var recordMouse = document.getElementById("mouse_recordbox").checked;
-			
 			//If not recording, send start message with type depending on which checkboxes are checked
 			if(!isRecording)
-			{
-				//Send messages with 25 milliseconds delay, so that the servers buffer 
-				//won't get corrupted
-				var index = 0;
-				var interval = setInterval(function()
-				{
-					if(index == 0)
-					{
-						var data = new Object();
-						data.Application = userInfo[0];
-						data.Name = userInfo[1];
-						data.Age = userInfo[2];
-						
-						data.Gender = userInfo[3];
-						if(!data.Gender)
-						{
-							data.Gender = "";
-						}	
-						
-						data.Occupation = userInfo[4];
-						data.Location = userInfo[5];
-						
-						data.ComputerUsage = userInfo[6];
-						if(!data.ComputerUsage)
-						{
-							data.ComputerUsage = "";
-						}		
-						
-						data.Other = userInfo[7];
-						
-						chrome.extension.sendRequest({ msg: "websocket::sendUserInfo", data: JSON.stringify(data)});
-					}
-					else if(index == 1)
-					{
-						chrome.extension.sendRequest({ msg: "tabinfo::getScrollHeight"});
-					}
-					else if(index == 2)
-					{
-						chrome.extension.sendRequest({ msg: "tabinfo::getDocumentSize"});
-					}
-					else if(index == 3)
-					{
-						//Decide what to record depending on the checkboxes in the recorder tab.
-						if(recordEye && recordMouse)
-						{
-							chrome.extension.sendRequest({ msg: "websocket::startRecording", data: 2});
-						}
-						else if(recordEye)
-						{
-							chrome.extension.sendRequest({ msg: "websocket::startRecording", data: 0});
-						}
-						else if(recordMouse)
-						{
-							chrome.extension.sendRequest({ msg: "websocket::startRecording", data: 1});
-						}
-						else
-						{
-							renderInfo("Please choose what to record in the checkboxes!", "Error");
-						}
-					}
-					else
-					{
-						clearInterval(interval);
-					}
-					
-					index++;
-				}, 50);
+			{			
+				chrome.extension.sendRequest({ msg: "websocket::startRecording"});
 			}
 			//If recording and not paused, send message to pause recording.
 			else if(isRecording && !isRecordingPaused)
 			{	
-				if(recordEye && recordMouse)
-				{
-					chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });
-					chrome.extension.sendRequest({ msg: "mouserecorder::pauseRecording" });
-				}
-				else if(recordEye)
-				{
-					chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });
-				}
-				else if(recordMouse)
-				{
-					chrome.extension.sendRequest({ msg: "mouserecorder::pauseRecording" });
-				}
+				chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });		
 			}
 			//If recording and paused, send resume message
 			else if(isRecording && isRecordingPaused)
 			{
-				if(recordEye && recordMouse)
-				{
-					chrome.extension.sendRequest({ msg: "websocket::resumeRecording" });
-					chrome.extension.sendRequest({ msg: "mouserecorder::resumeRecording" });
-				}
-				else if(recordEye)
-				{
-					chrome.extension.sendRequest({ msg: "websocket::resumeRecording" });
-				}
-				else if(recordMouse)
-				{
-					chrome.extension.sendRequest({ msg: "mouserecorder::resumeRecording" });
-				}	
+				chrome.extension.sendRequest({ msg: "websocket::resumeRecording" });
 			}
 			//This should not be possible, but just in case.
 			else
@@ -223,15 +130,8 @@ function addRecorderMessageListener()
 		{
 			if(!isRecording)
 			{
-				if(document.getElementById("mouse_recordbox").checked)
-				{
-					chrome.extension.sendRequest({ msg: "mouserecorder::startRecording" });
-				}
-				
 				document.getElementById('start_button').innerHTML = "Pause";
 				isRecording = true;
-				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecording", data: isRecording });
-				chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 				
 				var timer = setTimeout(function()
 				{
@@ -247,9 +147,8 @@ function addRecorderMessageListener()
 			{
 				document.getElementById('start_button').innerHTML = "Resume";
 				isRecordingPaused = true;
-				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecordingPaused", data: isRecordingPaused });
+
 				renderInfo("Recording paused!", "Alert");
-				chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
 			}
 		}
 		//Resume received
@@ -275,15 +174,8 @@ function addRecorderMessageListener()
 			document.getElementById('start_button').innerHTML = "Start";
 			isRecording = false;
 			isRecordingPaused = false;
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecording", data: isRecording });
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecordingPaused", data: isRecordingPaused });
+
 			renderInfo("Recording Stopped!", "Alert");
-			chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
-		
-			if(document.getElementById("mouse_recordbox").checked)
-			{
-				chrome.extension.sendRequest({ msg: "mouserecorder::stopRecording" });
-			}
 		}
 	});
 }

@@ -31,7 +31,6 @@ var tempTimer = setTimeout(function()
 	});
 }, 50);
 
-
 //Listen for messages from tabinfo.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
 {

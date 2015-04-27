@@ -163,8 +163,6 @@ function hideHeatmap()
 	});
 }
 
-
-
 //Check if the injected scripts are alive, if not
 //try to inject them. Also handles errors like 
 //permission denied or browser window not selected.

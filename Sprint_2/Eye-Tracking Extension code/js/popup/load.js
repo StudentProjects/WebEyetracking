@@ -247,9 +247,10 @@ function createLinkTable(input)
 	}
 	
 	//Build link list of tests.
+	var linkArray = new Array();	
 	var sizeDate = data['Dates'].length;
 	var dates = data['Dates'];
-	for(i = sizeDate-1; i >= 0; i--)
+	for(i = 0; i < sizeDate; i++)
 	{
 		if(data['Dates'][i]['Date'] == currentDate)
 		{
@@ -280,11 +281,10 @@ function createLinkTable(input)
 				listItem.className = "list-group-item";
 				
 				var tempData = new Object();
+				tempData.Application = data['ApplicationName'];
 				tempData.Name = userName;
 				tempData.Date =	data['Dates'][i]['Date'];
-				tempData.Application = data['ApplicationName'];
-				tempData.Id = data['Dates'][i]['Names'][j]['Id'];
-			
+				tempData.Id = data['Dates'][i]['Names'][j]['Id'];	
 				
 				listItem.addEventListener("click", (function(data, time)
 				{
@@ -295,17 +295,23 @@ function createLinkTable(input)
 						
 						//Save testInfo variable in persistantpopupvariables.js
 						var testInfo = new Object();
-						testInfo.Name = data.Name;
 						testInfo.Application = data.Application;
+						testInfo.Name = data.Name;
 						testInfo.Date = data.Date;
 						testInfo.Time = time;
 						chrome.extension.sendRequest({ msg: "persistentpopupvariables::setTestInfo", data: testInfo });
 					};
 				}(tempData, data['Dates'][i]['Names'][j]['Time'])));
 				
-				list.appendChild(listItem);
+				
+				linkArray.push(listItem);
 			}
 		}
+	}
+	
+	for(i = linkArray.length-1; i >= 0; i--)
+	{
+		list.appendChild(linkArray[i]);
 	}
 	
 	createNavigationLinks(2);
