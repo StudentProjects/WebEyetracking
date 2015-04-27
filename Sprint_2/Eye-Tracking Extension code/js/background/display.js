@@ -26,6 +26,8 @@ chrome.runtime.onConnect.addListener(function(port)
 	{
 		if(msg.message == "display::animationStarted")
 		{
+			setIsRendering(true);
+			chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});	
 			chrome.runtime.sendMessage({msg: 'player::animationStarted'});
 		}
 		else if(msg.message == "display::animationFinished")
@@ -100,7 +102,6 @@ function animateHeatmap(animateEye, animateMouse)
 				{
 					console.log(response.message);
 					chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});	
-					setIsRendering(true);
 				}
 				else
 				{

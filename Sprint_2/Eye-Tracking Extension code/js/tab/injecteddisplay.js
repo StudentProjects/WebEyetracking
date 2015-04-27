@@ -21,7 +21,6 @@ var timeStampMouse = null; //Array of eye time stamps.
 var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
 var animating = false; //True if animating.
-
 var indexEye = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeEye = 0; //Size of coordinate arrays.
@@ -155,31 +154,34 @@ function setData(i_data)
 //as long as index is less than the size of the timeStampEYE array.
 function animateEye()
 {
-	var nextFrame = 0;
-	if(indexEye > 0)
-	{
-		var nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
-	}
-	
-	animationEye = setTimeout(function()
-	{	
-		if(indexEye >= sizeEye)
+	//if(!isRenderingPaused)
+	//{
+		var nextFrame = 0;
+		if(indexEye > 0)
 		{
-			stopAnimation();
-			return;
+			var nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
 		}
 		
-		heatmapEyeInstance.addData(
-		{
-			x: xEyeCoords[indexEye],
-			y: yEyeCoords[indexEye],
-			value: 1
-		});
-		
-		indexEye++;
-		animateEye();
-		
-	}, nextFrame);
+		animationEye = setTimeout(function()
+		{	
+			if(indexEye >= sizeEye)
+			{
+				stopAnimation();
+				return;
+			}
+			
+			heatmapEyeInstance.addData(
+			{
+				x: xEyeCoords[indexEye],
+				y: yEyeCoords[indexEye],
+				value: 1
+			});
+			
+			indexEye++;
+			animateEye();
+			
+		}, nextFrame);	
+	//}
 }
 
 //Animate the result of the collected mouse data. Recursive function that runs

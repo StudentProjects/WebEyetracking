@@ -34,7 +34,15 @@ function initPlayer()
 		else
 		{
 			renderInfo("Please use the checkboxes to select what to animate!", "Error");
-		}	
+		}		
+		/*else if(isRendering && !isRenderingPaused)
+		{
+			chrome.extension.sendRequest({ msg: "display::pauseRendering"});
+		}
+		else if(isRendering && isRenderingPaused)
+		{
+			chrome.extension.sendRequest({ msg: "display::resumeRendering"});
+		}*/
 	});
 
 	//Send show request to display.js

@@ -300,8 +300,11 @@ chrome.extension.onRequest.addListener
 		//Handled in display.js
         else if(request.msg == "display::animate") 
 		{
-			var data = request.data;
-			animateHeatmap(data.Eye, data.Mouse);
+			if(!isRendering)
+			{
+				var data = request.data;
+				animateHeatmap(data.Eye, data.Mouse);	
+			}
 		}
         else if(request.msg == "display::show") 
 		{
