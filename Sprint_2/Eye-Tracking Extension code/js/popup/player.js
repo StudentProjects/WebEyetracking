@@ -30,11 +30,11 @@ function initPlayer()
 		if(toSend.Eye|| toSend.Mouse)
 		{
 			chrome.extension.sendRequest({ msg: "display::animate", data: toSend });
-		}
+		} 
 		else
 		{
 			renderInfo("Please use the checkboxes to select what to animate!", "Error");
-		}	
+		}		
 	});
 
 	//Send show request to display.js
@@ -165,13 +165,20 @@ function addPlayerMessageListener()
 		else if(i_message.msg == "player::animationStarted")
 		{
 			document.getElementById("animatedata_button").innerHTML="Pause";
-			document.getElementById("player_testheader").innerHTML = "Animating data..";
-			chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});		
+			document.getElementById("player_testheader").innerHTML = "Animating data..";	
 			var timer = setTimeout(function()
 			{
 				window.close();
 				clearTimeout(timer);
 			}, 15);
+		}
+		else if(i_message.msg == "player::resumeRendering")
+		{
+			document.getElementById("animatedata_button").innerHTML="Pause";
+		}
+		else if(i_message.msg == "player::pauseRendering")
+		{
+			document.getElementById("animatedata_button").innerHTML="Resume";
 		}
 		else if(i_message.msg == "player::animationFinished")
 		{

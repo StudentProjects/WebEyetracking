@@ -26,11 +26,14 @@ chrome.runtime.onConnect.addListener(function(port)
 	{
 		if(msg.message == "display::animationStarted")
 		{
+			setIsRendering(true);
+			chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});	
 			chrome.runtime.sendMessage({msg: 'player::animationStarted'});
 		}
 		else if(msg.message == "display::animationFinished")
 		{
 			setIsRendering(false);
+			setIsRenderingPaused(false);
 			chrome.browserAction.setIcon({path: "../../img/play-icon16.png"});
 			chrome.runtime.sendMessage({msg: 'player::animationFinished'});
 		}
@@ -44,14 +47,96 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::noEyeData")
 		{
+			setPlayerEyeBox(false);
 			chrome.runtime.sendMessage({msg: 'player::noEyeData'});
 		}
 		else if(msg.message == "display::noMouseData")
 		{
+			setPlayerMouseBox(false);
 			chrome.runtime.sendMessage({msg: 'player::noMouseData'});
 		}
 	});
 });
+
+function handleFixationPoints()
+{
+	if(isFixationPointsDisplayed)
+	{
+		chrome.tabs.getSelected(null, function(i_tab) 
+		{
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::hideFixationPoints"}, function(response) 
+			{
+				try
+				{
+					chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
+					setIsFixationPointsDisplayed(false);
+					console.log(response.message);
+				}
+				catch(err)
+				{	
+					console.log("Error: " + err.message);
+				}
+			});
+		});
+	}
+	else
+	{
+		chrome.tabs.getSelected(null, function(i_tab) 
+		{
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::showFixationPoints"}, function(response) 
+			{
+				try
+				{
+					chrome.runtime.sendMessage({msg: 'statistics::showingFixationPoints'});
+					setIsFixationPointsDisplayed(true);
+					console.log(response.message);
+				}
+				catch(err)
+				{	
+					console.log("Error: " + err.message);
+				}
+			});
+		});
+	}
+}
+
+function pauseRendering()
+{
+	chrome.tabs.getSelected(null, function(i_tab) 
+	{
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::pauseRendering"}, function(response) 
+		{
+			try
+			{
+				setIsRenderingPaused(true);
+				console.log(response.message);
+			}
+			catch(err)
+			{	
+				console.log("Error: " + err.message);
+			}
+		});
+	});
+}
+
+function resumeRendering()
+{
+	chrome.tabs.getSelected(null, function(i_tab) 
+	{
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::resumeRendering"}, function(response) 
+		{
+			try
+			{
+				setIsRenderingPaused(false);
+				console.log(response.message);
+			}
+			catch(err)
+			{	
+				console.log("Error: " + err.message);
+			}
+		});
+	});
+}
 
 //Inject scripts into the current tab
 function injectDisplay()
@@ -100,7 +185,6 @@ function animateHeatmap(animateEye, animateMouse)
 				{
 					console.log(response.message);
 					chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});	
-					setIsRendering(true);
 				}
 				else
 				{

@@ -23,6 +23,7 @@ var isRenderingPaused = false;
 //recorder
 var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
+var isFixationPointsDisplayed = false;
 var activeTab = null;
 
 ///////////
@@ -281,6 +282,7 @@ function addPopupMessageListener()
 			isConnected = i_message.content['isConnected'];
 			isRendering = i_message.content['isRendering'];
 			isRenderingPaused = i_message.content['isRenderingPaused'];
+			isFixationPointsDisplayed = i_message.content['isFixationPointsDisplayed'];
 			
 			if(i_message.content['testInfo'])
 			{
@@ -292,7 +294,9 @@ function addPopupMessageListener()
 			document.getElementById("eye_recordbox").checked = i_message.content['recorderEyeBox'];
 			document.getElementById("mouse_recordbox").checked = i_message.content['recorderMouseBox'];
 			document.getElementById("eye_playerbox").checked = i_message.content['playerEyeBox'];
+			document.getElementById("eye_playerbox").disabled = !i_message.content['playerEyeBox'];
 			document.getElementById("mouse_playerbox").checked = i_message.content['playerMouseBox'];
+			document.getElementById("mouse_playerbox").disabled = !i_message.content['playerMouseBox'];
 			
 			setActiveTab(i_message.content['activeTab']);
 		
@@ -309,15 +313,29 @@ function addPopupMessageListener()
 				document.getElementById('start_button').innerHTML = "Resume";
 			}
 			
-			if(isRendering)
+			if(!isRendering)
+			{
+				document.getElementById('animatedata_button').innerHTML = "Animate";
+				document.getElementById('animatedata_button').title = "Press to animate";
+			}
+			else if(isRendering && !isRenderingPaused)
 			{
 				document.getElementById('animatedata_button').innerHTML = "Pause";
 				document.getElementById('animatedata_button').title = "Press to pause";
 			}
 			else
 			{
-				document.getElementById('animatedata_button').innerHTML = "Animate";
-				document.getElementById('animatedata_button').title = "Press to animate";
+				document.getElementById('animatedata_button').innerHTML = "Resume";
+				document.getElementById('animatedata_button').title = "Press to resume";
+			}
+			
+			if(isFixationPointsDisplayed)
+			{
+				document.getElementById('fixation_button').innerHTML = "Hide fixation points";
+			}
+			else
+			{
+				document.getElementById('fixation_button').innerHTML = "Show fixation points";
 			}
 			
 			if(!isConnected)
@@ -335,10 +353,6 @@ function addPopupMessageListener()
 			if(isRecording)
 			{
 				chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });
-			}
-			else if(isRendering)
-			{
-				// pause rendering
 			}
 			else
 			{

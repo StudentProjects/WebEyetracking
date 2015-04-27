@@ -21,7 +21,6 @@ var timeStampMouse = null; //Array of eye time stamps.
 var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
 var animating = false; //True if animating.
-
 var indexEye = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeEye = 0; //Size of coordinate arrays.
@@ -39,6 +38,8 @@ var heatmapEyeInstance = null;
 var heatmapMouseInstance = null;
 
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
+
+var isPaused = false;
 
 ///////////
 //METHODS//
@@ -69,6 +70,16 @@ function initializeCanvas(mouse,eye)
 			}
 		});
 	}
+}
+
+function showFixationPoints()
+{
+	
+}
+
+function hideFixationPoints()
+{
+	
 }
 
 //Update the xCoords and yCoords with the latest collected data.
@@ -144,71 +155,72 @@ function setData(i_data)
 	{
 		port.postMessage({message: "display::noMouseData"});
 	}
-	//If test data exists
-	if(t_data['testStatistics'])
-	{
-		var t_fixationPointsX = new Array();
-	}
 }
 
 //Animate the result of the collected eye data. Recursive function that runs
 //as long as index is less than the size of the timeStampEYE array.
 function animateEye()
 {
-	var nextFrame = 0;
-	if(indexEye > 0)
+	if(!isPaused)
 	{
-		var nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
-	}
-	
-	animationEye = setTimeout(function()
-	{	
-		if(indexEye >= sizeEye)
+		var nextFrame = 0;
+		if(indexEye > 0)
 		{
-			stopAnimation();
-			return;
+			var nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
 		}
 		
-		heatmapEyeInstance.addData(
-		{
-			x: xEyeCoords[indexEye],
-			y: yEyeCoords[indexEye],
-			value: 1
-		});
-		
-		indexEye++;
-		animateEye();
-		
-	}, nextFrame);
+		animationEye = setTimeout(function()
+		{	
+			if(indexEye >= sizeEye)
+			{
+				stopAnimation();
+				return;
+			}
+			
+			heatmapEyeInstance.addData(
+			{
+				x: xEyeCoords[indexEye],
+				y: yEyeCoords[indexEye],
+				value: 1
+			});
+			
+			indexEye++;
+			animateEye();
+			
+		}, nextFrame);	
+	}
 }
 
 //Animate the result of the collected mouse data. Recursive function that runs
 //as long as index is less than the size of the timeStampMouse array.
 function animateMouse()
 {	
-	var nextFrame = 0;
-	if(indexMouse > 0)
+	if(!isPaused)
 	{
-		var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
-	}
-	
-	if(mousePointer != null)
-	{
-		animationMouse = setTimeout(function()
-		{	
-			if(indexMouse >= sizeMouse)
-			{
-				stopAnimation();
-				return;
-			}
+		var nextFrame = 0;
+		if(indexMouse > 0)
+		{
+			var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
+		}
 		
-			mousePointer.style.left = xMouseCoords[indexMouse]+'px';
-			mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+		if(mousePointer != null)
+		{
+			animationMouse = setTimeout(function()
+			{	
+				if(indexMouse >= sizeMouse)
+				{
+					stopAnimation();
+					return;
+				}
 			
-			indexMouse++;	
-			animateMouse();
-			
-		}, nextFrame);	
+				mousePointer.style.left = xMouseCoords[indexMouse]+'px';
+				mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+				
+				indexMouse++;	
+				animateMouse();
+				
+			}, nextFrame);	
+		}
 	}
 }
 
@@ -467,6 +479,27 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 				sendResponse({message: "Failedstart"});	
 			}
 		}
+		else if(animating && !isPaused)
+		{
+			if(timeStampEYE)
+			{
+				animateEye();	
+			}
+			if(timeStampMouse)
+			{
+				animateMouse();
+			}
+		}
+	}
+	else if(request.msg == "injecteddisplay::pauseRendering")
+	{
+		isPaused = true;
+		sendResponse({message: "Paused!"});	
+	}
+	else if(request.msg == "injecteddisplay::resumeRendering")
+	{
+		isPaused = false;
+		sendResponse({message: "Resumed!"});	
 	}
 	else if (request.msg == "injecteddisplay::show")
 	{
@@ -486,5 +519,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	{
 		setData(request.data);
 		sendResponse({message: "Updating data!"});
+	}
+	else if(request.msg == "injecteddisplay::showFixationPoints")
+	{
+		sendResponse({message: "Displaying fixation points!"});
+		showFixationPoints();
+	}
+	else if(request.msg == "injecteddisplay::hideFixationPoints")
+	{
+		sendResponse({message: "Hiding fixation points!"});
+		hideFixationPoints();
 	}
 });

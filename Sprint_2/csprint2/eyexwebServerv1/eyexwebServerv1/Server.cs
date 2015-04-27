@@ -426,6 +426,7 @@ namespace tieto.education.eyetrackingwebserver
             {
                 // Blocking signal waiting for a client to connect
                 m_connectedClient = m_socketListener.AcceptTcpClient();
+                DateTime connectionTime = DateTime.Now;
                 // Moving forward if client connected
                 m_logType = 1;
                 outputTextProperty = "Server: A client connected!";
@@ -436,7 +437,17 @@ namespace tieto.education.eyetrackingwebserver
                 while (true)
                 {
                     // Wait until handshake data is available
-                    while (!t_clientStream.DataAvailable) ;
+                    while (!t_clientStream.DataAvailable)
+                    {
+                        TimeSpan timeSinceConnection = DateTime.Now - connectionTime;
+                        if((int)timeSinceConnection.TotalSeconds >= 2)
+                        {
+                            m_logType = 0;
+                            outputTextProperty = "Server: Too long time to perform handshake. Disconnecting client";
+                            handleClientDisconnectRequest();
+                            break;
+                        }
+                    }
                     Byte[] bytes = new Byte[m_connectedClient.Available];
                     t_clientStream.Read(bytes, 0, bytes.Length);
 
@@ -522,7 +533,7 @@ namespace tieto.education.eyetrackingwebserver
                                 // Read all available data and store it in an array
                                 Byte[] t_receivedBytes = new Byte[m_connectedClient.Available];
                                 t_incomingStream.Read(t_receivedBytes, 0, t_receivedBytes.Length);
-                                //t_incomingStream.Flush();
+                                t_incomingStream.Flush();
                                 // Send decrypted string to HandleMessage which will do something with the message
                                 // Setting safe to exit to false so that the thread doesn't get killed while handling messages
                                 m_safeToDisconnectClient = false;
@@ -672,6 +683,7 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns></returns>
         public string getApplicationData(string i_applicationName)
         {
+            clientConnectedProperty = true;
             return m_fileLoader.getApplicationData(i_applicationName);
         }
 
@@ -681,6 +693,7 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns>A parsed JSON string containing all the applications</returns>
         public string getAllApplicationData()
         {
+            clientConnectedProperty = true;
             return m_fileLoader.getAllApplicationData();
         }
 

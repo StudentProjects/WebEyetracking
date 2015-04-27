@@ -22,6 +22,7 @@ var playerEyeBox = true;
 var playerMouseBox = true;
 var isRendering = false;
 var isRenderingPaused = false;
+var isFixationPointsDisplayed = false;
 
 ///////////
 //METHODS//
@@ -43,6 +44,7 @@ function sendPopupVariables()
 	variables.playerMouseBox = playerMouseBox;
 	variables.isRendering = isRendering;
 	variables.isRenderingPaused = isRenderingPaused;
+	variables.isFixationPointsDisplayed = isFixationPointsDisplayed;
 	
 	chrome.runtime.sendMessage({msg: 'popup::variables', content: variables});
 }
@@ -70,6 +72,11 @@ function setIsRendering(status)
 function setIsRenderingPaused(status)
 {
 	isRenderingPaused = status;
+}
+
+function setIsFixationPointsDisplayed(status)
+{
+	isFixationPointsDisplayed = status;
 }
 
 function setIsRecordingPaused(status)
