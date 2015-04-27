@@ -18,6 +18,7 @@ var debugQueue = new Array();
 
 //player
 var isRendering = false;
+var isRenderingPaused = false;
 
 //recorder
 var isRecording = false; //Is the application recording or not?
@@ -279,6 +280,7 @@ function addPopupMessageListener()
 			isRecordingPaused = i_message.content['isRecordingPaused'];
 			isConnected = i_message.content['isConnected'];
 			isRendering = i_message.content['isRendering'];
+			isRenderingPaused = i_message.content['isRenderingPaused'];
 			
 			if(i_message.content['testInfo'])
 			{
@@ -305,6 +307,17 @@ function addPopupMessageListener()
 			else if(isRecording && isRecordingPaused)
 			{
 				document.getElementById('start_button').innerHTML = "Resume";
+			}
+			
+			if(isRendering)
+			{
+				document.getElementById('animatedata_button').innerHTML = "Pause";
+				document.getElementById('animatedata_button').title = "Press to pause";
+			}
+			else
+			{
+				document.getElementById('animatedata_button').innerHTML = "Animate";
+				document.getElementById('animatedata_button').title = "Press to animate";
 			}
 			
 			if(!isConnected)
