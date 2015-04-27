@@ -533,7 +533,7 @@ namespace tieto.education.eyetrackingwebserver
                                 // Read all available data and store it in an array
                                 Byte[] t_receivedBytes = new Byte[m_connectedClient.Available];
                                 t_incomingStream.Read(t_receivedBytes, 0, t_receivedBytes.Length);
-                                //t_incomingStream.Flush();
+                                t_incomingStream.Flush();
                                 // Send decrypted string to HandleMessage which will do something with the message
                                 // Setting safe to exit to false so that the thread doesn't get killed while handling messages
                                 m_safeToDisconnectClient = false;
