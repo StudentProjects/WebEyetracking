@@ -53,6 +53,7 @@ function connectWebSocket()
 		chrome.runtime.sendMessage({msg: 'popup::connected'});
 		
 		//Get applications
+		console.log("Requesting application data!");
 		manageMessage(17, "GetAllApplicationsRequest");	
 	};
 	

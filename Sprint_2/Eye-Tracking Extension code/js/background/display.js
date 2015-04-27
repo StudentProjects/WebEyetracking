@@ -30,6 +30,8 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::animationFinished")
 		{
+			setIsRendering(false);
+			chrome.browserAction.setIcon({path: "../../img/play-icon16.png"});
 			chrome.runtime.sendMessage({msg: 'player::animationFinished'});
 		}
 		else if(msg.message == "display::displayingData")
@@ -98,11 +100,12 @@ function animateHeatmap(animateEye, animateMouse)
 				{
 					console.log(response.message);
 					chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});	
+					setIsRendering(true);
 				}
 				else
 				{
 					if(currentData != null)
-					{
+					{	
 						console.log(response.message);
 						setHeatmapData(currentData);	
 						animateHeatmap(animateEye,animateMouse);

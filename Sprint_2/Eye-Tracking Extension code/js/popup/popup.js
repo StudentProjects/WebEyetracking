@@ -34,12 +34,12 @@ initializePopup();
 function initializePopup()
 {
 	addPopupMessageListener();
-	
-	console.log("popup.js initialized!");
 
 	initializeTabs();
 	
 	chrome.extension.sendRequest({ msg: "persistentpopupvariables::getVariables" });
+	
+	console.log("popup.js initialized!");
 }
 
 //Initializes tabs
@@ -278,6 +278,7 @@ function addPopupMessageListener()
 			isRecording = i_message.content['isRecording'];
 			isRecordingPaused = i_message.content['isRecordingPaused'];
 			isConnected = i_message.content['isConnected'];
+			isRendering = i_message.content['isRendering'];
 			
 			if(i_message.content['testInfo'])
 			{
@@ -316,6 +317,20 @@ function addPopupMessageListener()
 				span.innerHTML ="Online";
 				span.className = "h1-success";
 				chrome.extension.sendRequest({ msg: "websocket::getAllApplicationsRequest"});
+			}
+			
+			if(isRecording)
+			{
+				chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });
+			}
+			else if(isRendering)
+			{
+				// pause rendering
+			}
+			else
+			{
+				//Setting default icon
+				chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});	
 			}
 		}
 		else if(i_message.msg == "popup::renderInfo")

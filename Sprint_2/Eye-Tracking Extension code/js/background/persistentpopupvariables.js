@@ -20,6 +20,8 @@ var recorderEyeBox = true;
 var recorderMouseBox = true;
 var playerEyeBox = true;
 var playerMouseBox = true;
+var isRendering = false;
+
 ///////////
 //METHODS//
 ///////////
@@ -38,6 +40,7 @@ function sendPopupVariables()
 	variables.recorderMouseBox = recorderMouseBox;
 	variables.playerEyeBox = playerEyeBox;
 	variables.playerMouseBox = playerMouseBox;
+	variables.isRendering = isRendering;
 	
 	chrome.runtime.sendMessage({msg: 'popup::variables', content: variables});
 }
@@ -55,6 +58,11 @@ function sendTestInfo()
 function setIsRecording(status)
 {
 	isRecording = status;
+}
+
+function setIsRendering(status)
+{
+	isRendering = status;
 }
 
 function setIsRecordingPaused(status)

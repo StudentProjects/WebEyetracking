@@ -129,7 +129,6 @@ function addPlayerMessageListener()
 		//animateHeatmap
 		if(i_message.msg == "player::animateHeatmap")
 		{
-			document.getElementById("player_testheader").innerHTML = "Animating data";
 			renderInfo("Animating data...", "Alert");
 		}
 		//showHeatmap
@@ -147,6 +146,12 @@ function addPlayerMessageListener()
 		else if(i_message.msg == "player::animationStarted")
 		{
 			document.getElementById("player_testheader").innerHTML = "Animating data..";
+			chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});		
+			var timer = setTimeout(function()
+			{
+				window.close();
+				clearTimeout(timer);
+			}, 15);
 		}
 		else if(i_message.msg == "player::animationFinished")
 		{
