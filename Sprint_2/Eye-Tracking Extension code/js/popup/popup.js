@@ -309,6 +309,17 @@ function addPopupMessageListener()
 				document.getElementById('start_button').innerHTML = "Resume";
 			}
 			
+			if(isRendering)
+			{
+				document.getElementById('animatedata_button').innerHTML = "Pause";
+				document.getElementById('animatedata_button').title = "Press to pause";
+			}
+			else
+			{
+				document.getElementById('animatedata_button').innerHTML = "Animate";
+				document.getElementById('animatedata_button').title = "Press to animate";
+			}
+			
 			if(!isConnected)
 			{
 				chrome.extension.sendRequest({ msg: "websocket::connectWebSocket" });

@@ -26,8 +26,7 @@ function initPlayer()
 	{	
 		var toSend = new Object();
 		toSend.Eye = document.getElementById("eye_playerbox").checked;
-		toSend.Mouse = document.getElementById("mouse_playerbox").checked;
-		
+		toSend.Mouse = document.getElementById("mouse_playerbox").checked;	
 		if(toSend.Eye|| toSend.Mouse)
 		{
 			chrome.extension.sendRequest({ msg: "display::animate", data: toSend });
@@ -35,7 +34,7 @@ function initPlayer()
 		else
 		{
 			renderInfo("Please use the checkboxes to select what to animate!", "Error");
-		}
+		}	
 	});
 
 	//Send show request to display.js
@@ -145,6 +144,7 @@ function addPlayerMessageListener()
 		}
 		else if(i_message.msg == "player::animationStarted")
 		{
+			document.getElementById("animatedata_button").innerHTML="Pause";
 			document.getElementById("player_testheader").innerHTML = "Animating data..";
 			chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});		
 			var timer = setTimeout(function()
@@ -156,6 +156,8 @@ function addPlayerMessageListener()
 		else if(i_message.msg == "player::animationFinished")
 		{
 			document.getElementById("player_testheader").innerHTML = "Finished animating";
+			document.getElementById('animatedata_button').innerHTML = "Animate";
+			document.getElementById('animatedata_button').title = "Press to animate";
 		}
 		else if(i_message.msg == "player::displayingData")
 		{
