@@ -18,6 +18,7 @@ var debugQueue = new Array();
 
 //player
 var isRendering = false;
+var isRenderingPaused = false;
 
 //recorder
 var isRecording = false; //Is the application recording or not?
@@ -279,6 +280,7 @@ function addPopupMessageListener()
 			isRecordingPaused = i_message.content['isRecordingPaused'];
 			isConnected = i_message.content['isConnected'];
 			isRendering = i_message.content['isRendering'];
+			isRenderingPaused = i_message.content['isRenderingPaused'];
 			
 			if(i_message.content['testInfo'])
 			{
