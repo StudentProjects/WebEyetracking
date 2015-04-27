@@ -62,13 +62,41 @@ function handleFixationPoints()
 {
 	if(isFixationPointsDisplayed)
 	{
-		chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
-		setIsFixationPointsDisplayed(false);
+		chrome.tabs.getSelected(null, function(i_tab) 
+		{
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::hideFixationPoints"}, function(response) 
+			{
+				try
+				{
+					chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
+					setIsFixationPointsDisplayed(false);
+					console.log(response.message);
+				}
+				catch(err)
+				{	
+					console.log("Error: " + err.message);
+				}
+			});
+		});
 	}
 	else
 	{
-		chrome.runtime.sendMessage({msg: 'statistics::showingFixationPoints'});
-		setIsFixationPointsDisplayed(true);
+		chrome.tabs.getSelected(null, function(i_tab) 
+		{
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::showFixationPoints"}, function(response) 
+			{
+				try
+				{
+					chrome.runtime.sendMessage({msg: 'statistics::showingFixationPoints'});
+					setIsFixationPointsDisplayed(true);
+					console.log(response.message);
+				}
+				catch(err)
+				{	
+					console.log("Error: " + err.message);
+				}
+			});
+		});
 	}
 }
 

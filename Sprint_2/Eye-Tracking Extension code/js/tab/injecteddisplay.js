@@ -72,6 +72,16 @@ function initializeCanvas(mouse,eye)
 	}
 }
 
+function showFixationPoints()
+{
+	
+}
+
+function hideFixationPoints()
+{
+	
+}
+
 //Update the xCoords and yCoords with the latest collected data.
 function setData(i_data)
 {
@@ -144,11 +154,6 @@ function setData(i_data)
 	else 
 	{
 		port.postMessage({message: "display::noMouseData"});
-	}
-	//If test data exists
-	if(t_data['testStatistics'])
-	{
-		var t_fixationPointsX = new Array();
 	}
 }
 
@@ -514,5 +519,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	{
 		setData(request.data);
 		sendResponse({message: "Updating data!"});
+	}
+	else if(request.msg == "injecteddisplay::showFixationPoints")
+	{
+		sendResponse({message: "Displaying fixation points!"});
+		showFixationPoints();
+	}
+	else if(request.msg == "injecteddisplay::hideFixationPoints")
+	{
+		sendResponse({message: "Hiding fixation points!"});
+		hideFixationPoints();
 	}
 });
