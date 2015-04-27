@@ -333,6 +333,10 @@ chrome.extension.onRequest.addListener
 		{
 			hideHeatmap();
 		}
+		else if(request.msg == "display::handleFixationPoints")
+		{
+			handleFixationPoints();
+		}
 		//Handled in mouserecorder.js
 		else if(request.msg == "mouserecorder::startRecording") 
 		{

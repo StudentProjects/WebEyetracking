@@ -21,6 +21,13 @@ initStatistics();
 //Initialize player.js
 function initStatistics()
 {
+	//Send animate request to display.js
+	document.getElementById('fixation_button').addEventListener("click", function()
+	{	
+		console.log("Anax");
+		chrome.extension.sendRequest({ msg:"display::handleFixationPoints"});	
+	});
+	
 	addStatisticsMessageListener();
 	
 	console.log("statistics.js initialized!");
@@ -71,6 +78,13 @@ function addStatisticsMessageListener()
 	//for messages from our extension.
 	chrome.extension.onMessage.addListener(function(i_message, i_messageSender, i_sendResponse)
 	{
-
+		if(i_message.msg == "statistics::showingFixationPoints")
+		{
+			document.getElementById("fixation_button").innerHTML = "Hide fixation points";
+		}
+		else if(i_message.msg == "statistics::hidingFixationPoints")
+		{
+			document.getElementById("fixation_button").innerHTML = "Show fixation points";
+		}
 	});
 }

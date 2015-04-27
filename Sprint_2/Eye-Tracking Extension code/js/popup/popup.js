@@ -23,6 +23,7 @@ var isRenderingPaused = false;
 //recorder
 var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
+var isFixationPointsDisplayed = false;
 var activeTab = null;
 
 ///////////
@@ -281,6 +282,7 @@ function addPopupMessageListener()
 			isConnected = i_message.content['isConnected'];
 			isRendering = i_message.content['isRendering'];
 			isRenderingPaused = i_message.content['isRenderingPaused'];
+			isFixationPointsDisplayed = i_message.content['isFixationPointsDisplayed'];
 			
 			if(i_message.content['testInfo'])
 			{
@@ -325,6 +327,15 @@ function addPopupMessageListener()
 			{
 				document.getElementById('animatedata_button').innerHTML = "Resume";
 				document.getElementById('animatedata_button').title = "Press to resume";
+			}
+			
+			if(isFixationPointsDisplayed)
+			{
+				document.getElementById('fixation_button').innerHTML = "Hide fixation points";
+			}
+			else
+			{
+				document.getElementById('fixation_button').innerHTML = "Show fixation points";
 			}
 			
 			if(!isConnected)

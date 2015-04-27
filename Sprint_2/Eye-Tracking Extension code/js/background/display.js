@@ -58,6 +58,20 @@ chrome.runtime.onConnect.addListener(function(port)
 	});
 });
 
+function handleFixationPoints()
+{
+	if(isFixationPointsDisplayed)
+	{
+		chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
+		setIsFixationPointsDisplayed(false);
+	}
+	else
+	{
+		chrome.runtime.sendMessage({msg: 'statistics::showingFixationPoints'});
+		setIsFixationPointsDisplayed(true);
+	}
+}
+
 function pauseRendering()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
