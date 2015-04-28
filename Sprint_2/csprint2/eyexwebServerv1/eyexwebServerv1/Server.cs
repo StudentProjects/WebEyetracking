@@ -40,6 +40,7 @@ namespace tieto.education.eyetrackingwebserver
         private bool m_startSucceded;
         private bool m_clientConnected;
         private bool m_runListeningThread;
+        private bool m_runClientThread;
 
         private Thread m_listeningThread;
         private Thread m_recieveDataThread;
@@ -84,6 +85,7 @@ namespace tieto.education.eyetrackingwebserver
             m_fileLoader = new FileLoader();
             m_clientConnected = false;
             m_runListeningThread = true;
+            m_runClientThread = false;
             //Listening for file messages
             
             // Initializing server and recorder
@@ -489,6 +491,7 @@ namespace tieto.education.eyetrackingwebserver
                     // Set as background thread so it will exit when the main thread dies
                     m_recieveDataThread.IsBackground = true;
                     m_runListeningThread = true;
+                    m_runClientThread = true;
                 }
             }
             catch(Exception)
@@ -507,66 +510,64 @@ namespace tieto.education.eyetrackingwebserver
         {
             try
             {
-                //Only run if this thread is not supposed to terminate
-                if(!m_isTerminatingListeningThread)
+                NetworkStream t_incomingStream = m_connectedClient.GetStream();
+                while (m_runClientThread)
                 {
-
-                    NetworkStream t_incomingStream = m_connectedClient.GetStream();
-                    while (true)
+                    while (!t_incomingStream.DataAvailable)
+                    {               
+                        if(m_isTerminatingListeningThread && m_safeToDisconnectClient)
+                        {
+                            m_logType = 3;
+                            outputTextProperty = "Server: Breaking thread!";
+                            m_runClientThread = false;
+                            break;
+                        }
+                        else if (!IsConnected())
+                        {
+                            m_logType = 3;
+                            outputTextProperty = "Server: Client suddenly disconnected!";
+                            handleClientDisconnectRequest();
+                            m_runClientThread = false;
+                            break;
+                        }
+                    }
+                    if (!m_isTerminatingListeningThread)
                     {
-                        while (!t_incomingStream.DataAvailable)
-                        {               
-                            if(m_isTerminatingListeningThread && m_safeToDisconnectClient)
-                            {
-                                m_logType = 3;
-                                outputTextProperty = "Server: Breaking thread!";
-                                break;
-                            }
-                            else if (!IsConnected())
-                            {
-                                m_logType = 3;
-                                outputTextProperty = "Server: Client suddenly disconnected!";
-                                handleClientDisconnectRequest();
-                            }
-                        }
-                        if (!m_isTerminatingListeningThread)
+                        m_logType = 0;
+                        outputTextProperty = "Server: Message received from client!";
+                        // Read all available data and store it in an array
+                        Byte[] t_receivedBytes = new Byte[m_connectedClient.Available];
+                        t_incomingStream.Read(t_receivedBytes, 0, t_receivedBytes.Length);
+                        t_incomingStream.Flush();
+                        // Send decrypted string to HandleMessage which will do something with the message
+                        // Setting safe to exit to false so that the thread doesn't get killed while handling messages
+                        m_safeToDisconnectClient = false;
+                        // Sending the message to messagehandler
+                        m_messageHandler.decryptMessage(t_receivedBytes);
+                        // The thread can successfully exit when the message has been handled
+                        m_safeToDisconnectClient = true;
+                    }
+                    else
+                    {
+                        if(m_safeToDisconnectClient)
                         {
-                            m_logType = 0;
-                            outputTextProperty = "Server: Message received from client!";
-                            // Read all available data and store it in an array
-                            Byte[] t_receivedBytes = new Byte[m_connectedClient.Available];
-                            t_incomingStream.Read(t_receivedBytes, 0, t_receivedBytes.Length);
-                            t_incomingStream.Flush();
-                            // Send decrypted string to HandleMessage which will do something with the message
-                            // Setting safe to exit to false so that the thread doesn't get killed while handling messages
-                            m_safeToDisconnectClient = false;
-                            // Sending the message to messagehandler
-                            m_messageHandler.decryptMessage(t_receivedBytes);
-                            // The thread can successfully exit when the message has been handled
-                            m_safeToDisconnectClient = true;
+                            // Closing client socket
+                            // if exit is possible
+                            m_logType = 3;
+                            outputTextProperty = "Server: Disconnecting in else statement, reading thread";
+                            m_connectedClient.Close();
+                            m_runClientThread = false;
                         }
-                        else
-                        {
-                            if(m_safeToDisconnectClient)
-                            {
-                                // Closing client socket
-                                // if exit is possible
-                                m_logType = 3;
-                                outputTextProperty = "Server: Disconnecting in else statement, reading thread";
-                                m_connectedClient.Close();
-                                break;  
-                            }
                             
-                        }
-                    } 
-                }
+                    }
+                } 
             }    
             catch(Exception)
             {
                 m_logType = 3;
                 outputTextProperty = "Server: Disconnecting in reading thread!";
-                m_isTerminatingListeningThread = true;
-                m_connectedClient.Close();
+                handleClientDisconnectRequest();
+                m_connectedClient.Close();              
             }
         }
 
