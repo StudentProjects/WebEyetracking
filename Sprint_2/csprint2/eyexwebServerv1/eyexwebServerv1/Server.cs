@@ -554,8 +554,6 @@ namespace tieto.education.eyetrackingwebserver
                         {
                             // Closing client socket
                             // if exit is possible
-                            m_logType = 3;
-                            outputTextProperty = "Server: Disconnecting in else statement, reading thread";
                             m_connectedClient.Close();
                             m_runClientThread = false;
                         }
