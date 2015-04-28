@@ -115,10 +115,12 @@ function setData(i_data)
 		{
 			console.log("X and Y eye coords do not match!");
 		}
+		
+		port.postMessage({message: "display::hasEyeData", data: true});
 	}
 	else 
 	{
-		port.postMessage({message: "display::noEyeData"});
+		port.postMessage({message: "display::hasEyeData", data: false});
 	}
 	
 	//If mouse data exists
@@ -150,10 +152,12 @@ function setData(i_data)
 		{
 			console.log("X and Y mouse coords do not match!");
 		}
+		
+		port.postMessage({message: "display::hasMouseData", data: true});
 	}
 	else 
 	{
-		port.postMessage({message: "display::noMouseData"});
+		port.postMessage({message: "display::hasMouseData", data: false});
 	}
 }
 

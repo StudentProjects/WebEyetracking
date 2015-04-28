@@ -295,6 +295,7 @@ function addPopupMessageListener()
 			document.getElementById("mouse_recordbox").checked = i_message.content['recorderMouseBox'];
 			document.getElementById("eye_playerbox").checked = i_message.content['playerEyeBox'];
 			document.getElementById("eye_playerbox").disabled = i_message.content['playerEyeBoxDisabled'];
+			console.log("Eye dis: " + i_message.content['playerEyeBoxDisabled']);
 			document.getElementById("mouse_playerbox").checked = i_message.content['playerMouseBox'];
 			document.getElementById("mouse_playerbox").disabled = i_message.content['playerMouseBoxDisabled'];
 			
