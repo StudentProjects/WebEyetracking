@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.IO;
 using System.Reflection;
+using System.Timers;
 
 namespace tieto.education.eyetrackingwebserver
 {
@@ -41,6 +42,7 @@ namespace tieto.education.eyetrackingwebserver
         private bool m_clientConnected;
         private bool m_runListeningThread;
         private bool m_runClientThread;
+        private bool m_isStartBitSent;
 
         private Thread m_listeningThread;
         private Thread m_recieveDataThread;
@@ -50,6 +52,8 @@ namespace tieto.education.eyetrackingwebserver
         private MessageHandler m_messageHandler;
         private FileSaver m_fileSaver;
         private FileLoader m_fileLoader;
+        private List<string> m_messageSubstrings;
+        private System.Timers.Timer m_messageSender;
 
         // declare event
         public event EventHandler onOutputTextUpdate = delegate { };
@@ -86,6 +90,12 @@ namespace tieto.education.eyetrackingwebserver
             m_clientConnected = false;
             m_runListeningThread = true;
             m_runClientThread = false;
+            m_messageSubstrings = new List<string>();
+            m_isStartBitSent = false;
+            m_messageSender = new System.Timers.Timer();
+            m_messageSender.Interval = 50;
+            m_messageSender.Enabled = false;
+            m_messageSender.Elapsed += new ElapsedEventHandler(this.timerTimeout);
             //Listening for file messages
             
             // Initializing server and recorder
@@ -855,6 +865,112 @@ namespace tieto.education.eyetrackingwebserver
             return false;
         }
 
+        private void timerTimeout(object sender, ElapsedEventArgs e)
+        {
+            if(m_messageSubstrings.Count > 0)
+            {
+                if(!m_isStartBitSent)
+                {
+                    writeLargeMessageToSocket(m_messageSubstrings[0], true, false);
+                    m_messageSubstrings.RemoveAt(0);
+                    m_isStartBitSent = true;
+                }
+                else if(m_messageSubstrings.Count == 1)
+                {
+                    writeLargeMessageToSocket(m_messageSubstrings[0], false, true);
+                    m_messageSubstrings.Clear();
+                    m_messageSender.Stop();
+                }
+                else
+                {
+                    writeLargeMessageToSocket(m_messageSubstrings[0], false, false);
+                    m_messageSubstrings.RemoveAt(0);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sending large message with different header mask depending on start,continuation,stop
+        /// </summary>
+        /// <param name="i_message">The message to send</param>
+        /// <param name="i_isStartMessage">Bool, defining if it is start of new message</param>
+        /// <param name="i_isFinalMessage">Bool, defining if it is end of message</param>
+        private void writeLargeMessageToSocket(string i_message,bool i_isStartMessage,bool i_isFinalMessage)
+        {
+            // Getting client stream
+            NetworkStream t_clientStream = m_connectedClient.GetStream();
+            // Extra space added for message header
+            string t_totalMessage = i_message;
+            byte[] t_sendingByte = Encoding.UTF8.GetBytes(t_totalMessage);
+            int t_messageLength = t_sendingByte.Length;
+            byte[] t_headerFrame = new byte[10];
+            if(i_isStartMessage)
+            {       
+                // start message
+                t_headerFrame[0] = 0x01;
+            }
+            else if(i_isFinalMessage)
+            {
+                // final message in text
+                t_headerFrame[0] = 0x80;
+            }
+            else
+            {
+                // continuation frame
+                t_headerFrame[0] = 0x00;
+            }
+
+            int t_frameCount = 0;
+            // If length is less or equal to 125 we don't need to mask the message
+            if (t_sendingByte.Length <= 125)
+            {
+                t_headerFrame[1] = (byte)t_sendingByte.Length;
+                t_frameCount = 2;
+            }
+            // A bit larger message, masking header with 3 bytes
+            else if (t_sendingByte.Length >= 126 && t_sendingByte.Length <= 65535)
+            {
+                // This is the final message and it is a text
+                t_headerFrame[1] = (byte)126;
+                // Interpent as a 16-bit unsigned integer which defines messages length
+                t_headerFrame[2] = (byte)((t_messageLength >> 8) & (byte)255);
+                t_headerFrame[3] = (byte)(t_messageLength & (byte)255);
+                t_frameCount = 4;
+            }
+            // Constructing the final response message //
+            // Adding message to message header
+            int t_totalLength = t_frameCount + t_sendingByte.Length;
+            byte[] t_replyMessage = new byte[t_totalLength];
+
+            int t_counter = 0;
+            for (int i = 0; i < t_frameCount; i++)
+            {
+                t_replyMessage[t_counter] = t_headerFrame[i];
+                t_counter++;
+            }
+            for (int i = 0; i < t_sendingByte.Length; i++)
+            {
+                t_replyMessage[t_counter] = t_sendingByte[i];
+                t_counter++;
+            }
+            // Avoiding possible errors
+            try
+            {
+                // Write the message to the open stream
+                t_clientStream.Write(t_replyMessage, 0, t_replyMessage.Length);
+                // cleanup stream
+                t_clientStream.Flush();
+                // For better UX, printing info to the local form telling that the message was sent
+                m_logType = 1;
+                outputTextProperty = "Server: Successfully sent a message to client";
+            }
+            catch (Exception e)
+            {
+                m_logType = 2;
+                outputTextProperty = "Server: Error when sending message - " + e.ToString();
+            }
+        }
+
         /// <summary>
         /// Writing requested message to client stream
         /// Modifies the messages header depending on the size of the message
@@ -868,6 +984,8 @@ namespace tieto.education.eyetrackingwebserver
                 // Safety check to see if the client is still connected to this server
                 if (m_connectedClient != null && m_connectedClient.Connected)
                 {
+                    if(i_message.Length <= 65535)
+                    {
                         // Getting client stream
                         NetworkStream t_clientStream = m_connectedClient.GetStream();
                         // Extra space added for message header
@@ -878,14 +996,14 @@ namespace tieto.education.eyetrackingwebserver
 
                         int t_frameCount = 0;
                         // If length is less or equal to 125 we don't need to mask the message
-                        if(t_sendingByte.Length <= 125)
+                        if (t_sendingByte.Length <= 125)
                         {
                             t_headerFrame[0] = 0x81; // final message and it is a text
                             t_headerFrame[1] = (byte)t_sendingByte.Length;
                             t_frameCount = 2;
                         }
                         // A bit larger message, masking header with 3 bytes
-                        else if(t_sendingByte.Length >= 126 && t_sendingByte.Length <= 65535)
+                        else if (t_sendingByte.Length >= 126 && t_sendingByte.Length <= 65535)
                         {
                             // This is the final message and it is a text
                             t_headerFrame[0] = 0x81;  // final message and it is a text
@@ -895,23 +1013,6 @@ namespace tieto.education.eyetrackingwebserver
                             t_headerFrame[3] = (byte)(t_messageLength & (byte)255);
                             t_frameCount = 4;
                         }
-                            // A very large message, masking the header with 9 bytes
-                        else
-                        {
-                            t_headerFrame[0] = 0x81;  // final message and it is a text
-                            t_headerFrame[1] = (byte)127;
-                            // Interpent as a 64-bit unsigned integer which defines messages length
-                            t_headerFrame[2] = (byte)((t_messageLength >> 56) & (byte)255);
-                            t_headerFrame[3] = (byte)((t_messageLength >> 48) & (byte)255);
-                            t_headerFrame[4] = (byte)((t_messageLength >> 40) & (byte)255);
-                            t_headerFrame[5] = (byte)((t_messageLength >> 32) & (byte)255);
-                            t_headerFrame[6] = (byte)((t_messageLength >> 24) & (byte)255);
-                            t_headerFrame[7] = (byte)((t_messageLength >> 16) & (byte)255);
-                            t_headerFrame[8] = (byte)((t_messageLength >> 8) & (byte)255);
-                            t_headerFrame[9] = (byte)(t_messageLength & (byte)255);
-                            t_frameCount = 10;
-                        }
-
                         // Constructing the final response message //
                         // Adding message to message header
                         int t_totalLength = t_frameCount + t_sendingByte.Length;
@@ -925,7 +1026,7 @@ namespace tieto.education.eyetrackingwebserver
                             t_counter++;
                         }
 
-                        for (int i = 0; i < t_sendingByte.Length;i++)
+                        for (int i = 0; i < t_sendingByte.Length; i++)
                         {
                             t_replyMessage[t_counter] = t_sendingByte[i];
                             t_counter++;
@@ -942,12 +1043,42 @@ namespace tieto.education.eyetrackingwebserver
                             m_logType = 1;
                             outputTextProperty = "Server: Successfully sent a message to client";
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             m_logType = 2;
                             outputTextProperty = "Server: Error when sending message - " + e.ToString();
                         }
-                                            
+                    }
+                        //very large message
+                    else
+                    {
+                        m_logType = 0;
+                        outputTextProperty = "Server: Large message size: " + i_message.Length.ToString();
+                        int t_sizePerMessage = 60000;
+                        int t_numberOfMessages = (int)Math.Ceiling((double)i_message.Length / (double)t_sizePerMessage);
+
+                        m_messageSubstrings.Clear();
+
+                        //Splitting message into smaller substríngs with a max size of 60000
+                        for(int i=0;i<t_numberOfMessages;i++)
+                        {
+                            if(i != t_numberOfMessages-1)
+                            {
+                                string t_substring = i_message.Substring(i * 60000, 60000);
+                                m_messageSubstrings.Add(t_substring);
+                            }
+                            else
+                            {
+                                int t_length = i_message.Length - (i * 60000);
+                                string t_substring = i_message.Substring(i * 60000, t_length);
+                                m_messageSubstrings.Add(t_substring);
+                                m_isStartBitSent = false;
+                            }
+                        }
+                        m_logType = 0;
+                        outputTextProperty = "Server: Number of large messages to send: " + t_numberOfMessages.ToString();
+                        m_messageSender.Start();
+                    }
                 }
             }
         }

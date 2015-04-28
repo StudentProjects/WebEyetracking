@@ -75,6 +75,7 @@ function connectWebSocket()
 		console.log("Message received!");
 		
 		//Called from messagehandler.js
+		console.log("Message length: " + event.data.length);
 		handleMessage(event.data); 
 	}; 
 }
