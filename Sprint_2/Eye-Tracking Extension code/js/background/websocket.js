@@ -54,11 +54,11 @@ function connectWebSocket()
 		
 		//Get applications
 		console.log("Requesting application data!");
-		manageMessage(17, "GetAllApplicationsRequest");	
+		manageMessage(17, "GetAllApplicationsRequest");
 	};
 	
 	//Happens when a connection is closed.
-	websocket.onclose = function(event) 
+	websocket.onclose = function(event)
 	{
 		isConnected = false;
 		clearInterval(messageSendInterval);

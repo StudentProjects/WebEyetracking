@@ -82,6 +82,12 @@ function initPlayer()
 //currently loaded test.
 function setCurrentTestInfo(user, application, date, time)
 {
+	//Set these to false by default. If no data exists, these values
+	//will be changed when the new data arrives from the server, and
+	//is checked by injecteddisplay.js. 
+	document.getElementById("eye_playerbox").disabled = false;
+	document.getElementById("mouse_playerbox").disabled = false;
+	
 	//Split users name and make upper case of first letter in
 	//each part of the name.
 	var userName = "";
@@ -199,11 +205,13 @@ function addPlayerMessageListener()
 		{
 			document.getElementById("eye_playerbox").checked = false;
 			document.getElementById("eye_playerbox").disabled = true;
+			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBoxDisabled", data: true});
 		}
 		else if(i_message.msg == "player::noMouseData")
 		{
 			document.getElementById("mouse_playerbox").checked = false;
 			document.getElementById("mouse_playerbox").disabled = true;
+			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBoxDisabled", data: true});
 		}
 	});
 }

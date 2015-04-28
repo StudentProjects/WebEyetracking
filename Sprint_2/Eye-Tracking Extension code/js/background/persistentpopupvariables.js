@@ -20,6 +20,8 @@ var recorderEyeBox = true;
 var recorderMouseBox = true;
 var playerEyeBox = true;
 var playerMouseBox = true;
+var playerEyeBoxDisabled = false;
+var playerMouseBoxDisabled = false;
 var isRendering = false;
 var isRenderingPaused = false;
 var isFixationPointsDisplayed = false;
@@ -42,6 +44,8 @@ function sendPopupVariables()
 	variables.recorderMouseBox = recorderMouseBox;
 	variables.playerEyeBox = playerEyeBox;
 	variables.playerMouseBox = playerMouseBox;
+	variables.playerEyeBoxDisabled = playerEyeBoxDisabled;
+	variables.playerMouseBoxDisabled = playerMouseBoxDisabled;
 	variables.isRendering = isRendering;
 	variables.isRenderingPaused = isRenderingPaused;
 	variables.isFixationPointsDisplayed = isFixationPointsDisplayed;
@@ -127,4 +131,14 @@ function setPlayerEyeBox(status)
 function setPlayerMouseBox(status)
 {
 	playerMouseBox = status;
+}
+
+function setPlayerEyeBoxDisabled(status)
+{
+	playerEyeBoxDisabled = status;
+}
+
+function setPlayerMouseBoxDisabled(status)
+{
+	playerMouseBoxDisabled = status;
 }

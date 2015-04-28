@@ -417,6 +417,16 @@ chrome.extension.onRequest.addListener
 		{
 			setPlayerMouseBox(request.data);
 		}
+		//setPlayerEyeBoxDisabled
+		else if(request.msg == "persistentpopupvariables::setPlayerEyeBoxDisabled")
+		{
+			setPlayerEyeBoxDisabled(request.data);
+		}
+		//setPlayerMouseBoxDisabled
+		else if(request.msg == "persistentpopupvariables::setPlayerMouseBoxDisabled")
+		{
+			setPlayerMouseBoxDisabled(request.data);
+		}
 		//getUserInfo
 		else if(request.msg == "persistentpopupvariables::getUserInfo") 
 		{

@@ -64,9 +64,9 @@ function initializeCanvas(mouse,eye)
 			radius: 45,
 			gradient:
 			{
-				'.5': 'blue',
-				'.8': 'red',
-				'.95': 'white'
+				'.2': 'blue',
+				'.5': 'red',
+				'.75': 'white'
 			}
 		});
 	}
