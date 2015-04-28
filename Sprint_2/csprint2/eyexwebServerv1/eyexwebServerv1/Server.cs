@@ -492,6 +492,8 @@ namespace tieto.education.eyetrackingwebserver
                     m_recieveDataThread.IsBackground = true;
                     m_runListeningThread = true;
                     m_runClientThread = true;
+
+                    m_messageHandler.serverNotificationToClient(18, getAllApplicationData());
                 }
             }
             catch(Exception)
