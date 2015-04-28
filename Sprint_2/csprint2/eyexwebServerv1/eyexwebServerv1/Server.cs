@@ -543,6 +543,7 @@ namespace tieto.education.eyetrackingwebserver
                         // Setting safe to exit to false so that the thread doesn't get killed while handling messages
                         m_safeToDisconnectClient = false;
                         // Sending the message to messagehandler
+                        clientTextProperty = 0;
                         m_messageHandler.decryptMessage(t_receivedBytes);
                         // The thread can successfully exit when the message has been handled
                         m_safeToDisconnectClient = true;
