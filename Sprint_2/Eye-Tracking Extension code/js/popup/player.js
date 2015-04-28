@@ -82,16 +82,11 @@ function initPlayer()
 //currently loaded test.
 function setCurrentTestInfo(user, application, date, time)
 {
-	console.log("SET!");
-	
-	
 	//Set these to false by default. If no data exists, these values
 	//will be changed when the new data arrives from the server, and
 	//is checked by injecteddisplay.js. 
 	document.getElementById("eye_playerbox").disabled = false;
 	document.getElementById("mouse_playerbox").disabled = false;
-	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBoxDisabled", data: false});
-	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBoxDisabled", data: false});
 	
 	//Split users name and make upper case of first letter in
 	//each part of the name.
@@ -206,23 +201,36 @@ function addPlayerMessageListener()
 		{
 			document.getElementById("player_testheader").innerHTML = "Current test";
 		}
-		else if(i_message.msg == "player::noEyeData")
+		else if(i_message.msg == "player::hasEyeData")
 		{
-			var delay = setTimeout(function()
+			if(i_message.data == true)
+			{
+				document.getElementById("eye_playerbox").disabled = false;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBoxDisabled", data: false});
+			}
+			else
 			{
 				document.getElementById("eye_playerbox").checked = false;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBox", data: false});
 				document.getElementById("eye_playerbox").disabled = true;
 				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBoxDisabled", data: true});
-			}, 50);
+			}
 		}
-		else if(i_message.msg == "player::noMouseData")
+		else if(i_message.msg == "player::hasMouseData")
 		{
-			var delay = setTimeout(function()
+			
+			if(i_message.data == true)
+			{
+				document.getElementById("mouse_playerbox").disabled = false;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBoxDisabled", data: false});
+			}
+			else
 			{
 				document.getElementById("mouse_playerbox").checked = false;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBox", data: false});
 				document.getElementById("mouse_playerbox").disabled = true;
 				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBoxDisabled", data: true});
-			}, 50);
+			}
 		}
 	});
 }
