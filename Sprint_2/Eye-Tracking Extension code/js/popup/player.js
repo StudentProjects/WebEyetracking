@@ -87,6 +87,8 @@ function setCurrentTestInfo(user, application, date, time)
 	//is checked by injecteddisplay.js. 
 	document.getElementById("eye_playerbox").disabled = false;
 	document.getElementById("mouse_playerbox").disabled = false;
+	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBoxDisabled", data: false});
+	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBoxDisabled", data: false});
 	
 	//Split users name and make upper case of first letter in
 	//each part of the name.
