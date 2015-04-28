@@ -46,6 +46,15 @@
 				 "default": "Alt+R"
 			},
 			"description": "Toggle recording on/off"
+		},
+		
+		"togglepauserecording" : 
+		{
+			"suggested_key": 
+			{
+				 "default": "Alt+K"
+			},
+			"description": "Toggle pause/resume recording"
 		}
 	},
 	

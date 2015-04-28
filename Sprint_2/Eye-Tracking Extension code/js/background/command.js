@@ -45,5 +45,23 @@ chrome.commands.onCommand.addListener(function(command)
 		{
 			handleStartRecording();
 		}
+    }
+    
+    //TogglePauseRecording
+    if(command === "togglepauserecording") 
+	{
+		if(isRecording)
+		{
+			if(!isRecordingPaused)
+			{
+				console.log("Pause?");
+				handlePauseRecording();
+			}
+			else
+			{
+				console.log("Resume?");
+				handleResumeRecording();
+			}
+		}
     } 
 });

@@ -213,6 +213,8 @@ function handleStartReceived()
 
 function handlePauseRecording()
 {
+	console.log("Pause");
+	
 	if(recorderEyeBox && recorderMouseBox)
 	{
 		manageMessage(2, "PauseRecordingRequest");
@@ -240,21 +242,23 @@ function handlePauseReceived()
 
 function handleResumeRecording()
 {
+	console.log("Resume");
+	
 	if(recorderEyeBox && recorderMouseBox)
 	{
-		manageMessage(3, "PauseRecordingRequest");
+		manageMessage(3, "ResumeRecordingRequest");
 		resumeMouseRecording();
 	}
 	else if(recorderEyeBox)
 	{
-		manageMessage(3, "PauseRecordingRequest");
+		manageMessage(3, "ResumeRecordingRequest");
 	}
 	else if(recorderMouseBox)
 	{
 		resumeMouseRecording();
 		chrome.runtime.sendMessage({ msg: "recorder::resumeReceived" });
 		chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
-		isRecordingPaused = true;
+		isRecordingPaused = false;
 	}
 }
 
@@ -262,7 +266,7 @@ function handleResumeReceived()
 {
 	chrome.runtime.sendMessage({ msg: "recorder::resumeReceived" });
 	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
-	isRecordingPaused = true;
+	isRecordingPaused = false;
 }
 
 function handleStopRecording()

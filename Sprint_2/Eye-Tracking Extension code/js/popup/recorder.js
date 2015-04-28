@@ -158,8 +158,6 @@ function addRecorderMessageListener()
 			{
 				document.getElementById('start_button').innerHTML = "Pause";
 				isRecordingPaused = false;
-				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setIsRecordingPaused", data: isRecordingPaused });
-				chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 				
 				var timer = setTimeout(function()
 				{

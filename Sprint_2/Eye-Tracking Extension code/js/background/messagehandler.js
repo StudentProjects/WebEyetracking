@@ -267,7 +267,7 @@ chrome.extension.onRequest.addListener
 		//Resume
 		else if(request.msg == "websocket::resumeRecording") 
 		{
-			manageMessage(3, "ResumeRecordingRequest");
+			handleResumeRecording();
 		}
 		//Stop
 		else if(request.msg == "websocket::stopRecording") 
