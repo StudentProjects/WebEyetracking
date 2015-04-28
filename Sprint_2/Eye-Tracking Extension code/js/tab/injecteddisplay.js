@@ -392,7 +392,6 @@ function showEye()
 {	
 	if(xEyeCoords && yEyeCoords)
 	{
-		port.postMessage({message: "display::displayingData"});
 		initializeCanvas(false,true);
 		console.log("Show eye heatmap!");
 		
@@ -406,6 +405,7 @@ function showEye()
 				value: 1
 			});
 		}
+		port.postMessage({message: "display::displayingData"});
 	}
 	else
 	{
@@ -432,6 +432,7 @@ function showMouse()
 				value: 1
 			});
 		}
+		port.postMessage({message: "display::displayingData"});
 	}
 	else
 	{

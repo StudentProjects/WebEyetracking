@@ -46,8 +46,13 @@ function initPlayer()
 		
 		if(toSend.Eye || toSend.Mouse)
 		{
-			chrome.extension.sendRequest({ msg: "display::show", data: toSend });
 			document.getElementById("main_body").style.cursor = "wait";
+			document.getElementById("player_testheader").innerHTML = "Loading data..";
+			
+			var timeout = setTimeout(function()
+			{
+				chrome.extension.sendRequest({ msg: "display::show", data: toSend });
+			},30);
 		}
 		else
 		{
@@ -165,7 +170,6 @@ function addPlayerMessageListener()
 		//hideHeatmap
 		else if(i_message.msg == "player::hideHeatmap")
 		{
-			document.getElementById("player_testheader").innerHTML = "Current test";
 			renderInfo("Hiding data...", "Alert");
 		}
 		else if(i_message.msg == "player::animationStarted")
@@ -194,12 +198,13 @@ function addPlayerMessageListener()
 		}
 		else if(i_message.msg == "player::displayingData")
 		{
+			
 			document.getElementById("player_testheader").innerHTML = "Displaying data";
 			document.getElementById("main_body").style.cursor = "default";
 		}
 		else if(i_message.msg == "player::setHeaderToDefault")
 		{
-			document.getElementById("player_testheader").innerHTML = "Current test";
+			//document.getElementById("player_testheader").innerHTML = "Current test";
 		}
 		else if(i_message.msg == "player::hasEyeData")
 		{
