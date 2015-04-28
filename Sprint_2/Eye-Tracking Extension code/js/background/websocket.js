@@ -93,8 +93,8 @@ function afterConnection()
 	chrome.runtime.sendMessage({msg: 'popup::connected'});
 	
 	//Get applications
-	console.log("Requesting application data!");
-	manageMessage(17, "GetAllApplicationsRequest");
+	//console.log("Requesting application data!");
+	//manageMessage(17, "GetAllApplicationsRequest");
 }
 
 //Disconnect from websocket

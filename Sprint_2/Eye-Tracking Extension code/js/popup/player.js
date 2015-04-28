@@ -82,6 +82,9 @@ function initPlayer()
 //currently loaded test.
 function setCurrentTestInfo(user, application, date, time)
 {
+	console.log("SET!");
+	
+	
 	//Set these to false by default. If no data exists, these values
 	//will be changed when the new data arrives from the server, and
 	//is checked by injecteddisplay.js. 
