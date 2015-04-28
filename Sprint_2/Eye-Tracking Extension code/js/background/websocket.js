@@ -65,6 +65,8 @@ function connectWebSocket()
 		messageSendInterval = null;
 		messageQueue = null;
 		
+		console.log("Close code: " + event.code);
+		
 		//Send message to popup.js, telling it that we have disconnected.
 		chrome.runtime.sendMessage({msg: 'popup::disconnected'});
 		if(event.code > 1000)
