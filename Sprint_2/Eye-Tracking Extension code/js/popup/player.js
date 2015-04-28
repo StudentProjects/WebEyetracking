@@ -205,15 +205,21 @@ function addPlayerMessageListener()
 		}
 		else if(i_message.msg == "player::noEyeData")
 		{
-			document.getElementById("eye_playerbox").checked = false;
-			document.getElementById("eye_playerbox").disabled = true;
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBoxDisabled", data: true});
+			var delay = setTimeout(function()
+			{
+				document.getElementById("eye_playerbox").checked = false;
+				document.getElementById("eye_playerbox").disabled = true;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBoxDisabled", data: true});
+			}, 50);
 		}
 		else if(i_message.msg == "player::noMouseData")
 		{
-			document.getElementById("mouse_playerbox").checked = false;
-			document.getElementById("mouse_playerbox").disabled = true;
-			chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBoxDisabled", data: true});
+			var delay = setTimeout(function()
+			{
+				document.getElementById("mouse_playerbox").checked = false;
+				document.getElementById("mouse_playerbox").disabled = true;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBoxDisabled", data: true});
+			}, 50);
 		}
 	});
 }
