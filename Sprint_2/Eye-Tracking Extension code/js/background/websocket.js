@@ -47,7 +47,7 @@ function connectWebSocket()
 		messageSendInterval = setInterval(function()
 		{
 			sendMessage();
-		},30);
+		},50);
 		
 		//Send message to popup.js, telling it that we have connected.
 		chrome.runtime.sendMessage({msg: 'popup::connected'});

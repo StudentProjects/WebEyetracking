@@ -521,7 +521,7 @@ namespace tieto.education.eyetrackingwebserver
                                 {
                                     break;
                                 }
-                                else if(!IsConnected())
+                                else if (!m_connectedClient.Client.Connected)
                                 {
                                     handleClientDisconnectRequest();
                                 }
@@ -560,6 +560,8 @@ namespace tieto.education.eyetrackingwebserver
             }    
             catch(Exception)
             {
+                m_logType = 3;
+                outputTextProperty = "Server: Disconnecting in reading thread!";
                 m_isTerminatingListeningThread = true;
                 m_connectedClient.Close();
             }
