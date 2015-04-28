@@ -1,0 +1,73 @@
+{
+	"manifest_version": 2,
+
+	"name": "Eye-Tracking Recorder",
+	"version": "0.4",
+	"description": "Record and play eye-tracking movements",
+	
+	"browser_action":
+	{
+		"default_popup": "html/popup.html",
+		"default_icon": "img/eye-icon16.png"
+	},
+	
+	"icons":
+	{
+		"16": "img/eye-icon16.png",
+		"48": "img/eye-icon48.png",
+		"128": "img/eye-icon128.png"
+	},
+	
+	"background": 
+	{
+		"page": "html/background.html",
+		"persistent": true
+	},
+	"web_accessible_resources": 
+	[
+  		"img/*.png"
+	],
+	
+	"commands": 
+	{
+		"togglerendering" : 
+		{
+			"suggested_key": 
+			{
+				 "default": "Alt+A" 
+			},
+			"description": "Toggle animation on/off"
+		},
+		
+		"togglerecording" : 
+		{
+			"suggested_key": 
+			{
+				 "default": "Alt+R"
+			},
+			"description": "Toggle recording on/off"
+		},
+		
+		"togglepauserecording" : 
+		{
+			"suggested_key": 
+			{
+				 "default": "Alt+K"
+			},
+			"description": "Toggle pause/resume recording"
+		}
+	},
+	
+	"permissions": 
+	[      
+        "webRequest",
+		"webRequestBlocking",
+        "*://*.google.com/",
+		"tabs",
+        "notifications",
+        "http://*/",
+        "https://*/",
+		"bookmarks",
+		"unlimitedStorage"
+	]
+}
