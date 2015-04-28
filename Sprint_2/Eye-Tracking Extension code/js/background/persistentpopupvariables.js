@@ -15,6 +15,7 @@ var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
 var userInfo = null; //Information about the user
 var testInfo = null;
+var statistics = null;
 var activeTab = 0;
 var recorderEyeBox = true;
 var recorderMouseBox = true;
@@ -39,6 +40,7 @@ function sendPopupVariables()
 	variables.isConnected = isConnected;
 	variables.userInfo = userInfo;
 	variables.testInfo = testInfo;
+	variables.statistics = statistics;
 	variables.activeTab = activeTab;
 	variables.recorderEyeBox = recorderEyeBox;
 	variables.recorderMouseBox = recorderMouseBox;
@@ -107,6 +109,12 @@ function setTestInfo(newTestInfo)
 {
 	testInfo = newTestInfo;
 }
+
+function setStatistics(newStatistics)
+{
+	statistics = newStatistics;
+}
+
 
 function setActiveTab(newTab)
 {

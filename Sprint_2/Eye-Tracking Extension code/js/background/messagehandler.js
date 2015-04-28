@@ -392,6 +392,11 @@ chrome.extension.onRequest.addListener
 		{
 			setTestInfo(request.data);
 		}
+		//setStatistics
+		else if(request.msg == "persistentpopupvariables::setStatistics") 
+		{
+			setStatistics(request.data);
+		}
 		//setCurrentTab
 		else if(request.msg == "persistentpopupvariables::setActiveTab")
 		{	

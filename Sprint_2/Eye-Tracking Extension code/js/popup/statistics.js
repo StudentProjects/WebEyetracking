@@ -35,8 +35,8 @@ function initStatistics()
 
 function setStatistics(data)
 {
-	console.log("Data: " + data);
 	var statistics = data;
+	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setStatistics", data: statistics });
 	
 	//Time on page
 	var time = statistics['timeOnPage'].split(",");

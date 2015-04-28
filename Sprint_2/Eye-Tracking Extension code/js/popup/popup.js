@@ -284,6 +284,7 @@ function addPopupMessageListener()
 			isRenderingPaused = i_message.content['isRenderingPaused'];
 			isFixationPointsDisplayed = i_message.content['isFixationPointsDisplayed'];
 			
+			//Set test info in player
 			if(i_message.content['testInfo'])
 			{
 				setCurrentTestInfo(i_message.content['testInfo'].Name, i_message.content['testInfo'].Application, 
@@ -295,10 +296,13 @@ function addPopupMessageListener()
 			document.getElementById("mouse_recordbox").checked = i_message.content['recorderMouseBox'];
 			document.getElementById("eye_playerbox").checked = i_message.content['playerEyeBox'];
 			document.getElementById("eye_playerbox").disabled = i_message.content['playerEyeBoxDisabled'];
-			console.log("Eye dis: " + i_message.content['playerEyeBoxDisabled']);
 			document.getElementById("mouse_playerbox").checked = i_message.content['playerMouseBox'];
 			document.getElementById("mouse_playerbox").disabled = i_message.content['playerMouseBoxDisabled'];
 			
+			//Set statistics
+			setStatistics(i_message.content['statistics']);
+			
+			//Set active tab
 			setActiveTab(i_message.content['activeTab']);
 		
 			if(!isRecording)
