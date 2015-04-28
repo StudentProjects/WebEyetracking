@@ -22,6 +22,13 @@ var checkConnection = setInterval(function()
 	{
 		connectWebSocket();
 	}
+	if(websocket != null)
+	{
+		if(websocket.readyState == 1 && !isConnected)
+		{
+			afterConnection();
+		}
+	}
 }, 5000);
 
 ///////////
@@ -41,20 +48,7 @@ function connectWebSocket()
 	//Happens when a connection is established.
 	websocket.onopen = function(event) 
 	{
-		isConnected = true;
-		messageQueue = new Array();
-		
-		messageSendInterval = setInterval(function()
-		{
-			sendMessage();
-		},50);
-		
-		//Send message to popup.js, telling it that we have connected.
-		chrome.runtime.sendMessage({msg: 'popup::connected'});
-		
-		//Get applications
-		console.log("Requesting application data!");
-		manageMessage(17, "GetAllApplicationsRequest");
+		afterConnection();
 	};
 	
 	//Happens when a connection is closed.
@@ -83,6 +77,24 @@ function connectWebSocket()
 		//Called from messagehandler.js
 		handleMessage(event.data); 
 	}; 
+}
+
+function afterConnection()
+{
+	isConnected = true;
+	messageQueue = new Array();
+	
+	messageSendInterval = setInterval(function()
+	{
+		sendMessage();
+	},50);
+	
+	//Send message to popup.js, telling it that we have connected.
+	chrome.runtime.sendMessage({msg: 'popup::connected'});
+	
+	//Get applications
+	console.log("Requesting application data!");
+	manageMessage(17, "GetAllApplicationsRequest");
 }
 
 //Disconnect from websocket
