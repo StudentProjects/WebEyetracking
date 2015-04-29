@@ -39,8 +39,11 @@ function setStatistics(data)
 	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setStatistics", data: statistics });
 	
 	//Time on page
-	var time = statistics['timeOnPage'].split(",");
-	document.getElementById("statistics_timeonpage").innerHTML = "Time on page: " + time[0];
+	if(statistics['timeOnPage'])
+	{
+		var time = statistics['timeOnPage'].split(",");
+		document.getElementById("statistics_timeonpage").innerHTML = "Time on page: " + time[0];	
+	}
 	
 	//percentageOfPageSeen
 	document.getElementById("statistics_percentageofpageseen").innerHTML = "Percentage of page seen: " + statistics['percentageOfPageSeen'] + "%";
