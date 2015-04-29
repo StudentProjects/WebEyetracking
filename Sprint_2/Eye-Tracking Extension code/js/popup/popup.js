@@ -300,7 +300,10 @@ function addPopupMessageListener()
 			document.getElementById("mouse_playerbox").disabled = i_message.content['playerMouseBoxDisabled'];
 			
 			//Set statistics
-			setStatistics(i_message.content['statistics']);
+			if(i_message.content['statistics'])
+			{
+				setStatistics(i_message.content['statistics']);
+			}
 			
 			//Set active tab
 			setActiveTab(i_message.content['activeTab']);

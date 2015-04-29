@@ -35,42 +35,45 @@ function initStatistics()
 
 function setStatistics(data)
 {
-	var statistics = data;
-	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setStatistics", data: statistics });
-	
-	//Time on page
-	if(statistics['timeOnPage'])
+	if(data)
 	{
-		var time = statistics['timeOnPage'].split(",");
-		document.getElementById("statistics_timeonpage").innerHTML = "Time on page: " + time[0];	
-	}
+		var statistics = data;
+		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setStatistics", data: statistics });
+		
+		//Time on page
+		if(statistics['timeOnPage'])
+		{
+			var time = statistics['timeOnPage'].split(",");
+			document.getElementById("statistics_timeonpage").innerHTML = "Time on page: " + time[0];	
+		}
+		
+		//percentageOfPageSeen
+		document.getElementById("statistics_percentageofpageseen").innerHTML = "Percentage of page seen: " + statistics['percentageOfPageSeen'] + "%";
 	
-	//percentageOfPageSeen
-	document.getElementById("statistics_percentageofpageseen").innerHTML = "Percentage of page seen: " + statistics['percentageOfPageSeen'] + "%";
-
-	//firstFixated
-	if(statistics['firstFixation'])
-	{
-		var x = statistics['firstFixation']['X'];
-		var y = statistics['firstFixation']['Y'];
-		var time = statistics['firstFixation']['fixationTime'];
-		document.getElementById("statistics_firstfixation").innerHTML = "First fixation: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
-	}	
-	
-	//mostFixated
-	if(statistics['mostFixated'])
-	{
-		x = statistics['mostFixated']['X'];
-		y = statistics['mostFixated']['Y'];
-		time = statistics['mostFixated']['fixationTime'];
-		document.getElementById("statistics_mostfixated").innerHTML = "Most fixated: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
-	}
-	
-	//nrOfFixations
-	if(statistics['allFixations'])
-	{
-		var nr = statistics['allFixations'];
-		document.getElementById("statistics_nroffixations").innerHTML = "Number of fixations: " + nr.length;		
+		//firstFixated
+		if(statistics['firstFixation'])
+		{
+			var x = statistics['firstFixation']['X'];
+			var y = statistics['firstFixation']['Y'];
+			var time = statistics['firstFixation']['fixationTime'];
+			document.getElementById("statistics_firstfixation").innerHTML = "First fixation: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
+		}	
+		
+		//mostFixated
+		if(statistics['mostFixated'])
+		{
+			x = statistics['mostFixated']['X'];
+			y = statistics['mostFixated']['Y'];
+			time = statistics['mostFixated']['fixationTime'];
+			document.getElementById("statistics_mostfixated").innerHTML = "Most fixated: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
+		}
+		
+		//nrOfFixations
+		if(statistics['allFixations'])
+		{
+			var nr = statistics['allFixations'];
+			document.getElementById("statistics_nroffixations").innerHTML = "Number of fixations: " + nr.length;		
+		}	
 	}
 }
 
