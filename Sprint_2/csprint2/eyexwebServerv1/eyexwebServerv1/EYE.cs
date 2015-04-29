@@ -420,6 +420,10 @@ namespace tieto.education.eyetrackingwebserver
                        m_gazePointStream = null;
                        m_fixationPointStream.Dispose();
                        m_fixationPointStream = null;
+                       if (m_statisticsHandler != null)
+                       {
+                           m_dataCurrentTest.testStatistics.timeOnPage = m_statisticsHandler.getTimeOnPage(m_currentTestUserInfo.TestTime);
+                       } 
                        log("Recorder: Successfully stopped EYE and Mouse-tracking test.. Waiting for mouse coordinates", 1);
                        return true;
                    }
