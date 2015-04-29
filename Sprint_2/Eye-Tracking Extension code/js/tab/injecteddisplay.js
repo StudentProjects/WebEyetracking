@@ -106,11 +106,11 @@ function showFixationPoints()
 				text.style.position = 'absolute';
 				
 				text.style.left = '20px';
-				if(i > 9)
+				if(i > 8)
 				{
 					text.style.left = '16px';
 				}
-				if(i > 99)
+				if(i > 98)
 				{
 					text.style.left = '12px';
 				}
