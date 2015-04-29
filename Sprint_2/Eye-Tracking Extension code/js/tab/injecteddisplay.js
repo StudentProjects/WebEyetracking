@@ -121,6 +121,11 @@ function showFixationPoints()
 				fixationDivs[i].appendChild(img);
 				fixationDivs[i].appendChild(text);
 				document.body.appendChild(fixationDivs[i]);
+				
+				fixationDivs[i].addEventListener("click", function()
+				{	
+					this.style.zIndex = this.style.zIndex+1;
+				});
 			}	
 		}
 	}
