@@ -62,6 +62,9 @@ function initializeCanvas(mouse,eye)
 		{
 			container: document.querySelector('*'),
 			radius: 45,
+		 	maxOpacity: 1,
+		    minOpacity: .0,
+		    blur: .75,
 			gradient:
 			{
 				'.2': 'blue',
