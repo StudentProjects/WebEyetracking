@@ -101,7 +101,7 @@ function filterApplications(input)
 	var sizeData = allApplications['ApplicationName'].length;
 	for(i = 0; i < sizeData; i++)
 	{
-		if(allApplications['ApplicationName'][i].indexOf(input) > -1)
+		if(allApplications['ApplicationName'][i].toLowerCase().indexOf(input.toLowerCase()) > -1)
 		{
 			applications[index] = allApplications['ApplicationName'][i];
 			index++;		

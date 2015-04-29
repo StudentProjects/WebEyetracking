@@ -49,11 +49,13 @@ function initializeCanvas(mouse,eye)
 {
 	if(eye)
 	{
-		console.log("Initializing canvas for Eye!");
 		heatmapEyeInstance = h337.create( //Heatmap instance.
 		{
 			container: document.querySelector('*'),
-			radius: 45
+			radius: 45,
+			maxOpacity: 1,
+		    minOpacity: .0,
+		    blur: .75
 		});
 	}
 	if(mouse)
@@ -64,13 +66,13 @@ function initializeCanvas(mouse,eye)
 			radius: 45,
 		 	maxOpacity: 1,
 		    minOpacity: .0,
-		    blur: .75,
-			gradient:
+		    blur: .75
+			/*gradient:
 			{
-				'.2': 'blue',
-				'.5': 'red',
-				'.75': 'white'
-			}
+				'.2': 'yellow',
+				'.5': 'orange',
+				'.85': 'red'
+			}*/
 		});
 	}
 }

@@ -93,5 +93,7 @@ function stopMouseRecording()
 	clearInterval(timer);
 	isPaused = false;
 	
+	
+	
 	manageMessage(23, JSON.stringify(currentMouseRecording));
 }

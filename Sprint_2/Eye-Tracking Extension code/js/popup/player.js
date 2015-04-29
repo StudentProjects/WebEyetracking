@@ -209,6 +209,8 @@ function addPlayerMessageListener()
 		{
 			if(i_message.data == true)
 			{
+				document.getElementById("eye_playerbox").checked = true;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBox", data: true});
 				document.getElementById("eye_playerbox").disabled = false;
 				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerEyeBoxDisabled", data: false});
 			}
@@ -225,6 +227,8 @@ function addPlayerMessageListener()
 			
 			if(i_message.data == true)
 			{
+				document.getElementById("mouse_playerbox").checked = true;
+				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBox", data: true});
 				document.getElementById("mouse_playerbox").disabled = false;
 				chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBoxDisabled", data: false});
 			}
