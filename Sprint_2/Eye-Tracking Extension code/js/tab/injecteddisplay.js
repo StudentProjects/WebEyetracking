@@ -17,6 +17,8 @@ var timeStampEYE = null; //Array of eye time stamps.
 var xMouseCoords = null; //Array of eye x coordinates.
 var yMouseCoords = null; //Array of eye y coordinates.
 var timeStampMouse = null; //Array of eye time stamps.
+var xFixationPointCoords = null;
+var yFixationPointCoords = null;
 
 var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
@@ -40,6 +42,7 @@ var heatmapMouseInstance = null;
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
 
 var isPaused = false;
+var showingFixationPoints = false;
 
 ///////////
 //METHODS//
@@ -49,11 +52,12 @@ function initializeCanvas(mouse,eye)
 {
 	if(eye)
 	{
-		console.log("Initializing canvas for Eye!");
+		console.log("Initializing canvas for Eye with zindex!");
 		heatmapEyeInstance = h337.create( //Heatmap instance.
 		{
 			container: document.querySelector('*'),
-			radius: 45
+			radius: 45,
+			zIndex: 1000
 		});
 	}
 	if(mouse)
@@ -62,6 +66,7 @@ function initializeCanvas(mouse,eye)
 		{
 			container: document.querySelector('*'),
 			radius: 45,
+			zIndex: 2,
 		 	maxOpacity: 1,
 		    minOpacity: .0,
 		    blur: .75,
@@ -77,12 +82,26 @@ function initializeCanvas(mouse,eye)
 
 function showFixationPoints()
 {
-	
+	if(!showingFixationPoints)
+	{
+		if(xFixationPointCoords)
+		{
+			console.log("icens anax");
+			showingFixationPoints = true;		
+		}
+	}
 }
 
 function hideFixationPoints()
 {
-	
+	if(showingFixationPoints)
+	{
+		if(xFixationPointCoords)
+		{
+			console.log("doz anax");
+			showingFixationPoints = false;		
+		}
+	}
 }
 
 //Update the xCoords and yCoords with the latest collected data.
@@ -161,6 +180,20 @@ function setData(i_data)
 	else 
 	{
 		port.postMessage({message: "display::hasMouseData", data: false});
+	}
+	
+	if(t_data['testStatistics']['allFixations'])
+	{
+		console.log("Update statistics data");
+		xFixationPointCoords = new Array();
+		yFixationPointCoords = new Array();
+		var t_size = t_data['testStatistics']['allFixations'].length;
+		for(var i=0;i<t_size;i++)
+		{
+			xFixationPointCoords[i] = t_data['testStatistics']['allFixations'][i]['X'];
+			yFixationPointCoords[i] = t_data['testStatistics']['allFixations'][i]['Y'];
+		}
+		console.log("Loaded " + t_size + " frames of fixation points!");
 	}
 }
 
