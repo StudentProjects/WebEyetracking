@@ -36,6 +36,8 @@ var timerMouse = 0; //The delay until rendering next mouse frame.
 var mousePointer = null;
 var mouseImage = null;
 
+var fixationDivs = new Array();
+
 var heatmapEyeInstance = null;
 var heatmapMouseInstance = null;
 
@@ -87,8 +89,39 @@ function showFixationPoints()
 	{
 		if(xFixationPointCoords)
 		{
-			console.log("icens anax");
-			showingFixationPoints = true;		
+			showingFixationPoints = true;	
+
+			for( i = 0; i < xFixationPointCoords.length; i++)
+			{
+				fixationDivs[i] = document.createElement('div');
+				fixationDivs[i].style.textAlign = 'center';
+				fixationDivs[i].style.position = 'absolute';
+				fixationDivs[i].style.width = "48px";
+				fixationDivs[i].style.height = "48px";
+				fixationDivs[i].style.left = (xFixationPointCoords[i]-24) +'px';
+				fixationDivs[i].style.top = (yFixationPointCoords[i]-24) +'px';
+				fixationDivs[i].style.zIndex = "2";
+				var text = document.createElement('p');
+				text.innerHTML = i+1;
+				text.style.position = 'absolute';
+				
+				text.style.left = '20px';
+				if(i > 9)
+				{
+					text.style.left = '16px';
+				}
+				if(i > 99)
+				{
+					text.style.left = '12px';
+				}
+				
+				text.style.top = '16px';
+				var img = document.createElement('img');
+				img.src = chrome.runtime.getURL("../../img/circle.png");
+				fixationDivs[i].appendChild(img);
+				fixationDivs[i].appendChild(text);
+				document.body.appendChild(fixationDivs[i]);
+			}	
 		}
 	}
 }
@@ -99,7 +132,14 @@ function hideFixationPoints()
 	{
 		if(xFixationPointCoords)
 		{
-			showingFixationPoints = false;		
+			showingFixationPoints = false;	
+			var size = fixationDivs.length;
+			for(i = 0; i < size; i++)
+			{
+				document.body.removeChild(fixationDivs[i]);
+			}
+			
+			fixationDivs = [];	
 		}
 	}
 }
@@ -403,7 +443,6 @@ function manageMouseDiv(create)
 {
 	if(create)
 	{
-		console.log("Creating element");
 		mousePointer = document.createElement('div');
 		mousePointer.id = "mouse";
 		mousePointer.style.position = 'absolute';
