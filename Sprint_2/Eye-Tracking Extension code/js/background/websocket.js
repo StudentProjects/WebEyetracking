@@ -22,7 +22,7 @@ var checkConnection = setInterval(function()
 	{
 		connectWebSocket();
 	}
-	if(websocket != null)
+	if(websocket)
 	{
 		if(websocket.readyState == 1 && !isConnected)
 		{
@@ -92,10 +92,6 @@ function afterConnection()
 	
 	//Send message to popup.js, telling it that we have connected.
 	chrome.runtime.sendMessage({msg: 'popup::connected'});
-	
-	//Get applications
-	//console.log("Requesting application data!");
-	//manageMessage(17, "GetAllApplicationsRequest");
 }
 
 //Disconnect from websocket

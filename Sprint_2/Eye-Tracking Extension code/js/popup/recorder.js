@@ -82,21 +82,11 @@ function initRecorder()
 		{
 			m_isCollapsed = false;
 			document.getElementById('toggleinfo_button').innerHTML = "Show optional info";
-			var interval = setInterval(function()
-			{
-				window.location.hash = "#div_app";
-				clearInterval(interval);
-			},400);
 		}
 		else
 		{
 			m_isCollapsed = true;
 			document.getElementById('toggleinfo_button').innerHTML = "Hide optional info";
-			var interval = setInterval(function()
-			{
-				window.location.hash = "#div_age";
-				clearInterval(interval);
-			},400);
 		}
 	});
 	

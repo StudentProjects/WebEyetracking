@@ -197,8 +197,7 @@ function addPlayerMessageListener()
 			document.getElementById('animatedata_button').title = "Press to animate";
 		}
 		else if(i_message.msg == "player::displayingData")
-		{
-			
+		{	
 			document.getElementById("player_testheader").innerHTML = "Displaying data";
 			document.getElementById("main_body").style.cursor = "default";
 		}

@@ -140,6 +140,7 @@ function initializeTabs()
 	console.log("Created popup tabs!");
 }
 
+//Set new tab as active
 function setActiveTab(newTab)
 {
 	//Workaround! Sometimes there are two items with class active.
@@ -171,6 +172,7 @@ function setActiveTab(newTab)
 	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setActiveTab", data: newTab });
 }
 
+//Render or queue mesage
 function renderInfo(info, type)
 {
 	if(isRendering)
@@ -183,6 +185,7 @@ function renderInfo(info, type)
 	}
 }
 
+//Render next message in queue
 function renderQueue(info, type)
 {
 	isRendering = true;
@@ -228,6 +231,7 @@ function renderQueue(info, type)
 	}, 3000);
 }
 
+//Add message to queue
 function placeInQueue(info, type)
 {
 	var debugMessage = new Object();
@@ -247,6 +251,19 @@ function placeInQueue(info, type)
 	{
 		debugQueue[debugQueue.length] = debugMessage;
 	}
+}
+
+function checkScrollbar()
+{
+    var b = $('body');
+    var normalw = 0;
+    var scrollw = 0;
+    if(b.prop('scrollHeight')>b.height())
+    {
+        normalw = window.innerWidth;
+        scrollw = normalw - b.width();
+        $('#tab-container').css({marginRight:'-'+scrollw+'px'});
+    }
 }
 
 //Create message listener for popup.js
