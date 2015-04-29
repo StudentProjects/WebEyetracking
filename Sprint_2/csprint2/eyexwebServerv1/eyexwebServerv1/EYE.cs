@@ -296,7 +296,7 @@ namespace tieto.education.eyetrackingwebserver
                            m_gazePointStream.Next += (s, e) => saveGazePointAndTimestamp((int)e.X, (int)e.Y, (ulong)e.Timestamp);
 
                            //Initializing fixation stream
-                           m_fixationPointStream = m_eyeHost.CreateFixationDataStream(FixationDataMode.Sensitive);
+                           m_fixationPointStream = m_eyeHost.CreateFixationDataStream(FixationDataMode.Slow);
                            // Adding event to handler
                            m_fixationPointStream.Next += (s, e) => saveFixationPointAndTimestamp(e);
                            // The application is currently recording
