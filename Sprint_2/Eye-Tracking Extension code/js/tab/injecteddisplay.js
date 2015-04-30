@@ -37,6 +37,7 @@ var mousePointer = null;
 var mouseImage = null;
 
 var fixationDivs = new Array();
+var maxHeight = 9001;
 
 var heatmapEyeInstance = null;
 var heatmapMouseInstance = null;
@@ -56,12 +57,19 @@ function initializeCanvas(mouse,eye)
 	{
 		heatmapEyeInstance = h337.create( //Heatmap instance.
 		{
-			container: document.querySelector('*'),
+			container: document.querySelector('body'),
 			radius: 45,
 			maxOpacity: 1,
 		    minOpacity: .0,
 		    blur: .75
 		});
+		
+		if(heatmapEyeInstance["_renderer"]["_height"] < screen.height);
+		{
+			heatmapEyeInstance["_renderer"]["_height"] = screen.height;
+		}
+		
+		console.log("After: " + heatmapEyeInstance["_renderer"]["_zIndex"]);	
 	}
 	if(mouse)
 	{
@@ -100,31 +108,34 @@ function showFixationPoints()
 				fixationDivs[i].style.height = "48px";
 				fixationDivs[i].style.left = (xFixationPointCoords[i]-24) +'px';
 				fixationDivs[i].style.top = (yFixationPointCoords[i]-24) +'px';
-				fixationDivs[i].style.zIndex = "2";
+				fixationDivs[i].style.zIndex = "9001";
 				var text = document.createElement('p');
 				text.innerHTML = i+1;
 				text.style.position = 'absolute';
 				
 				text.style.left = '20px';
-				if(i > 8)
+				if(i > 9)
 				{
 					text.style.left = '16px';
 				}
-				if(i > 98)
+				if(i > 99)
 				{
 					text.style.left = '12px';
 				}
 				
-				text.style.top = '16px';
+				text.style.top = '15px';
 				var img = document.createElement('img');
 				img.src = chrome.runtime.getURL("../../img/circle.png");
+				img.style.width = "100%";
+				img.style.height = "100%";
 				fixationDivs[i].appendChild(img);
 				fixationDivs[i].appendChild(text);
 				document.body.appendChild(fixationDivs[i]);
 				
 				fixationDivs[i].addEventListener("click", function()
 				{	
-					this.style.zIndex = this.style.zIndex+1;
+					maxHeight += 1;
+					this.style.zIndex = maxHeight;
 				});
 			}	
 		}
