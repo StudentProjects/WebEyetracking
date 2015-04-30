@@ -862,7 +862,7 @@ namespace tieto.education.eyetrackingwebserver
                         return false;
                     }
                 }
-                catch (SocketException)
+                catch (Exception)
                 {
                     return false;
                 }
