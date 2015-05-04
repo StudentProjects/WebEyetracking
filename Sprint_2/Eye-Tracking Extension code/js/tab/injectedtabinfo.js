@@ -46,8 +46,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	else if (request.msg == "injectedtabinfo::getDocumentSize")
 	{
 		var data = new Object();
-		data.Width = $(document).width();
-		data.Height = $(document).height();		
+		data.Width = Math.max($(document).width(), $(window).width());
+		data.Height = Math.max($(document).height(), $(window).height());
 		
 		sendResponse({data: JSON.stringify(data)});	
 	}

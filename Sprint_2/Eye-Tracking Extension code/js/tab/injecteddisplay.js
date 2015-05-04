@@ -47,35 +47,44 @@ var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
 var isPaused = false;
 var showingFixationPoints = false;
 
+var canvasDiv = null;
+
 ///////////
 //METHODS//
 ///////////
 
 function initializeCanvas(mouse,eye)
 {
+	if(!canvasDiv)
+	{
+		canvasDiv = document.createElement("div");;	
+		canvasDiv.style.top = "0px";
+		canvasDiv.style.left = "0px";	
+		canvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
+		canvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
+		canvasDiv.style.zIndex = "9000";	
+		canvasDiv.id = "canvas-div";
+		canvasDiv.className = "canvas-class";	
+		canvasDiv.style.position = "absolute";	
+		document.body.appendChild(canvasDiv);
+	}
+	
 	if(eye)
 	{
 		heatmapEyeInstance = h337.create( //Heatmap instance.
 		{
-			container: document.querySelector('body'),
+			container: document.querySelector(".canvas-class"),
 			radius: 45,
 			maxOpacity: 1,
 		    minOpacity: .0,
 		    blur: .75
 		});
-		
-		if(heatmapEyeInstance["_renderer"]["_height"] < screen.height);
-		{
-			heatmapEyeInstance["_renderer"]["_height"] = screen.height;
-		}
-		
-		console.log("After: " + heatmapEyeInstance["_renderer"]["_zIndex"]);	
 	}
 	if(mouse)
 	{
 		heatmapMouseInstance = h337.create( //Heatmap instance.
 		{
-			container: document.querySelector('*'),
+			container: document.querySelector(".canvas-class"),
 			radius: 45,
 			zIndex: 2,
 		 	maxOpacity: 1,
@@ -257,6 +266,8 @@ function setData(i_data)
 //as long as index is less than the size of the timeStampEYE array.
 function animateEye()
 {
+	document.getElementById('canvas-div').style.position = 'absolute';
+	
 	if(!isPaused)
 	{
 		var nextFrame = 0;
@@ -265,25 +276,32 @@ function animateEye()
 			var nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
 		}
 		
-		animationEye = setTimeout(function()
-		{	
-			if(indexEye >= sizeEye)
-			{
-				stopAnimation();
-				return;
-			}
-			
-			heatmapEyeInstance.addData(
-			{
-				x: xEyeCoords[indexEye],
-				y: yEyeCoords[indexEye],
-				value: 1
-			});
-			
-			indexEye++;
-			animateEye();
-			
-		}, nextFrame);	
+		if(heatmapEyeInstance)
+		{
+			animationEye = setTimeout(function()
+			{	
+				if(indexEye >= sizeEye)
+				{
+					stopAnimation();
+					return false;
+				}
+				
+				heatmapEyeInstance.addData(
+				{
+					x: xEyeCoords[indexEye],
+					y: yEyeCoords[indexEye],
+					value: 1
+				});
+				
+				indexEye++;
+				animateEye();
+				
+			}, nextFrame);	
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
 
@@ -299,14 +317,14 @@ function animateMouse()
 			var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
 		}
 		
-		if(mousePointer != null)
+		if(mousePointer)
 		{
 			animationMouse = setTimeout(function()
 			{	
 				if(indexMouse >= sizeMouse)
 				{
 					stopAnimation();
-					return;
+					return false;
 				}
 			
 				mousePointer.style.left = xMouseCoords[indexMouse]+'px';
@@ -316,6 +334,10 @@ function animateMouse()
 				animateMouse();
 				
 			}, nextFrame);	
+		}
+		else
+		{
+			return false;
 		}
 	}
 }
@@ -424,22 +446,31 @@ function startAnimation(animateEyeBool, animateMouseBool)
 //Stop the animate function
 function stopAnimation()
 {
-	console.log("Stop animation!");
-	port.postMessage({message: "display::animationFinished"});
-	indexEye = 0;
-	indexMouse = 0;
-	if(animationEye)
+	
+	if(animationEye && indexEye >= sizeEye)
 	{
+		console.log("Stop eye animation!");
+		indexEye = 0;
+		
 		clearTimeout(animationEye);
 		animationEye = null;
 	}
-	if(animationMouse)
+	
+	if(animationMouse && indexMouse >= sizeMouse)
 	{
+		console.log("Stop mouse animation!");
+		indexMouse = 0;
+		
 		clearTimeout(animationMouse);
 		animationMouse = null;
 		manageMouseDiv(false);
 	}
-	animating = false;
+	
+	if(!animationEye && !animationMouse)
+	{
+		port.postMessage({message: "display::animationFinished"});
+		animating = false;
+	}
 }
 
 function show(eyeShow, mouseShow)
@@ -548,7 +579,13 @@ function hide()
 		var canvas = heatmapMouseInstance._renderer.canvas;
 		//remove the canvas from DOM
 		$(canvas).remove();	
-		heatmapMouseInstance = null;	
+		heatmapMouseInstance = null;
+	}
+	
+	if(canvasDiv)
+	{
+		document.body.removeChild(document.getElementById("canvas-div"));
+		canvasDiv = null;
 	}
 }
 
@@ -566,6 +603,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			if(timeStampEYE || timeStampMouse)
 			{
 				hide(); //Hide before starting animation
+				console.log(request.eye + " - " + request.mouse);
 				startAnimation(request.eye, request.mouse);
 				sendResponse({message: "Animating heatmap!"});	
 			}		
