@@ -82,28 +82,30 @@ namespace tieto.education.eyetrackingwebserver
         }
 
         /// <summary>
-        /// Calculates how much percentage of the page the user has looked at based on the area of the page and the view area
+        /// Calculates how much percent of the page the user has seen based on document areas which the document has been divided into
+        /// Calculates max and minimun values of each block in the document and calculates the total percentage based on number of blocks
         /// </summary>
-        /// <param name="i_minX">The minimum x value which the user has looked at</param>
-        /// <param name="i_maxX">The maximum x value which the user has looked at</param>
-        /// <param name="i_minY">The minimum y value which the user has looked at</param>
-        /// <param name="i_maxY">The maximum y value which the user has looked at</param>
-        /// <param name="i_pageX">The width of the page which the test was performed on</param>
-        /// <param name="i_pageY">The height of the page which the test was performed on</param>
-        /// <returns>The total percentage of how much of the screen the user has looked at as an integer</returns>
+        /// <param name="i_documentAreas">All document blocks</param>
+        /// <param name="i_x">All X Coordinates</param>
+        /// <param name="i_y"> All Y Coordinates</param>
+        /// <param name="i_areaWidth">Width of each block</param>
+        /// <param name="i_areaHeight">Height of each block</param>
+        /// <returns>Integer, percent of page seen</returns>
         public int getPercentageOfPage(DocumentArea[,] i_documentAreas, List<int> i_x, List<int> i_y,uint i_areaWidth,uint i_areaHeight)
         {
             DocumentArea[,] t_documentAreas = i_documentAreas;
-            int t_asInt = 4;
+            int t_percentOfDocument = 4;
             try
             {
                 int tempX = -1;
                 int tempY = -1;
                 for (int i = 0; i < i_x.Count; i++)
                 {
+                    //Getting the corresponding index to this point in the document area array
                     tempX = (int)Math.Floor((double)i_x[i] / (double)i_areaWidth);
                     tempY = (int)Math.Floor((double)i_y[i] / (double)i_areaHeight);
 
+                    //Checking so that the values does not exceed the bounds of the array
                     if (tempX > (t_documentAreas.GetLength(0)-1))
                     {
                         tempX = t_documentAreas.GetLength(0)-1;
@@ -121,6 +123,7 @@ namespace tieto.education.eyetrackingwebserver
                         tempY = 0;
                     }
 
+                    //Checking if the x value is greater or less than the maximum or minimum value in this document block
                     if (t_documentAreas[tempX, tempY].xMin > i_x[i])
                     {
                         t_documentAreas[tempX, tempY].xMin = i_x[i];
@@ -133,9 +136,12 @@ namespace tieto.education.eyetrackingwebserver
 
                 for(int i=0;i<i_y.Count;i++)
                 {
+                    //Getting the corresponding index to this point in the document area array
                     tempX = (int)Math.Floor((double)i_x[i] / (double)i_areaWidth);
                     tempY = (int)Math.Floor((double)i_y[i] / (double)i_areaHeight);
 
+
+                    //Checking so that the values does not exceed the bounds of the array
                     if (tempX > (t_documentAreas.GetLength(0) - 1))
                     {
                         tempX = t_documentAreas.GetLength(0) - 1;
@@ -153,6 +159,7 @@ namespace tieto.education.eyetrackingwebserver
                         tempY = 0;
                     }
 
+                    //Checking if the t value is greater or less than the maximum or minimum value in this document block
                     if (t_documentAreas[tempX, tempY].yMin > i_y[i])
                     {
                         t_documentAreas[tempX, tempY].yMin = i_y[i];
@@ -163,8 +170,9 @@ namespace tieto.education.eyetrackingwebserver
                     }
                 }
 
-                double areaPercent = 0.0;
-                uint totalArea = i_areaWidth * i_areaHeight;
+                //Calculating the area seen within each block based on min and max values
+                double totalAreaPercent = 0.0;
+                uint totalBlockArea = i_areaWidth * i_areaHeight;
                 for (int i = 0; i < t_documentAreas.GetLength(0); i++)
                 {
                     for(int j=0;j<t_documentAreas.GetLength(1);j++)
@@ -172,22 +180,26 @@ namespace tieto.education.eyetrackingwebserver
                         int x = t_documentAreas[i, j].xMax - t_documentAreas[i, j].xMin;
                         int y = t_documentAreas[i, j].yMax - t_documentAreas[i, j].yMin;
 
-                        int partArea = x * y;
-
-                        double tempArea = (double)partArea/(double)totalArea;
-                        areaPercent += tempArea;
+                        if(x > 0 && y > 0)
+                        {
+                            int minMaxIntervalArea = x * y;
+                            double tempArea = (double)minMaxIntervalArea / (double)totalBlockArea;
+                            totalAreaPercent += tempArea;
+                        }
                     }
                 }
 
-                double finalPercent = areaPercent / (double)(t_documentAreas.GetLength(0) * t_documentAreas.GetLength(1));
-                t_asInt = (int)finalPercent;
+                totalAreaPercent *= 100.0;
+                // final percent. Total percent of page seen in all blocks divided by number of blocks
+                double finalPercent = totalAreaPercent / (double)(t_documentAreas.GetLength(0) * t_documentAreas.GetLength(1));
+                t_percentOfDocument = (int)finalPercent;
             }
             catch(Exception)
             {
-                t_asInt = 1000;
+                t_percentOfDocument = 1000;
             }
-          
-            return t_asInt;
+
+            return t_percentOfDocument;
         }
     }
 }

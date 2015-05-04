@@ -45,10 +45,6 @@ namespace tieto.education.eyetrackingwebserver
         private int m_activeDisplayHeight;
         private int m_activeTestType;
         private int m_currentFixationIndex;
-        private uint m_highestEyeCoordinateLookedAtX;
-        private uint m_lowestEyeCoordinateLookedAtX;
-        private uint m_highestEyeCoordinateLookedAtY;
-        private uint m_lowestEyeCoordinateLookedAtY;
         private uint m_pageWidthInTestApplication;
         private uint m_pageHeightInTestApplication;
         private ulong m_firstGazeTimestamp;
@@ -84,8 +80,8 @@ namespace tieto.education.eyetrackingwebserver
             //Defaulting scroll position to zero
             m_currentScrollPositionY = 0;
 
-            m_areasOfHeight = 3;
-            m_areasOfWidth = 4;
+            m_areasOfHeight = 9;
+            m_areasOfWidth = 12;
             // Not recording as default
             m_isRecording = false;
             // Not paused as default
@@ -114,11 +110,6 @@ namespace tieto.education.eyetrackingwebserver
             // 0 = EYE, 1=Mouse, 2= Both
             m_activeTestType = -1;
             m_currentFixationIndex = -1;
-
-            m_highestEyeCoordinateLookedAtX = 0;
-            m_lowestEyeCoordinateLookedAtX = 9999;
-            m_highestEyeCoordinateLookedAtY = 0;
-            m_lowestEyeCoordinateLookedAtY = 9999;
 
             m_fileSaver = i_fileSaverInstance;
         }
@@ -186,8 +177,9 @@ namespace tieto.education.eyetrackingwebserver
            m_documentAreaWidth = t_width;
            m_documentAreaHeight = t_height;
 
+           //Creating document blocks of the current document based on the specified number of blocks in the width and height axis
+           //Used when calculating total percent of page seen
            DocumentArea[,] t_documentAreas = new DocumentArea[m_areasOfWidth, m_areasOfHeight];
-
            for (int i = 0; i < m_areasOfWidth;i++ )
            {
                for(int j=0;j<m_areasOfHeight;j++)
@@ -228,24 +220,6 @@ namespace tieto.education.eyetrackingwebserver
                    // offsetting y with scroll position
                    m_gazeYCoordinates.Add(i_gazeY + m_currentScrollPositionY);
                    m_gazePointTimeStamps.Add(calculateTimestampForGazePoint(i_gazeTimeStamp));
-
-                   //Check if one of the coordinates can be the min or max value of page seen
-                   if (i_gazeX < m_lowestEyeCoordinateLookedAtX)
-                   {
-                       m_lowestEyeCoordinateLookedAtX = (uint)i_gazeX;
-                   }
-                   if (i_gazeX > m_highestEyeCoordinateLookedAtX)
-                   {
-                       m_highestEyeCoordinateLookedAtX = (uint)i_gazeX;
-                   }
-                   if (i_gazeY < m_lowestEyeCoordinateLookedAtY)
-                   {
-                       m_lowestEyeCoordinateLookedAtY = (uint)i_gazeY;
-                   }
-                   if (i_gazeY > m_highestEyeCoordinateLookedAtY)
-                   {
-                       m_highestEyeCoordinateLookedAtY = (uint)i_gazeY;
-                   }
                }
            }
        }
@@ -277,8 +251,10 @@ namespace tieto.education.eyetrackingwebserver
                         {
                             if(m_currentFixationPoint != null)
                             {
-                                if(m_currentFixationPoint.timeStampFixation != 0)
+                                if (m_currentFixationPoint.timeStampFixation > 10000)
                                 {
+                                    m_currentFixationPoint.X = (int)Math.Abs(((double)m_currentFixationPoint.X + i_fixationEvent.X) / 2.0);
+                                    m_currentFixationPoint.Y = (int)Math.Abs(((double)m_currentFixationPoint.Y + i_fixationEvent.Y) / 2.0);
                                     int fixationCount = m_fixationPoints.Count;
                                     if (fixationCount >= 1)
                                     {
@@ -290,7 +266,7 @@ namespace tieto.education.eyetrackingwebserver
                                             int medianY = (int)Math.Floor((double)m_currentFixationPoint.Y + m_fixationPoints[fixationCount - 1].Y / 2.0);
 
                                             m_fixationPoints[fixationCount - 1].X = medianX;
-                                            m_fixationPoints[fixationCount - 1].Y = medianY;
+                                            m_fixationPoints[fixationCount - 1].Y = medianY + m_currentScrollPositionY;
 
                                             return;
                                         }
@@ -302,6 +278,7 @@ namespace tieto.education.eyetrackingwebserver
 
                                     m_currentFixationPoint.fixationTime = t_currentTimestampFixation.ToString();
                                     m_currentFixationPoint.fixationOrder = m_currentFixationIndex;
+                                    m_currentFixationPoint.Y += m_currentScrollPositionY;
                                     m_fixationPoints.Add(m_currentFixationPoint);
                                 }
                             }
@@ -530,10 +507,6 @@ namespace tieto.education.eyetrackingwebserver
            m_gazeYCoordinates.Clear();
            m_isFirstPointCollected = false;
            m_gazePointTimeStamps.Clear();
-           m_highestEyeCoordinateLookedAtX = 0;
-           m_highestEyeCoordinateLookedAtY = 0;
-           m_lowestEyeCoordinateLookedAtX = 9999;
-           m_lowestEyeCoordinateLookedAtY = 9999;
            m_isDocumentBoundsSet = false;
            m_currentFixationIndex = -1;
 
@@ -605,9 +578,12 @@ namespace tieto.education.eyetrackingwebserver
                //Statistics
                log("Recorder: Calculating statistics!", 0);
                m_dataCurrentTest.testStatistics.percentageOfPageSeen = m_statisticsHandler.getPercentageOfPage(m_documentAreas,m_gazeXCoordinates,m_gazeYCoordinates,m_documentAreaWidth,m_documentAreaHeight);
-               m_dataCurrentTest.testStatistics.mostFixated = m_statisticsHandler.getMostFixated(m_fixationPoints.ToArray());
-               m_dataCurrentTest.testStatistics.allFixations = m_statisticsHandler.getAllFixationPoints(m_fixationPoints);
-               m_dataCurrentTest.testStatistics.firstFixation = m_fixationPoints[0];
+               if(m_fixationPoints.Count > 0)
+               {
+                   m_dataCurrentTest.testStatistics.mostFixated = m_statisticsHandler.getMostFixated(m_fixationPoints.ToArray());
+                   m_dataCurrentTest.testStatistics.allFixations = m_statisticsHandler.getAllFixationPoints(m_fixationPoints);
+                   m_dataCurrentTest.testStatistics.firstFixation = m_fixationPoints[0];
+               }
                log("Recorder: Successfully calculated statistics!", 1);
 
                // Tell file saver to save files

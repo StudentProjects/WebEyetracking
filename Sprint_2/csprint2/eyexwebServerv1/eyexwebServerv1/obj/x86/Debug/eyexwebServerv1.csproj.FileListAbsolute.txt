@@ -39,4 +39,3 @@ C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyex
 C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.csproj.GenerateResource.Cache
 C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.exe
 C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.pdb
-C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.csprojResolveAssemblyReference.cache
