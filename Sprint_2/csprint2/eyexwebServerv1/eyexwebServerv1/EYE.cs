@@ -35,6 +35,10 @@ namespace tieto.education.eyetrackingwebserver
         private string m_logMessage;
 
        // integers
+        private uint m_areasOfWidth;
+        private uint m_areasOfHeight;
+        private uint m_documentAreaWidth;
+        private uint m_documentAreaHeight;
         private int m_logType;
         private int m_currentScrollPositionY;
         private int m_activeDisplayWidth;
@@ -64,6 +68,7 @@ namespace tieto.education.eyetrackingwebserver
         private GazePointDataStream m_gazePointStream;
         private FixationDataStream m_fixationPointStream;
         private FixationPoint m_currentFixationPoint;
+        private DocumentArea[,] m_documentAreas;
 
        /// <summary>
        /// Initializing all necessary class objects and variables
@@ -78,6 +83,9 @@ namespace tieto.education.eyetrackingwebserver
             m_currentTestUserInfo = new UserInfo();
             //Defaulting scroll position to zero
             m_currentScrollPositionY = 0;
+
+            m_areasOfHeight = 3;
+            m_areasOfWidth = 4;
             // Not recording as default
             m_isRecording = false;
             // Not paused as default
@@ -171,6 +179,28 @@ namespace tieto.education.eyetrackingwebserver
        {
            m_pageHeightInTestApplication = height;
            m_pageWidthInTestApplication = width;
+
+           uint t_width = width / m_areasOfWidth;
+           uint t_height = height / m_areasOfHeight;
+
+           m_documentAreaWidth = t_width;
+           m_documentAreaHeight = t_height;
+
+           DocumentArea[,] t_documentAreas = new DocumentArea[m_areasOfWidth, m_areasOfHeight];
+
+           for (int i = 0; i < m_areasOfWidth;i++ )
+           {
+               for(int j=0;j<m_areasOfHeight;j++)
+               {
+                   t_documentAreas[i,j] = new DocumentArea();
+                   t_documentAreas[i, j].xMin = (int)width;
+                   t_documentAreas[i, j].xMax = -1 * (int)width;
+                   t_documentAreas[i, j].yMax = -1 * (int)height;
+                   t_documentAreas[i, j].yMin = (int)height;
+               }
+           }
+
+           m_documentAreas = t_documentAreas;
 
            m_isDocumentBoundsSet = true;
        }
@@ -574,7 +604,7 @@ namespace tieto.education.eyetrackingwebserver
 
                //Statistics
                log("Recorder: Calculating statistics!", 0);
-               m_dataCurrentTest.testStatistics.percentageOfPageSeen = m_statisticsHandler.getPercentageOfPage(m_lowestEyeCoordinateLookedAtX, m_highestEyeCoordinateLookedAtX, m_lowestEyeCoordinateLookedAtY, m_highestEyeCoordinateLookedAtY, m_pageWidthInTestApplication, m_pageHeightInTestApplication);
+               m_dataCurrentTest.testStatistics.percentageOfPageSeen = m_statisticsHandler.getPercentageOfPage(m_documentAreas,m_gazeXCoordinates,m_gazeYCoordinates,m_areasOfWidth,m_areasOfHeight);
                m_dataCurrentTest.testStatistics.mostFixated = m_statisticsHandler.getMostFixated(m_fixationPoints.ToArray());
                m_dataCurrentTest.testStatistics.allFixations = m_statisticsHandler.getAllFixationPoints(m_fixationPoints);
                m_dataCurrentTest.testStatistics.firstFixation = m_fixationPoints[0];

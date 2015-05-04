@@ -91,17 +91,59 @@ namespace tieto.education.eyetrackingwebserver
         /// <param name="i_pageX">The width of the page which the test was performed on</param>
         /// <param name="i_pageY">The height of the page which the test was performed on</param>
         /// <returns>The total percentage of how much of the screen the user has looked at as an integer</returns>
-        public int getPercentageOfPage(uint i_minX,uint i_maxX,uint i_minY, uint i_maxY, uint i_pageX, uint i_pageY)
+        public int getPercentageOfPage(DocumentArea[,] i_documentAreas, List<int> i_x, List<int> i_y,uint i_areaWidth,uint i_areaHeight)
         {
-            uint t_totalX = i_maxX - i_minX;
-            uint t_totalY = i_maxY - i_minY;
+            DocumentArea[,] t_documentAreas = i_documentAreas;
+            int t_asInt = 0;
+            try
+            {
+                for (int i = 0; i < i_x.Count; i++)
+                {
+                    int tempX = (int)Math.Floor((double)i_x[i] / (double)i_areaWidth);
+                    int tempY = (int)Math.Floor((double)i_y[i] / (double)i_areaHeight);
 
-            uint t_viewArea = t_totalX * t_totalY;
-            uint t_pageArea = i_pageX * i_pageY;
+                    if (t_documentAreas[tempX, tempY].xMin > i_x[i])
+                    {
+                        t_documentAreas[tempX, tempY].xMin = i_x[i];
+                    }
+                    if (t_documentAreas[tempX, tempY].xMax < i_x[i])
+                    {
+                        t_documentAreas[tempX, tempY].xMax = i_x[i];
+                    }
+                    if (t_documentAreas[tempX, tempY].yMin > i_y[i])
+                    {
+                        t_documentAreas[tempX, tempY].yMin = i_y[i];
+                    }
+                    if (t_documentAreas[tempX, tempY].yMax < i_y[i])
+                    {
+                        t_documentAreas[tempX, tempY].yMax = i_y[i];
+                    }
+                }
 
-            double t_viewPercentage = ((double)t_viewArea / (double)t_pageArea) * 100.0;
+                double areaPercent = 0.0;
+                uint totalArea = i_areaWidth * i_areaHeight;
+                for (int i = 0; i < t_documentAreas.GetLength(0); i++)
+                {
+                    for(int j=0;j<t_documentAreas.GetLength(1);j++)
+                    {
+                        int x = t_documentAreas[i, j].xMax - t_documentAreas[i, j].xMin;
+                        int y = t_documentAreas[i, j].yMax - t_documentAreas[i, j].yMin;
 
-            int t_asInt = (int)t_viewPercentage;
+                        int partArea = x * y;
+
+                        double tempArea = partArea/totalArea;
+                        areaPercent += tempArea;
+                    }
+                }
+
+                double finalPercent = areaPercent / (t_documentAreas.GetLength(0) * t_documentAreas.GetLength(1));
+                t_asInt = (int)finalPercent;
+            }
+            catch(Exception)
+            {
+                //Hej nu ligger catchen på rätt ställe
+            }
+          
             return t_asInt;
         }
     }

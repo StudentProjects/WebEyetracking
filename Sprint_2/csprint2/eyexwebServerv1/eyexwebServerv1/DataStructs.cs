@@ -55,6 +55,14 @@ namespace tieto.education.eyetrackingwebserver
         public AllStatistics testStatistics { get; set; }
     }
 
+    public class DocumentArea
+    {
+        public int xMax { get; set; }
+        public int xMin { get; set; }
+        public int yMax { get; set; }
+        public int yMin { get; set; }
+    }
+
     public class AllStatistics
     {
         public string timeOnPage { get; set; }
