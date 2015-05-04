@@ -86,16 +86,15 @@ function initializeCanvas(mouse,eye)
 		{
 			container: document.querySelector(".canvas-class"),
 			radius: 45,
-			zIndex: 2,
 		 	maxOpacity: 1,
 		    minOpacity: .0,
-		    blur: .75
-			/*gradient:
+		    blur: .75,
+			gradient:
 			{
-				'.2': 'yellow',
-				'.5': 'orange',
-				'.85': 'red'
-			}*/
+				'.2': 'red',
+				'.5': 'blue',
+				'.85': 'white'
+			}
 		});
 	}
 }
@@ -537,6 +536,8 @@ function showEye()
 	{
 		console.log("No data!");
 	}
+	
+	document.getElementById('canvas-div').style.position = 'absolute';
 }
 
 //Show the collected data as a heatmap in the tab
@@ -563,6 +564,8 @@ function showMouse()
 	{
 		console.log("No data!");
 	}
+	
+	document.getElementById('canvas-div').style.position = 'absolute';
 }
 
 //Hide the heatmap
