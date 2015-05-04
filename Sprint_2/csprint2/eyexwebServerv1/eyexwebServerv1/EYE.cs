@@ -604,7 +604,7 @@ namespace tieto.education.eyetrackingwebserver
 
                //Statistics
                log("Recorder: Calculating statistics!", 0);
-               m_dataCurrentTest.testStatistics.percentageOfPageSeen = m_statisticsHandler.getPercentageOfPage(m_documentAreas,m_gazeXCoordinates,m_gazeYCoordinates,m_areasOfWidth,m_areasOfHeight);
+               m_dataCurrentTest.testStatistics.percentageOfPageSeen = m_statisticsHandler.getPercentageOfPage(m_documentAreas,m_gazeXCoordinates,m_gazeYCoordinates,m_documentAreaWidth,m_documentAreaHeight);
                m_dataCurrentTest.testStatistics.mostFixated = m_statisticsHandler.getMostFixated(m_fixationPoints.ToArray());
                m_dataCurrentTest.testStatistics.allFixations = m_statisticsHandler.getAllFixationPoints(m_fixationPoints);
                m_dataCurrentTest.testStatistics.firstFixation = m_fixationPoints[0];

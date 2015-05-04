@@ -94,13 +94,32 @@ namespace tieto.education.eyetrackingwebserver
         public int getPercentageOfPage(DocumentArea[,] i_documentAreas, List<int> i_x, List<int> i_y,uint i_areaWidth,uint i_areaHeight)
         {
             DocumentArea[,] t_documentAreas = i_documentAreas;
-            int t_asInt = 0;
+            int t_asInt = 4;
             try
             {
+                int tempX = -1;
+                int tempY = -1;
                 for (int i = 0; i < i_x.Count; i++)
                 {
-                    int tempX = (int)Math.Floor((double)i_x[i] / (double)i_areaWidth);
-                    int tempY = (int)Math.Floor((double)i_y[i] / (double)i_areaHeight);
+                    tempX = (int)Math.Floor((double)i_x[i] / (double)i_areaWidth);
+                    tempY = (int)Math.Floor((double)i_y[i] / (double)i_areaHeight);
+
+                    if (tempX > (t_documentAreas.GetLength(0)-1))
+                    {
+                        tempX = t_documentAreas.GetLength(0)-1;
+                    }
+                    else if(tempX < 0)
+                    {
+                        tempX = 0;
+                    }
+                    if (tempY > (t_documentAreas.GetLength(1)-1))
+                    {
+                        tempY = t_documentAreas.GetLength(1)-1;
+                    }
+                    else if(tempY < 0)
+                    {
+                        tempY = 0;
+                    }
 
                     if (t_documentAreas[tempX, tempY].xMin > i_x[i])
                     {
@@ -110,6 +129,30 @@ namespace tieto.education.eyetrackingwebserver
                     {
                         t_documentAreas[tempX, tempY].xMax = i_x[i];
                     }
+                }
+
+                for(int i=0;i<i_y.Count;i++)
+                {
+                    tempX = (int)Math.Floor((double)i_x[i] / (double)i_areaWidth);
+                    tempY = (int)Math.Floor((double)i_y[i] / (double)i_areaHeight);
+
+                    if (tempX > (t_documentAreas.GetLength(0) - 1))
+                    {
+                        tempX = t_documentAreas.GetLength(0) - 1;
+                    }
+                    else if (tempX < 0)
+                    {
+                        tempX = 0;
+                    }
+                    if (tempY > (t_documentAreas.GetLength(1) - 1))
+                    {
+                        tempY = t_documentAreas.GetLength(1) - 1;
+                    }
+                    else if (tempY < 0)
+                    {
+                        tempY = 0;
+                    }
+
                     if (t_documentAreas[tempX, tempY].yMin > i_y[i])
                     {
                         t_documentAreas[tempX, tempY].yMin = i_y[i];
@@ -131,17 +174,17 @@ namespace tieto.education.eyetrackingwebserver
 
                         int partArea = x * y;
 
-                        double tempArea = partArea/totalArea;
+                        double tempArea = (double)partArea/(double)totalArea;
                         areaPercent += tempArea;
                     }
                 }
 
-                double finalPercent = areaPercent / (t_documentAreas.GetLength(0) * t_documentAreas.GetLength(1));
+                double finalPercent = areaPercent / (double)(t_documentAreas.GetLength(0) * t_documentAreas.GetLength(1));
                 t_asInt = (int)finalPercent;
             }
             catch(Exception)
             {
-                //Hej nu ligger catchen på rätt ställe
+                t_asInt = 1000;
             }
           
             return t_asInt;
