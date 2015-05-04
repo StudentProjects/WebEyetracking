@@ -249,13 +249,29 @@ namespace tieto.education.eyetrackingwebserver
                             {
                                 if(m_currentFixationPoint.timeStampFixation != 0)
                                 {
+                                    int fixationCount = m_fixationPoints.Count;
+                                    if (fixationCount >= 1)
+                                    {
+                                        double squiredLength = Math.Pow(((double)m_fixationPoints[fixationCount - 1].X - m_currentFixationPoint.X), 2.0) + Math.Pow(((double)m_fixationPoints[fixationCount - 1].Y - m_currentFixationPoint.Y), 2.0);
+                                        double lengthBetweenPoints = Math.Sqrt(squiredLength); 
+                                        if (lengthBetweenPoints <= 48)
+                                        {
+                                            int medianX = (int)Math.Floor((double)m_currentFixationPoint.X + m_fixationPoints[fixationCount - 1].X / 2.0);
+                                            int medianY = (int)Math.Floor((double)m_currentFixationPoint.Y + m_fixationPoints[fixationCount - 1].Y / 2.0);
+
+                                            m_fixationPoints[fixationCount - 1].X = medianX;
+                                            m_fixationPoints[fixationCount - 1].Y = medianY;
+
+                                            return;
+                                        }
+                                    }
+
                                     m_currentFixationIndex++;
                                     int t_currentTimestampFixation = (int)i_fixationEvent.Timestamp - m_currentFixationPoint.timeStampFixation;
                                     m_currentFixationPoint.timeStampFixation = t_currentTimestampFixation;
 
                                     m_currentFixationPoint.fixationTime = t_currentTimestampFixation.ToString();
                                     m_currentFixationPoint.fixationOrder = m_currentFixationIndex;
-
                                     m_fixationPoints.Add(m_currentFixationPoint);
                                 }
                             }

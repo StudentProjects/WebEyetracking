@@ -517,6 +517,10 @@ function showEye()
 		initializeCanvas(false,true);
 		console.log("Show eye heatmap!");
 		
+		var canvas = heatmapEyeInstance._renderer.canvas;
+		canvas.style.zIndex = "9999";
+		console.log("Setting z index");
+		
 		var t_size = xEyeCoords.length;
 		for(var i = 0; i < t_size; i++)
 		{
