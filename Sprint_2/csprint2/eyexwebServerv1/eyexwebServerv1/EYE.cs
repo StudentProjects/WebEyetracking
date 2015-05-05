@@ -462,7 +462,7 @@ namespace tieto.education.eyetrackingwebserver
        /// <param name="i_y">Array of mouse y coordinates received from client</param>
        /// <param name="i_timeStamp">The corresponding timestamp of each mouse point</param>
        /// <returns>Was the operation successful or not</returns>
-       public bool addMouseCoordinatesToTest(int[] i_mouseXCoords, int[] i_mouseYCoords, int[] i_mouseTimeStamps)
+       public bool addMouseCoordinatesToTest(int[] i_mouseXCoords, int[] i_mouseYCoords, int[] i_mouseTimeStamps,int[] i_mouseClickX,int[] i_mouseClickY,int[] i_mouseClickTimeStamp)
        {
            if(m_activeTestType == 1 || m_activeTestType == 2)
            {
@@ -471,6 +471,9 @@ namespace tieto.education.eyetrackingwebserver
                    m_dataCurrentTest.mouseX = i_mouseXCoords;
                    m_dataCurrentTest.mouseY = i_mouseYCoords;
                    m_dataCurrentTest.timeStampMouse = i_mouseTimeStamps;
+                   m_dataCurrentTest.mouseClickX = i_mouseClickX;
+                   m_dataCurrentTest.mouseClickY = i_mouseClickY;
+                   m_dataCurrentTest.mouseClickTimeStamp = i_mouseTimeStamps;
 
                    if(m_activeTestType == 1)
                    {

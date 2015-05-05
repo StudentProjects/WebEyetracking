@@ -352,7 +352,7 @@ namespace tieto.education.eyetrackingwebserver
                         MouseCoord t_mouse = JsonConvert.DeserializeObject<MouseCoord>(t_messageContent);
                       
                         //Add mouse coordinates 
-                        if(m_activeServerInstance.addMouseCoordinatesToTest(t_mouse.mouseX, t_mouse.mouseY, t_mouse.timeStampMouse))
+                        if(m_activeServerInstance.addMouseCoordinatesToTest(t_mouse.mouseX, t_mouse.mouseY, t_mouse.timeStampMouse,t_mouse.mouseClickX,t_mouse.mouseClickY,t_mouse.mouseClickTimeStamp))
                         {
                             constructResponseMessage(24, true);
                         }

@@ -877,11 +877,11 @@ namespace tieto.education.eyetrackingwebserver
         /// <param name="i_y">Integer array of all Y values</param>
         /// <param name="i_timeStamp">Ulong array of all the timeStamps</param>
         /// <returns>Bool, if the adding was successful or not</returns>
-        public bool addMouseCoordinatesToTest(int[] i_x, int[] i_y, int[] i_timeStamp)
+        public bool addMouseCoordinatesToTest(int[] i_x, int[] i_y, int[] i_timeStamp,int[] i_mouseClickX,int[] i_mouseClickY,int[] i_mouseClickTimeStamp)
         {
             if(m_recorderInstance != null)
             {
-                if(m_recorderInstance.addMouseCoordinatesToTest(i_x, i_y, i_timeStamp))
+                if(m_recorderInstance.addMouseCoordinatesToTest(i_x, i_y, i_timeStamp,i_mouseClickX,i_mouseClickY,i_mouseClickTimeStamp))
                 {
                     m_logType = 1;
                     outputTextProperty = "Recorder: Successfully added mouse coordinates to current test";

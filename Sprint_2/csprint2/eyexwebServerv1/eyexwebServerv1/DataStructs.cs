@@ -52,6 +52,9 @@ namespace tieto.education.eyetrackingwebserver
         public int[] mouseY { get; set; }
         public ulong[] timeStampEYE { get; set; }
         public int[] timeStampMouse { get; set; }
+        public int[] mouseClickX { get; set; }
+        public int[] mouseClickY { get; set; }
+        public int[] mouseClickTimeStamp { get; set; }
         public AllStatistics testStatistics { get; set; }
     }
 
@@ -86,6 +89,9 @@ namespace tieto.education.eyetrackingwebserver
         public int[] mouseX { get; set; }
         public int[] mouseY { get; set; }
         public int[] timeStampMouse { get; set; }
+        public int[] mouseClickX { get; set; }
+        public int[] mouseClickY { get; set; }
+        public int[] mouseClickTimeStamp { get; set; }
     }
 
     public class SubTest
