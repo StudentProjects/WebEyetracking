@@ -52,6 +52,15 @@ chrome.runtime.onConnect.addListener(function(port)
 	
 	port.onMessage.addListener(function(msg) 
 	{
+		if(msg.message == "tabinfo::mouseClick")
+		{
+			//Tell mouserecorder.js that a click happened, and where.
+			mouseClickEvent(msg.xCoord, msg.yCoord);
+		}
+	});
+	
+	port.onMessage.addListener(function(msg) 
+	{
 		if(msg.message == "tabinfo::httpRequest")
 		{
 			manageMessage(21, msg.address);
