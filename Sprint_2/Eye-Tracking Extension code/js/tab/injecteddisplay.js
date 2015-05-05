@@ -14,9 +14,15 @@
 var xEyeCoords = null; //Array of eye x coordinates.
 var yEyeCoords = null; //Array of eye y coordinates.
 var timeStampEYE = null; //Array of eye time stamps.
-var xMouseCoords = null; //Array of eye x coordinates.
-var yMouseCoords = null; //Array of eye y coordinates.
-var timeStampMouse = null; //Array of eye time stamps.
+
+var xMouseCoords = null; //Array of mouse x coordinates.
+var yMouseCoords = null; //Array of mouse y coordinates.
+var timeStampMouse = null; //Array of mouse time stamps.
+
+var xMouseClicks = null; //Array of mouse click x coordinates.
+var yMouseClicks = null; //Array of mouse click y coordinates.
+var timeMouseClicks = null; //Array of mouse click time stamps.
+
 var xFixationPointCoords = null;
 var yFixationPointCoords = null;
 var timeStampFixation = null;
@@ -401,6 +407,41 @@ function setData(i_data)
 	else 
 	{
 		port.postMessage({message: "display::hasMouseData", data: false});
+	}
+	
+	//If mouse clicks exist
+	if(t_data['mouseClickTimeStamp'])
+	{
+		console.log("Update mouse data!");		
+		t_xMouseClicks = new Array();
+		t_yMouseClicks = new Array();
+		t_timeMouseClicks = new Array();
+		
+		//Check so that there are an equal amount of x and y coordinates.
+		if(t_data['mouseClickX'].length == t_data['mouseClickY'].length)
+		{
+			var t_size = t_data['mouseClickTimeStamp'].length;
+			for(var i = 0; i < t_size; i++)
+			{
+				t_xMouseClicks[i] = t_data['mouseClickX'][i];
+				t_yMouseClicks[i] = t_data['mouseClickY'][i];
+				t_timeMouseClicks[i] = t_data['mouseClickTimeStamp'][i];
+			}
+			
+			xMouseClicks = t_xMouseClicks;
+			yMouseClicks = t_yMouseClicks;
+			timeMouseClicks = t_timeMouseClicks;
+			
+			console.log("Loaded " + t_size + " mouse clicks.");
+		}
+		else
+		{
+			console.log("X and Y mouse coords do not match!");
+		}
+	}
+	else
+	{
+		console.log("No mouse click data found!");
 	}
 	
 	if(t_data['testStatistics']['allFixations'])
