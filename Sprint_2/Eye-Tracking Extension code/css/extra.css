@@ -137,6 +137,11 @@ td.link-tabledata
 	margin-bottom: 14px;
 }
 
+.tetris
+{
+	background-color: #fff;	
+}
+
 fieldset.group  
 { 
   margin: 0; 
