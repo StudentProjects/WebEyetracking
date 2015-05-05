@@ -29,6 +29,11 @@ var tempTimer = setTimeout(function()
 	{	
 		port.postMessage({message: "tabinfo::mouseCoords", xCoord: event.pageX, yCoord: event.pageY});
 	});
+	
+	$(window).click(function(event)
+	{	
+		port.postMessage({message: "tabinfo::mouseClick", xCoord: event.pageX, yCoord: event.pageY});
+	});
 }, 50);
 
 //Listen for messages from tabinfo.js in extension

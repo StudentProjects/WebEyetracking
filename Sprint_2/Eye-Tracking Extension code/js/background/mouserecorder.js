@@ -18,8 +18,14 @@ var isRecording = false;
 var isPaused = false;
 var mouseX = -1;
 var mouseY = -1;
+var mouseClickX = -1;
+var mouseClickY = -1;
+var mouseClicks = 0;
+
 var lastTime = 0;
 var currentTime = 0;
+
+
 
 ///////////
 //METHODS//
@@ -32,6 +38,15 @@ function updateMousePosition(newX, newY)
 	mouseY = newY;
 }
 
+//Update mouse position
+function mouseClickEvent(atX, atY)
+{
+	mouseClickX = atX;
+	mouseClickY = atY;
+	mouseClicks += 1;
+}
+
+
 //Push mouse position and timestamp to currentMouseRecording array.
 function pushMousePosition()
 {
@@ -43,7 +58,14 @@ function pushMousePosition()
 		
 		currentMouseRecording['mouseX'].push(mouseX);
 		currentMouseRecording['mouseY'].push(mouseY);	
-		currentMouseRecording['timeStampMouse'].push(currentTime);	
+		currentMouseRecording['timeStampMouse'].push(currentTime);
+		
+		if(mouseClicks > currentMouseRecording['mouseClickTimeStamp'].length)
+		{
+			currentMouseRecording['mouseClickX'].push(mouseClickX);
+			currentMouseRecording['mouseClickY'].push(mouseClickY);	
+			currentMouseRecording['mouseClickTimeStamp'].push(currentTime);
+		}	
 	}
 }
 
@@ -56,7 +78,11 @@ function startMouseRecording()
 	currentMouseRecording['mouseX'] = new Array();
 	currentMouseRecording['mouseY'] = new Array();
 	currentMouseRecording['timeStampMouse'] = new Array();
+	currentMouseRecording['mouseClickX'] = new Array();
+	currentMouseRecording['mouseClickY'] = new Array();
+	currentMouseRecording['mouseClickTimeStamp'] = new Array();
 		
+	mouseClicks = 0;
 	var time = new Date();
 	currentTime = 0;
 	lastTime = time.getTime();
@@ -92,8 +118,6 @@ function stopMouseRecording()
 {
 	clearInterval(timer);
 	isPaused = false;
-	
-	
 	
 	manageMessage(23, JSON.stringify(currentMouseRecording));
 }
