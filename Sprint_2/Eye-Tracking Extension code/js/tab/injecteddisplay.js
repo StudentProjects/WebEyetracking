@@ -19,6 +19,7 @@ var yMouseCoords = null; //Array of eye y coordinates.
 var timeStampMouse = null; //Array of eye time stamps.
 var xFixationPointCoords = null;
 var yFixationPointCoords = null;
+var timeStampFixation = null;
 
 var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
@@ -48,6 +49,7 @@ var isPaused = false;
 var showingFixationPoints = false;
 
 var canvasDiv = null;
+var extraDiv = null;
 
 ///////////
 //METHODS//
@@ -107,7 +109,7 @@ function showFixationPoints()
 		{
 			showingFixationPoints = true;	
 
-			for( i = 0; i < xFixationPointCoords.length; i++)
+			for(i = 0; i < xFixationPointCoords.length; i++)
 			{
 				fixationDivs[i] = document.createElement('div');
 				fixationDivs[i].style.textAlign = 'center';
@@ -117,8 +119,15 @@ function showFixationPoints()
 				fixationDivs[i].style.left = (xFixationPointCoords[i]-24) +'px';
 				fixationDivs[i].style.top = (yFixationPointCoords[i]-24) +'px';
 				fixationDivs[i].style.zIndex = "9001";
-				var text = document.createElement('p');
-				text.innerHTML = i+1;
+				
+				extraDiv = document.createElement('div');
+				extraDiv.style.zIndex = "9900";
+				var time = timeStampFixation[i]/1000.0;				
+				time *= 100;
+				time = Math.round(time);
+				var test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Glad lunch</p>";
+				var text = document.createElement('a');
+				text.innerHTML = "<a href='#' title='Fixation Point' data-toggle='popover' data-placement='right' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ (i+1) + "</a>";
 				text.style.position = 'absolute';
 				
 				text.style.left = '20px';
@@ -132,19 +141,15 @@ function showFixationPoints()
 				}
 				
 				text.style.top = '15px';
+				
 				var img = document.createElement('img');
 				img.src = chrome.runtime.getURL("../../img/circle.png");
 				img.style.width = "100%";
 				img.style.height = "100%";
 				
-				
-				
+				fixationDivs[i].appendChild(extraDiv);			
 				fixationDivs[i].appendChild(img);
 				fixationDivs[i].appendChild(text);
-
-				var extraDiv = document.createElement('div');
-				extraDiv.innerHTML = "<a href='#' title='Point info' data-toggle='popover' data-placement='right' data-trigger='hover' data-content='Here you see info'>More info</a>";
-				fixationDivs[i].appendChild(extraDiv);
 				
 				document.body.appendChild(fixationDivs[i]);
 				
@@ -156,9 +161,102 @@ function showFixationPoints()
 				});
 			}	
 		}
-		$('[data-toggle="popover"]').popover();
-		//drawZones();
+		$('[data-toggle="popover"]').popover({position: 'fixed',container: extraDiv});
+		//drawLines();
+
 	}
+}
+
+//Draw lines between fixation points
+function drawLines()
+{
+	var height = Math.max($(document).height(), $(window).height());
+	var width = Math.max($(document).width(), $(window).width());
+	
+	var c = document.createElement("canvas");
+	c.height = height;
+	c.width = width;
+	c.style.position = "absolute";
+	c.style.top = "0px";
+	c.style.left = "0px";
+	c.style.zIndex = 9000;
+	
+	var ctx=c.getContext("2d");
+	
+	for(i = 0; i < xFixationPointCoords.length-1; i++)
+	{
+		//Remove 24px from start and end of line to make the lines start and end
+		//at the beginning of the fixation point areas.
+		var xAbs = Math.abs(xFixationPointCoords[i] - xFixationPointCoords[i+1]);
+		var yAbs = Math.abs(yFixationPointCoords[i] - yFixationPointCoords[i+1]);
+		var xDir = xFixationPointCoords[i] - xFixationPointCoords[i+1];
+		var yDir = yFixationPointCoords[i] - yFixationPointCoords[i+1];
+		var lineLength = Math.sqrt(Math.pow(xAbs, 2) + Math.pow(yAbs, 2));
+		var xLen = (xDir / lineLength) * 24;
+		var yLen = (yDir / lineLength) * 24;
+		
+		var xStartPoint = xFixationPointCoords[i] - xLen;
+		var yStartPoint = yFixationPointCoords[i] - yLen;
+		var xEndPoint = xFixationPointCoords[i+1] + xLen;
+		var yEndPoint = yFixationPointCoords[i+1] + yLen;
+		ctx.beginPath();
+		ctx.moveTo(xStartPoint, yStartPoint);
+		ctx.lineTo(xEndPoint, yEndPoint);
+		ctx.lineWidth = 3;
+		ctx.stroke();
+		
+		//Paint arrow lines.
+		//var xAdjacent = xFixationPointCoords[i+1] - xFixationPointCoords[i];
+		//var yAdjacent = 0;
+		//var xOpposite = 0;
+		//var yOpposite = yFixationPointCoords[i+1] - yFixationPointCoords[i];
+		
+		/*var lenAdjacent = Math.sqrt(Math.pow(xFixationPointCoords[i+1] - xFixationPointCoords[i], 2));
+		var lenOpposite = Math.sqrt(Math.pow(yFixationPointCoords[i+1] - yFixationPointCoords[i], 2));
+		var lineAngle = Math.atan(lenOpposite/lenAdjacent);
+		console.log("Opposite: " + lenOpposite);
+		console.log("Adjacent: " + lenAdjacent);
+		console.log("Angle: " + lineAngle * (180/3.14159));*/
+		
+		xLen /= 2;
+		yLen /= 2;
+		
+		var theta = 45 * (Math.PI/180);
+
+		var cs = Math.cos(theta);
+		var sn = Math.sin(theta);
+		
+		var xLine = xEndPoint - (xEndPoint + xLen);
+		var yLine = yEndPoint - (yEndPoint + yLen);
+		
+		px = xLine * cs - yLine * sn;
+		py = xLine * sn + yLine * cs;
+		
+		ctx.beginPath();
+		ctx.moveTo(xEndPoint, yEndPoint);
+		ctx.lineTo(xEndPoint + (xLen*2) + px, yEndPoint + (yLen*2) + py);
+		ctx.lineWidth = 2;
+		ctx.stroke();
+		
+		theta = -45 * (Math.PI/180);
+
+		cs = Math.cos(theta);
+		sn = Math.sin(theta);
+		
+		xLine = xEndPoint - (xEndPoint + xLen);
+		yLine = yEndPoint - (yEndPoint + yLen);
+		
+		px = xLine * cs - yLine * sn;
+		py = xLine * sn + yLine * cs;
+		
+		ctx.beginPath();
+		ctx.moveTo(xEndPoint, yEndPoint);
+		ctx.lineTo(xEndPoint + (xLen*2) + px, yEndPoint + (yLen*2) + py);
+		ctx.lineWidth = 2;
+		ctx.stroke();
+	}
+
+	document.body.appendChild(c);
 }
 
 function drawZones()
@@ -298,11 +396,13 @@ function setData(i_data)
 		console.log("Update statistics data");
 		xFixationPointCoords = new Array();
 		yFixationPointCoords = new Array();
+		timeStampFixation = new Array();
 		var t_size = t_data['testStatistics']['allFixations'].length;
 		for(var i=0;i<t_size;i++)
 		{
 			xFixationPointCoords[i] = t_data['testStatistics']['allFixations'][i]['X'];
 			yFixationPointCoords[i] = t_data['testStatistics']['allFixations'][i]['Y'];
+			timeStampFixation[i] = t_data['testStatistics']['allFixations'][i]['fixationTime'];
 		}
 		console.log("Loaded " + t_size + " frames of fixation points!");
 	}

@@ -142,17 +142,21 @@ function injectDisplay()
 	chrome.tabs.getSelected(null, function(i_tab)
 	{ 
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/heatmap/build/heatmap.js'});
-	
-		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
 		
+		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
+		
 		var timer = setTimeout(function()
 		{
+			chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
 			chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
 			console.log("Injecting bootstrap");
 			clearTimeout(timer);
 		}, 2000);
+		
+	
+		
 	});
 }
 

@@ -25,7 +25,12 @@
 	},
 	"web_accessible_resources": 
 	[
-  		"img/*.png"
+        "img/*.png",
+        "css/*.css",
+        "css/*.css.map",
+        "css/*.min.css",
+        "css/*.min.css.map",
+        "*.png"
 	],
 	
 	"commands": 
