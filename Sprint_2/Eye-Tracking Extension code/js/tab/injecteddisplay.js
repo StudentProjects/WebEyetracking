@@ -42,6 +42,7 @@ var maxHeight = 9001;
 
 var heatmapEyeInstance = null;
 var heatmapMouseInstance = null;
+var mostFixatedOrder = -1;
 
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
 
@@ -108,7 +109,6 @@ function showFixationPoints()
 		if(xFixationPointCoords)
 		{
 			showingFixationPoints = true;	
-
 			for(i = 0; i < xFixationPointCoords.length; i++)
 			{
 				fixationDivs[i] = document.createElement('div');
@@ -125,9 +125,27 @@ function showFixationPoints()
 				var time = timeStampFixation[i]/1000.0;				
 				time *= 100;
 				time = Math.round(time);
-				var test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Glad lunch</p>";
+				
+				var test;
+				var header = '';
+				if(mostFixatedOrder == i)
+				{
+					header = "Most Fixated Point";
+					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Other info: This is the most fixated point</p>";
+				}
+				else if(i==0)
+				{
+					header = "First Fixated Point";
+					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Other info: This is the first fixated point</p>";
+				}
+				else
+				{
+					header = "Fixation Point";
+					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Other info: No other information</p>";
+				}
+				
 				var text = document.createElement('a');
-				text.innerHTML = "<a href='#' title='Fixation Point' data-toggle='popover' data-placement='right' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ (i+1) + "</a>";
+				text.innerHTML = "<a href='#' title='"+header+"' data-toggle='popover' data-placement='right' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ (i+1) + "</a>";
 				text.style.position = 'absolute';
 				
 				text.style.left = '20px';
@@ -399,6 +417,11 @@ function setData(i_data)
 			timeStampFixation[i] = t_data['testStatistics']['allFixations'][i]['fixationTime'];
 		}
 		console.log("Loaded " + t_size + " frames of fixation points!");
+	}
+	
+	if(t_data['testStatistics']['mostFixated'])
+	{
+		mostFixatedOrder = t_data['testStatistics']['mostFixated']['fixationOrder'];
 	}
 }
 
