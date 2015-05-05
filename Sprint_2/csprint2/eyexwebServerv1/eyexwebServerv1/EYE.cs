@@ -473,7 +473,7 @@ namespace tieto.education.eyetrackingwebserver
                    m_dataCurrentTest.timeStampMouse = i_mouseTimeStamps;
                    m_dataCurrentTest.mouseClickX = i_mouseClickX;
                    m_dataCurrentTest.mouseClickY = i_mouseClickY;
-                   m_dataCurrentTest.mouseClickTimeStamp = i_mouseTimeStamps;
+                   m_dataCurrentTest.mouseClickTimeStamp = i_mouseClickTimeStamp;
 
                    if(m_activeTestType == 1)
                    {
