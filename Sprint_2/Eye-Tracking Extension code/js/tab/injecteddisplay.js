@@ -163,7 +163,6 @@ function showFixationPoints()
 		}
 		$('[data-toggle="popover"]').popover({position: 'fixed',container: extraDiv});
 		//drawLines();
-
 	}
 }
 
@@ -180,6 +179,7 @@ function drawLines()
 	c.style.top = "0px";
 	c.style.left = "0px";
 	c.style.zIndex = 9000;
+	c.id = "line-canvas";
 	
 	var ctx=c.getContext("2d");
 	
@@ -202,22 +202,10 @@ function drawLines()
 		ctx.beginPath();
 		ctx.moveTo(xStartPoint, yStartPoint);
 		ctx.lineTo(xEndPoint, yEndPoint);
-		ctx.lineWidth = 3;
+		ctx.lineWidth = 1;
 		ctx.stroke();
 		
-		//Paint arrow lines.
-		//var xAdjacent = xFixationPointCoords[i+1] - xFixationPointCoords[i];
-		//var yAdjacent = 0;
-		//var xOpposite = 0;
-		//var yOpposite = yFixationPointCoords[i+1] - yFixationPointCoords[i];
-		
-		/*var lenAdjacent = Math.sqrt(Math.pow(xFixationPointCoords[i+1] - xFixationPointCoords[i], 2));
-		var lenOpposite = Math.sqrt(Math.pow(yFixationPointCoords[i+1] - yFixationPointCoords[i], 2));
-		var lineAngle = Math.atan(lenOpposite/lenAdjacent);
-		console.log("Opposite: " + lenOpposite);
-		console.log("Adjacent: " + lenAdjacent);
-		console.log("Angle: " + lineAngle * (180/3.14159));*/
-		
+		//Paint arrow lines.	
 		xLen /= 2;
 		yLen /= 2;
 		
@@ -235,7 +223,7 @@ function drawLines()
 		ctx.beginPath();
 		ctx.moveTo(xEndPoint, yEndPoint);
 		ctx.lineTo(xEndPoint + (xLen*2) + px, yEndPoint + (yLen*2) + py);
-		ctx.lineWidth = 2;
+		ctx.lineWidth = 1;
 		ctx.stroke();
 		
 		theta = -45 * (Math.PI/180);
@@ -252,7 +240,7 @@ function drawLines()
 		ctx.beginPath();
 		ctx.moveTo(xEndPoint, yEndPoint);
 		ctx.lineTo(xEndPoint + (xLen*2) + px, yEndPoint + (yLen*2) + py);
-		ctx.lineWidth = 2;
+		ctx.lineWidth = 1;
 		ctx.stroke();
 	}
 
@@ -309,6 +297,12 @@ function hideFixationPoints()
 			}
 			
 			fixationDivs = [];	
+		}
+		
+		var canvas = document.getElementById("line-canvas");
+		if(canvas)
+		{
+			document.body.removeChild(canvas);
 		}
 	}
 }
