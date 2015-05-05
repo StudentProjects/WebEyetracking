@@ -136,19 +136,28 @@ function showFixationPoints()
 				img.src = chrome.runtime.getURL("../../img/circle.png");
 				img.style.width = "100%";
 				img.style.height = "100%";
+				
+				
+				
 				fixationDivs[i].appendChild(img);
 				fixationDivs[i].appendChild(text);
+
+				var extraDiv = document.createElement('div');
+				extraDiv.innerHTML = "<a href='#' title='Point info' data-toggle='popover' data-placement='right' data-trigger='hover' data-content='Here you see info'>More info</a>";
+				fixationDivs[i].appendChild(extraDiv);
+				
 				document.body.appendChild(fixationDivs[i]);
 				
 				fixationDivs[i].addEventListener("click", function()
 				{	
 					maxHeight += 1;
 					this.style.zIndex = maxHeight;
+					console.log("Clicked");				  
 				});
 			}	
 		}
-		
-		drawZones();
+		$('[data-toggle="popover"]').popover();
+		//drawZones();
 	}
 }
 
