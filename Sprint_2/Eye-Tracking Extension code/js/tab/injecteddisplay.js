@@ -57,7 +57,7 @@ function initializeCanvas(mouse,eye)
 {
 	if(!canvasDiv)
 	{
-		canvasDiv = document.createElement("div");;	
+		canvasDiv = document.createElement("div");
 		canvasDiv.style.top = "0px";
 		canvasDiv.style.left = "0px";	
 		canvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
@@ -147,7 +147,45 @@ function showFixationPoints()
 				});
 			}	
 		}
+		
+		drawZones();
 	}
+}
+
+function drawZones()
+{
+	var height = Math.max($(document).height(), $(window).height());
+	var width = Math.max($(document).width(), $(window).width());
+	
+	var c = document.createElement("canvas");
+	c.height = height;
+	c.width = width;
+	c.style.position = "absolute";
+	c.style.top = "0px";
+	c.style.left = "0px";
+	c.style.zIndex = 9002;
+	
+	var ctx=c.getContext("2d");
+	
+	for(i=0; i<12; i++)
+	{
+		ctx.beginPath();
+		ctx.moveTo(i*(width/12), 0);
+		ctx.lineTo(i*(width/12), height);
+		ctx.lineWidth = 3;
+		ctx.stroke();
+	}
+	
+	for(i=0; i<9; i++)
+	{
+		ctx.beginPath();
+		ctx.moveTo(0, i*(height/9));
+		ctx.lineTo(width, i*(height/9));
+		ctx.lineWidth = 3;
+		ctx.stroke();
+	}
+
+	document.body.appendChild(c);
 }
 
 function hideFixationPoints()
