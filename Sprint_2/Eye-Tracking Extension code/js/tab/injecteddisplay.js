@@ -107,7 +107,7 @@ function showFixationPoints()
 		{
 			showingFixationPoints = true;	
 
-			for( i = 0; i < xFixationPointCoords.length; i++)
+			for(i = 0; i < xFixationPointCoords.length; i++)
 			{
 				fixationDivs[i] = document.createElement('div');
 				fixationDivs[i].style.textAlign = 'center';
@@ -148,8 +148,101 @@ function showFixationPoints()
 			}	
 		}
 		
-		drawZones();
+		drawLines();
+		//drawZones();
 	}
+}
+
+//Draw lines between fixation points
+function drawLines()
+{
+	var height = Math.max($(document).height(), $(window).height());
+	var width = Math.max($(document).width(), $(window).width());
+	
+	var c = document.createElement("canvas");
+	c.height = height;
+	c.width = width;
+	c.style.position = "absolute";
+	c.style.top = "0px";
+	c.style.left = "0px";
+	c.style.zIndex = 9000;
+	
+	var ctx=c.getContext("2d");
+	
+	for(i = 0; i < xFixationPointCoords.length-1; i++)
+	{
+		//Remove 24px from start and end of line to make the lines start and end
+		//at the beginning of the fixation point areas.
+		var xAbs = Math.abs(xFixationPointCoords[i] - xFixationPointCoords[i+1]);
+		var yAbs = Math.abs(yFixationPointCoords[i] - yFixationPointCoords[i+1]);
+		var xDir = xFixationPointCoords[i] - xFixationPointCoords[i+1];
+		var yDir = yFixationPointCoords[i] - yFixationPointCoords[i+1];
+		var lineLength = Math.sqrt(Math.pow(xAbs, 2) + Math.pow(yAbs, 2));
+		var xLen = (xDir / lineLength) * 24;
+		var yLen = (yDir / lineLength) * 24;
+		
+		var xStartPoint = xFixationPointCoords[i] - xLen;
+		var yStartPoint = yFixationPointCoords[i] - yLen;
+		var xEndPoint = xFixationPointCoords[i+1] + xLen;
+		var yEndPoint = yFixationPointCoords[i+1] + yLen;
+		ctx.beginPath();
+		ctx.moveTo(xStartPoint, yStartPoint);
+		ctx.lineTo(xEndPoint, yEndPoint);
+		ctx.lineWidth = 3;
+		ctx.stroke();
+		
+		//Paint arrow lines.
+		//var xAdjacent = xFixationPointCoords[i+1] - xFixationPointCoords[i];
+		//var yAdjacent = 0;
+		//var xOpposite = 0;
+		//var yOpposite = yFixationPointCoords[i+1] - yFixationPointCoords[i];
+		
+		/*var lenAdjacent = Math.sqrt(Math.pow(xFixationPointCoords[i+1] - xFixationPointCoords[i], 2));
+		var lenOpposite = Math.sqrt(Math.pow(yFixationPointCoords[i+1] - yFixationPointCoords[i], 2));
+		var lineAngle = Math.atan(lenOpposite/lenAdjacent);
+		console.log("Opposite: " + lenOpposite);
+		console.log("Adjacent: " + lenAdjacent);
+		console.log("Angle: " + lineAngle * (180/3.14159));*/
+		
+		xLen /= 2;
+		yLen /= 2;
+		
+		var theta = 45 * (Math.PI/180);
+
+		var cs = Math.cos(theta);
+		var sn = Math.sin(theta);
+		
+		var xLine = xEndPoint - (xEndPoint + xLen);
+		var yLine = yEndPoint - (yEndPoint + yLen);
+		
+		px = xLine * cs - yLine * sn;
+		py = xLine * sn + yLine * cs;
+		
+		ctx.beginPath();
+		ctx.moveTo(xEndPoint, yEndPoint);
+		ctx.lineTo(xEndPoint + (xLen*2) + px, yEndPoint + (yLen*2) + py);
+		ctx.lineWidth = 2;
+		ctx.stroke();
+		
+		theta = -45 * (Math.PI/180);
+
+		cs = Math.cos(theta);
+		sn = Math.sin(theta);
+		
+		xLine = xEndPoint - (xEndPoint + xLen);
+		yLine = yEndPoint - (yEndPoint + yLen);
+		
+		px = xLine * cs - yLine * sn;
+		py = xLine * sn + yLine * cs;
+		
+		ctx.beginPath();
+		ctx.moveTo(xEndPoint, yEndPoint);
+		ctx.lineTo(xEndPoint + (xLen*2) + px, yEndPoint + (yLen*2) + py);
+		ctx.lineWidth = 2;
+		ctx.stroke();
+	}
+
+	document.body.appendChild(c);
 }
 
 function drawZones()
