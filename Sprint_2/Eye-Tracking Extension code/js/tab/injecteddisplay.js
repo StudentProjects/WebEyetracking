@@ -22,6 +22,7 @@ var timeStampMouse = null; //Array of mouse time stamps.
 var xMouseClicks = null; //Array of mouse click x coordinates.
 var yMouseClicks = null; //Array of mouse click y coordinates.
 var timeMouseClicks = null; //Array of mouse click time stamps.
+var currentMouseClick = 0;
 
 var xFixationPointCoords = null;
 var yFixationPointCoords = null;
@@ -534,6 +535,30 @@ function animateMouse()
 				mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 				mousePointer.style.top = yMouseCoords[indexMouse]+'px';
 				
+				if(timeMouseClicks[currentMouseClick])
+				{
+					if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
+					{
+						var div = document.createElement('div');
+						div.style.textAlign = 'center';
+						div.style.position = 'absolute';
+						div.style.width = "48px";
+						div.style.height = "48px";
+						div.style.left = (xMouseClicks[currentMouseClick] - 24) + "px";
+						div.style.top = (yMouseClicks[currentMouseClick] - 24) + "px";
+						div.style.zIndex = "9001";
+								
+						var img = document.createElement('img');
+						img.src = chrome.runtime.getURL("../../img/star.png");
+
+						div.appendChild(img);
+						
+						document.body.appendChild(div);
+						
+						currentMouseClick++;
+					}
+				}
+				
 				indexMouse++;	
 				animateMouse();
 				
@@ -585,6 +610,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			console.log("Start mouse animation!");
 			
 			sizeMouse = timeStampMouse.length;
+			currentMouseClick = 0;
 			indexMouse = 0;
 			timerMouse = 0;
 			animating = true;
@@ -608,6 +634,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			indexEye = 0;
 			timerEye = 0;
 			sizeMouse = timeStampMouse.length;
+			currentMouseClick = 0;
 			indexMouse = 0;
 			timerMouse = 0;
 			animating = true;
@@ -633,6 +660,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			console.log("No eye data to animate, animating mouse only!");
 			
 			sizeMouse= timeStampMouse.length;
+			currentMouseClick = 0;
 			indexMouse = 0;
 			timerMouse = 0;
 			animating = true;
