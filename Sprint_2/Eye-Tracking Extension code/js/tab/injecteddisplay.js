@@ -65,6 +65,9 @@ var isWindowStatic = false;
 var canvasDiv = null;
 var popoverDiv = null;
 
+var width = 0;
+var height = 0;
+
 ///////////
 //METHODS//
 ///////////
@@ -126,9 +129,13 @@ function showFixationPoints()
 	{
 		if(!showingFixationPoints)
 		{
+			width = Math.max($(document).width(), $(window).width());
+			height = Math.max($(document).height(), $(window).height());
 			if(xFixationPointCoords)
 			{
 				showingFixationPoints = true;	
+				popoverDiv = document.createElement('div');
+				popoverDiv.style.zIndex = "9999";
 				for(i = 0; i < xFixationPointCoords.length; i++)
 				{
 					var sizeDiameter;
@@ -149,8 +156,20 @@ function showFixationPoints()
 					fixationDivs[i].style.top = (yFixationPointCoords[i]-24) +'px';
 					fixationDivs[i].style.zIndex = "9001";
 					
-					popoverDiv = document.createElement('div');
-					popoverDiv.style.zIndex = "9999";
+					var id= "myID_" + i;
+					
+					var popoverPosition = "right";
+					
+					if(((width - (xFixationPointCoords[i]-24)) <= 300) && ((height - (yFixationPointCoords[i]-24)) >= 200))
+					{
+						popoverPosition = "bottom";
+					}
+					else if(((width - (xFixationPointCoords[i]-24)) <= 300) && ((height - (yFixationPointCoords[i]-24)) < 200))
+					{
+						popoverPosition = "top";
+					}
+					
+		
 					var time = timeStampFixation[i]/1000.0;				
 					time *= 100;
 					time = Math.round(time);
@@ -201,7 +220,7 @@ function showFixationPoints()
 		
 					
 					var text = document.createElement('a');
-					text.innerHTML = "<a href='#' title='"+header+"' data-toggle='popover' data-placement='right' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ fixationOrderText + "</a>";
+					text.innerHTML = "<a href='#' title='"+header+"' data-toggle='"+ id +"' data-placement='"+popoverPosition+"' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ fixationOrderText + "</a>";
 					text.style.position = 'absolute';
 					
 					text.style.left = '20px';
@@ -226,9 +245,10 @@ function showFixationPoints()
 					fixationDivs[i].appendChild(text);
 					
 					fixationDivs[i].childNodes[0].style.zIndex = 9999;
-					document.body.appendChild(fixationDivs[i]);			
+					document.body.appendChild(fixationDivs[i]);	
+					$("[data-toggle='"+id+"']").popover({position: 'fixed',container: popoverDiv});		
 				}	
-				$('[data-toggle="popover"]').popover({position: 'fixed',container: popoverDiv});
+				
 			}
 			//drawLines();
 		}	

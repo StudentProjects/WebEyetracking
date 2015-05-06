@@ -280,6 +280,9 @@ namespace tieto.education.eyetrackingwebserver
            }
        }
 
+       /// <summary>
+       /// Merging fixation points if they are really close to eachother
+       /// </summary>
        private void mergeFixationPoints()
        {
            try
