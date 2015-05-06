@@ -340,8 +340,6 @@ function setData(i_data)
 {
 	var t_data = JSON.parse(i_data);
 	
-	console.log(t_data['mouseClickTimeStamp']);
-	
 	//If eye data exists
 	if(t_data['timeStampEYE'])
 	{		
