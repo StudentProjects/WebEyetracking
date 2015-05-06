@@ -74,6 +74,8 @@ function initializeCanvas(mouse,eye)
 		canvasDiv.style.left = "0px";	
 		canvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
 		canvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
+		canvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
+		canvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
 		canvasDiv.style.zIndex = "9000";	
 		canvasDiv.id = "canvas-div";
 		canvasDiv.className = "canvas-class";	
@@ -567,24 +569,31 @@ function animateMouse()
 				mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 				mousePointer.style.top = yMouseCoords[indexMouse]+'px';
 				
-				if(timeMouseClicks[currentMouseClick])
+				try
 				{
-					if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
+					if(timeMouseClicks[currentMouseClick])
 					{
-						mousePointer.style.zIndex = "1";
-						canvasDiv.style.zIndex = "1";
-						
-						var evt = document.createEvent("MouseEvents"); 
-						evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
-						
-						document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]).dispatchEvent(evt);
-						
-						mousePointer.style.zIndex = "9001";
-						canvasDiv.style.zIndex = "9000";
-
-						currentMouseClick++;
+						if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
+						{
+							mousePointer.style.zIndex = "1";
+							canvasDiv.style.zIndex = "1";
+							
+							var evt = document.createEvent("MouseEvents"); 
+							evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
+							
+							document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]).dispatchEvent(evt);
+							
+							mousePointer.style.zIndex = "9001";
+							canvasDiv.style.zIndex = "9000";
+	
+							currentMouseClick++;
+						}
 					}
 				}
+				catch(err)
+				{
+					
+				}			
 				 	
 				indexMouse++;
 				animateMouse();
