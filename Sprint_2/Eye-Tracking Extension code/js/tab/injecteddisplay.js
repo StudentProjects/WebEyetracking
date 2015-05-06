@@ -70,13 +70,16 @@ function initializeCanvas(mouse,eye)
 		canvasDiv = document.createElement("div");
 		canvasDiv.style.top = "0px";
 		canvasDiv.style.left = "0px";	
-		canvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
-		canvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
+		canvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
+		canvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
 		canvasDiv.style.zIndex = "9000";	
 		canvasDiv.id = "canvas-div";
 		canvasDiv.className = "canvas-class";	
 		canvasDiv.style.position = "absolute";	
 		document.body.appendChild(canvasDiv);
+		
+		console.log($(document).width() + "px - " + $(document).height() + "px");
+		console.log($(window).width() + "px - " + $(window).height() + "px");
 	}
 	
 	if(eye)
@@ -337,6 +340,8 @@ function setData(i_data)
 {
 	var t_data = JSON.parse(i_data);
 	
+	console.log(t_data['mouseClickTimeStamp']);
+	
 	//If eye data exists
 	if(t_data['timeStampEYE'])
 	{		
@@ -413,7 +418,7 @@ function setData(i_data)
 	//If mouse clicks exist
 	if(t_data['mouseClickTimeStamp'])
 	{
-		console.log("Update mouse data!");		
+		console.log("Update mouse click data!");		
 		t_xMouseClicks = new Array();
 		t_yMouseClicks = new Array();
 		t_timeMouseClicks = new Array();
@@ -427,6 +432,8 @@ function setData(i_data)
 				t_xMouseClicks[i] = t_data['mouseClickX'][i];
 				t_yMouseClicks[i] = t_data['mouseClickY'][i];
 				t_timeMouseClicks[i] = t_data['mouseClickTimeStamp'][i];
+				
+				console.log("Click " + t_data['mouseClickTimeStamp'][i] + " loaded at: " + t_data['mouseClickX'][i] + " - " + t_data['mouseClickY'][i]);
 			}
 			
 			xMouseClicks = t_xMouseClicks;
@@ -539,27 +546,22 @@ function animateMouse()
 				{
 					if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
 					{
-						var div = document.createElement('div');
-						div.style.textAlign = 'center';
-						div.style.position = 'absolute';
-						div.style.width = "48px";
-						div.style.height = "48px";
-						div.style.left = (xMouseClicks[currentMouseClick] - 24) + "px";
-						div.style.top = (yMouseClicks[currentMouseClick] - 24) + "px";
-						div.style.zIndex = "9001";
-								
-						var img = document.createElement('img');
-						img.src = chrome.runtime.getURL("../../img/star.png");
+						mousePointer.style.zIndex = "1";
+						canvasDiv.style.zIndex = "1";
+						
+						var evt = document.createEvent("MouseEvents"); 
+						evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
+						
+						document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]).dispatchEvent(evt);
+						
+						mousePointer.style.zIndex = "9001";
+						canvasDiv.style.zIndex = "9000";
 
-						div.appendChild(img);
-						
-						document.body.appendChild(div);
-						
 						currentMouseClick++;
 					}
 				}
-				
-				indexMouse++;	
+				 	
+				indexMouse++;
 				animateMouse();
 				
 			}, nextFrame);	
@@ -727,7 +729,7 @@ function manageMouseDiv(create)
 		mousePointer.style.position = 'absolute';
 		mousePointer.style.width = "24px";
 		mousePointer.style.height = "24px";
-		mousePointer.style.zIndex = "1";
+		mousePointer.style.zIndex = "9001";
 	    mouseImage = document.createElement('img');
 		mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
 		mousePointer.appendChild(mouseImage);
