@@ -42,6 +42,41 @@ namespace tieto.education.eyetrackingwebserver
             return t_totalTime;
         }
 
+        /// <summary>
+        /// Getting point containing fixation order 0
+        /// </summary>
+        /// <param name="i_fixationPoints"></param>
+        /// <returns></returns>
+        public FixationPoint getFirstFixated(FixationPoint[] i_fixationPoints)
+        {
+            FixationPoint t_firstFixated = new FixationPoint();
+            try
+            {
+                bool isFirstFixatedFound = false;
+                for (int i = 0; i < i_fixationPoints.Length; i++)
+                {
+                    if (isFirstFixatedFound)
+                    {
+                        break;
+                    }
+                    for (int j = 0; j < i_fixationPoints[i].fixationOrder.Length; j++)
+                    {
+                        if (i_fixationPoints[i].fixationOrder[j] == 0)
+                        {
+                            t_firstFixated = i_fixationPoints[i];
+                            isFirstFixatedFound = true;
+                            break;
+                        }
+                    }
+                }
+                return t_firstFixated;
+            }
+            catch(Exception)
+            {
+                return t_firstFixated;
+            }
+        }
+
        /// <summary>
        /// Calculates the most fixated point based on the timeStamps in the received fixation point array
        /// </summary>

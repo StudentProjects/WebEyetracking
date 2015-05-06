@@ -29,6 +29,8 @@ var yFixationPointCoords = null;
 var timeStampFixation = null;
 var timesMerged = null;
 var timePoints = null;
+var fixationOrders = null;
+var individualFixationTimePerOrder = null;
 
 var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
@@ -52,14 +54,16 @@ var maxHeight = 9001;
 var heatmapEyeInstance = null;
 var heatmapMouseInstance = null;
 var mostFixatedOrder = -1;
+var mostFixatedIndex = -1;
 
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
 
 var isPaused = false;
 var showingFixationPoints = false;
+var isWindowStatic = false;
 
 var canvasDiv = null;
-var extraDiv = null;
+var popoverDiv = null;
 
 ///////////
 //METHODS//
@@ -121,97 +125,113 @@ function showFixationPoints()
 	try
 	{
 		if(!showingFixationPoints)
-	{
-		if(xFixationPointCoords)
 		{
-			showingFixationPoints = true;	
-			for(i = 0; i < xFixationPointCoords.length; i++)
+			if(xFixationPointCoords)
 			{
-				var sizeDiameter = 48 *(timesMerged[i]+1);
-				fixationDivs[i] = document.createElement('div');
-				fixationDivs[i].style.textAlign = 'center';
-				fixationDivs[i].style.position = 'absolute';
-				fixationDivs[i].style.width = sizeDiameter +"px";
-				fixationDivs[i].style.height = sizeDiameter +"px";
-				fixationDivs[i].style.left = (xFixationPointCoords[i]-24) +'px';
-				fixationDivs[i].style.top = (yFixationPointCoords[i]-24) +'px';
-				fixationDivs[i].style.zIndex = "9001";
-				
-				extraDiv = document.createElement('div');
-				extraDiv.style.zIndex = "9900";
-				var time = timeStampFixation[i]/1000.0;				
-				time *= 100;
-				time = Math.round(time);
-				
-				var test;
-				var header = '';
-				var fixatedAt = '<p>Fixated at:</p>';
-				
-				var numberOfTimepoints = timePoints[i].length;
-				
-				for(var j=0;j<numberOfTimepoints;j++)
+				showingFixationPoints = true;	
+				for(i = 0; i < xFixationPointCoords.length; i++)
 				{
-					var tempFixated = "<p>"+timePoints[i][j]+"</p>";
-					fixatedAt += tempFixated;
-				}
-				
-				if(mostFixatedOrder == i)
-				{
-					header = "Most Fixated Point";
-					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p><p>Times merged: "+timesMerged[i]+ "</p><p>Other info: This is the most fixated point</p>" + fixatedAt;
-				}
-				else if(i==0)
-				{
-					header = "First Fixated Point";
-					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Times merged: "+timesMerged[i]+ "</p><p>Other info: This is the first fixated point</p>"+ fixatedAt;
-				}
-				else
-				{
-					header = "Fixation Point";
-					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p><p>Times merged: "+timesMerged[i]+ "</p> <p>Other info: No other information</p>"+ fixatedAt;
-				}
-				
-				var text = document.createElement('a');
-				text.innerHTML = "<a href='#' title='"+header+"' data-toggle='popover' data-placement='right' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ (i+1) + "</a>";
-				text.style.position = 'absolute';
-				
-				text.style.left = '20px';
-				if(i > 9)
-				{
-					text.style.left = '16px';
-				}
-				if(i > 99)
-				{
-					text.style.left = '12px';
-				}
-				
-				text.style.top = '15px';
-				
-				var img = document.createElement('img');
-				img.src = chrome.runtime.getURL("../../img/circle.png");
-				img.style.width = "100%";
-				img.style.height = "100%";
-				
-				fixationDivs[i].appendChild(extraDiv);			
-				fixationDivs[i].appendChild(img);
-				fixationDivs[i].appendChild(text);
-				
-				document.body.appendChild(fixationDivs[i]);
-				
-				fixationDivs[i].addEventListener("click", function()
-				{	
-					maxHeight += 1;
-					this.style.zIndex = maxHeight;
-					extraDiv.style.zIndex = '9999';
-					$('[data-toggle="popover"]').popover({position: 'fixed',container: extraDiv});
-					this.childNodes[0] = extraDiv;
-					console.log("Clicked");				  
-				});
-			}	
-		}
-		$('[data-toggle="popover"]').popover({position: 'fixed',container: extraDiv});
-		//drawLines();
-	}	
+					var sizeDiameter;
+					if(timesMerged[i] == 0)
+					{
+						sizeDiameter = 48;
+					}
+					else
+					{
+						sizeDiameter = 48 + (5*(timesMerged[i]+1));
+					}
+					fixationDivs[i] = document.createElement('div');
+					fixationDivs[i].style.textAlign = 'center';
+					fixationDivs[i].style.position = 'absolute';
+					fixationDivs[i].style.width = sizeDiameter +"px";
+					fixationDivs[i].style.height = sizeDiameter +"px";
+					fixationDivs[i].style.left = (xFixationPointCoords[i]-24) +'px';
+					fixationDivs[i].style.top = (yFixationPointCoords[i]-24) +'px';
+					fixationDivs[i].style.zIndex = "9001";
+					
+					popoverDiv = document.createElement('div');
+					popoverDiv.style.zIndex = "9999";
+					var time = timeStampFixation[i]/1000.0;				
+					time *= 100;
+					time = Math.round(time);
+					
+					var test;
+					var header = '';		
+					var numberOfTimepoints = timePoints[i].length;				
+					var content = "";
+					
+					for(var j=0;j<numberOfTimepoints;j++)
+					{
+						var tempContent = "<br/><p>Fixation order: " + (fixationOrders[i][j]+1) + "</p> <p> Fixated at: " + timePoints[i][j] + "</p> <p>Duration: " + individualFixationTimePerOrder[i][j] + "ms </p>";
+						content += tempContent;
+					}
+					
+					if(mostFixatedIndex == i)
+					{
+						header = "Most Fixated Area";
+						test = "<p>Area fixation time: "+(time/100.0)+" second(s)</p><p>Area fixated in times: "+(timesMerged[i]+1)+ "</p><p>Other info: This area was most fixated</p>" + content;
+					}
+					else if(i==0)
+					{
+						header = "Area Contains First Fixated Point";
+						test = "<p>Area fixation time: "+(time/100.0)+" second(s)</p> <p>Area fixated in times: "+(timesMerged[i]+1)+ "</p><p>Other info: This area contains the first fixated point</p>" + content;
+					}
+					else
+					{
+						header = "Fixation Point";
+						test = "<p>Area fixation time: "+(time/100.0)+" second(s)</p><p>Area fixated in times: "+(timesMerged[i]+1)+ "</p> <p>Other info: No other information</p>" + content;
+					}
+					
+					var fixationOrderText = "";
+					var numberOfFixations = fixationOrders[i].length;
+					
+					for(var j=0;j<numberOfFixations;j++)
+					{
+						var tempLine;
+						if(j==0)
+						{
+							tempLine = ""+(fixationOrders[i][j]+1);
+						}
+						else
+						{
+							tempLine = ","+(fixationOrders[i][j]+1);
+						}
+						fixationOrderText += tempLine;
+					}			
+		
+					
+					var text = document.createElement('a');
+					text.innerHTML = "<a href='#' title='"+header+"' data-toggle='popover' data-placement='right' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ fixationOrderText + "</a>";
+					text.style.position = 'absolute';
+					
+					text.style.left = '20px';
+					if(i > 9)
+					{
+						text.style.left = '16px';
+					}
+					if(i > 99)
+					{
+						text.style.left = '12px';
+					}
+					
+					text.style.top = '15px';
+					
+					var img = document.createElement('img');
+					img.src = chrome.runtime.getURL("../../img/circle.png");
+					img.style.width = "100%";
+					img.style.height = "100%";
+					
+					fixationDivs[i].appendChild(popoverDiv);			
+					fixationDivs[i].appendChild(img);
+					fixationDivs[i].appendChild(text);
+					
+					fixationDivs[i].childNodes[0].style.zIndex = 9999;
+					document.body.appendChild(fixationDivs[i]);			
+				}	
+				$('[data-toggle="popover"]').popover({position: 'fixed',container: popoverDiv});
+			}
+			//drawLines();
+		}	
 	}
 	catch(err)
 	{
@@ -483,6 +503,8 @@ function setData(i_data)
 		timeStampFixation = new Array();
 		timesMerged = new Array();
 		timePoints = new Array();
+		fixationOrders = new Array();
+		individualFixationTimePerOrder = new Array();
 		var t_size = t_data['testStatistics']['allFixations'].length;
 		for(var i=0;i<t_size;i++)
 		{
@@ -491,6 +513,8 @@ function setData(i_data)
 			timeStampFixation[i] = t_data['testStatistics']['allFixations'][i]['timeStampFixation'];
 			timesMerged[i] = t_data['testStatistics']['allFixations'][i]['timesMerged'];
 			timePoints[i] = t_data['testStatistics']['allFixations'][i]['fixationTimePoints'];
+			fixationOrders[i] = t_data['testStatistics']['allFixations'][i]['fixationOrder'];
+			individualFixationTimePerOrder[i] = t_data['testStatistics']['allFixations'][i]['fixationTime'];
 		}
 		console.log("Loaded " + t_size + " frames of fixation points!");
 	}
@@ -498,6 +522,27 @@ function setData(i_data)
 	if(t_data['testStatistics']['mostFixated'])
 	{
 		mostFixatedOrder = t_data['testStatistics']['mostFixated']['fixationOrder'][0];
+		
+		var t_size = t_data['testStatistics']['allFixations'].length;
+		var isFound = false;
+		for(var i=0;i<t_size;i++)
+		{
+			if(isFound)
+			{
+				break;
+			}
+			var t_numberOfOrder = t_data['testStatistics']['allFixations'][i]['fixationOrder'].length;
+			for(var j=0;j<t_numberOfOrder;j++)
+			{
+				if(t_data['testStatistics']['allFixations'][i]['fixationOrder'][j] == mostFixatedOrder)
+				{
+					mostFixatedOrder = j;
+					mostFixatedIndex = i;
+					isFound = true;
+					break;
+				}
+			}
+		}
 	}
 }
 
