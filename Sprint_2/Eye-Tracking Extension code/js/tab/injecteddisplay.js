@@ -20,6 +20,8 @@ var timeStampMouse = null; //Array of eye time stamps.
 var xFixationPointCoords = null;
 var yFixationPointCoords = null;
 var timeStampFixation = null;
+var timesMerged = null;
+var timePoints = null;
 
 var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
@@ -104,18 +106,21 @@ function initializeCanvas(mouse,eye)
 
 function showFixationPoints()
 {
-	if(!showingFixationPoints)
+	try
+	{
+		if(!showingFixationPoints)
 	{
 		if(xFixationPointCoords)
 		{
 			showingFixationPoints = true;	
 			for(i = 0; i < xFixationPointCoords.length; i++)
 			{
+				var sizeDiameter = 48 *(timesMerged[i]+1);
 				fixationDivs[i] = document.createElement('div');
 				fixationDivs[i].style.textAlign = 'center';
 				fixationDivs[i].style.position = 'absolute';
-				fixationDivs[i].style.width = "48px";
-				fixationDivs[i].style.height = "48px";
+				fixationDivs[i].style.width = sizeDiameter +"px";
+				fixationDivs[i].style.height = sizeDiameter +"px";
 				fixationDivs[i].style.left = (xFixationPointCoords[i]-24) +'px';
 				fixationDivs[i].style.top = (yFixationPointCoords[i]-24) +'px';
 				fixationDivs[i].style.zIndex = "9001";
@@ -128,20 +133,30 @@ function showFixationPoints()
 				
 				var test;
 				var header = '';
+				var fixatedAt = '<p>Fixated at:</p>';
+				
+				var numberOfTimepoints = timePoints[i].length;
+				
+				for(var j=0;j<numberOfTimepoints;j++)
+				{
+					var tempFixated = "<p>"+timePoints[i][j]+"</p>";
+					fixatedAt += tempFixated;
+				}
+				
 				if(mostFixatedOrder == i)
 				{
 					header = "Most Fixated Point";
-					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Other info: This is the most fixated point</p>";
+					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p><p>Times merged: "+timesMerged[i]+ "</p><p>Other info: This is the most fixated point</p>" + fixatedAt;
 				}
 				else if(i==0)
 				{
 					header = "First Fixated Point";
-					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Other info: This is the first fixated point</p>";
+					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Times merged: "+timesMerged[i]+ "</p><p>Other info: This is the first fixated point</p>"+ fixatedAt;
 				}
 				else
 				{
 					header = "Fixation Point";
-					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p> <p>Other info: No other information</p>";
+					test = "<p>Fixation order: "+ (i+1) +"</p> <p>Fixation Time: "+(time/100.0)+" second(s)</p><p>Times merged: "+timesMerged[i]+ "</p> <p>Other info: No other information</p>"+ fixatedAt;
 				}
 				
 				var text = document.createElement('a');
@@ -175,12 +190,20 @@ function showFixationPoints()
 				{	
 					maxHeight += 1;
 					this.style.zIndex = maxHeight;
+					extraDiv.style.zIndex = '9999';
+					$('[data-toggle="popover"]').popover({position: 'fixed',container: extraDiv});
+					this.childNodes[0] = extraDiv;
 					console.log("Clicked");				  
 				});
 			}	
 		}
 		$('[data-toggle="popover"]').popover({position: 'fixed',container: extraDiv});
 		//drawLines();
+	}	
+	}
+	catch(err)
+	{
+		console.log(err.message);
 	}
 }
 
@@ -409,19 +432,23 @@ function setData(i_data)
 		xFixationPointCoords = new Array();
 		yFixationPointCoords = new Array();
 		timeStampFixation = new Array();
+		timesMerged = new Array();
+		timePoints = new Array();
 		var t_size = t_data['testStatistics']['allFixations'].length;
 		for(var i=0;i<t_size;i++)
 		{
 			xFixationPointCoords[i] = t_data['testStatistics']['allFixations'][i]['X'];
 			yFixationPointCoords[i] = t_data['testStatistics']['allFixations'][i]['Y'];
-			timeStampFixation[i] = t_data['testStatistics']['allFixations'][i]['fixationTime'];
+			timeStampFixation[i] = t_data['testStatistics']['allFixations'][i]['timeStampFixation'];
+			timesMerged[i] = t_data['testStatistics']['allFixations'][i]['timesMerged'];
+			timePoints[i] = t_data['testStatistics']['allFixations'][i]['fixationTimePoints'];
 		}
 		console.log("Loaded " + t_size + " frames of fixation points!");
 	}
 	
 	if(t_data['testStatistics']['mostFixated'])
 	{
-		mostFixatedOrder = t_data['testStatistics']['mostFixated']['fixationOrder'];
+		mostFixatedOrder = t_data['testStatistics']['mostFixated']['fixationOrder'][0];
 	}
 }
 

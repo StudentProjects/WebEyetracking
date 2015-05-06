@@ -55,7 +55,7 @@ function setStatistics(data)
 		{
 			var x = statistics['firstFixation']['X'];
 			var y = statistics['firstFixation']['Y'];
-			var time = statistics['firstFixation']['fixationTime'];
+			var time = statistics['firstFixation']['timeStampFixation'];
 			document.getElementById("statistics_firstfixation").innerHTML = "First fixation: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
 		}	
 		
@@ -64,7 +64,7 @@ function setStatistics(data)
 		{
 			x = statistics['mostFixated']['X'];
 			y = statistics['mostFixated']['Y'];
-			time = statistics['mostFixated']['fixationTime'];
+			time = statistics['mostFixated']['timeStampFixation'];
 			document.getElementById("statistics_mostfixated").innerHTML = "Most fixated: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
 		}
 		

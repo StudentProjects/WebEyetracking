@@ -79,8 +79,10 @@ namespace tieto.education.eyetrackingwebserver
     {
         public int X { get; set; }
         public int Y { get; set; }
-        public int fixationOrder { get; set; }
-        public string fixationTime {get;set;}
+        public int[] fixationOrder { get; set; }
+        public int timesMerged { get; set; }
+        public string[] fixationTimePoints { get; set; }
+        public string[] fixationTime {get;set;}
         public int timeStampFixation { get; set; }
     }
 
