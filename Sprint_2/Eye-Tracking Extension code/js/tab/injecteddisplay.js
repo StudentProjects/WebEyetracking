@@ -14,9 +14,16 @@
 var xEyeCoords = null; //Array of eye x coordinates.
 var yEyeCoords = null; //Array of eye y coordinates.
 var timeStampEYE = null; //Array of eye time stamps.
-var xMouseCoords = null; //Array of eye x coordinates.
-var yMouseCoords = null; //Array of eye y coordinates.
-var timeStampMouse = null; //Array of eye time stamps.
+
+var xMouseCoords = null; //Array of mouse x coordinates.
+var yMouseCoords = null; //Array of mouse y coordinates.
+var timeStampMouse = null; //Array of mouse time stamps.
+
+var xMouseClicks = null; //Array of mouse click x coordinates.
+var yMouseClicks = null; //Array of mouse click y coordinates.
+var timeMouseClicks = null; //Array of mouse click time stamps.
+var currentMouseClick = 0;
+
 var xFixationPointCoords = null;
 var yFixationPointCoords = null;
 var timeStampFixation = null;
@@ -65,13 +72,16 @@ function initializeCanvas(mouse,eye)
 		canvasDiv = document.createElement("div");
 		canvasDiv.style.top = "0px";
 		canvasDiv.style.left = "0px";	
-		canvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
-		canvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
+		canvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
+		canvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
 		canvasDiv.style.zIndex = "9000";	
 		canvasDiv.id = "canvas-div";
 		canvasDiv.className = "canvas-class";	
 		canvasDiv.style.position = "absolute";	
 		document.body.appendChild(canvasDiv);
+		
+		console.log($(document).width() + "px - " + $(document).height() + "px");
+		console.log($(window).width() + "px - " + $(window).height() + "px");
 	}
 	
 	if(eye)
@@ -426,6 +436,43 @@ function setData(i_data)
 		port.postMessage({message: "display::hasMouseData", data: false});
 	}
 	
+	//If mouse clicks exist
+	if(t_data['mouseClickTimeStamp'])
+	{
+		console.log("Update mouse click data!");		
+		t_xMouseClicks = new Array();
+		t_yMouseClicks = new Array();
+		t_timeMouseClicks = new Array();
+		
+		//Check so that there are an equal amount of x and y coordinates.
+		if(t_data['mouseClickX'].length == t_data['mouseClickY'].length)
+		{
+			var t_size = t_data['mouseClickTimeStamp'].length;
+			for(var i = 0; i < t_size; i++)
+			{
+				t_xMouseClicks[i] = t_data['mouseClickX'][i];
+				t_yMouseClicks[i] = t_data['mouseClickY'][i];
+				t_timeMouseClicks[i] = t_data['mouseClickTimeStamp'][i];
+				
+				console.log("Click " + t_data['mouseClickTimeStamp'][i] + " loaded at: " + t_data['mouseClickX'][i] + " - " + t_data['mouseClickY'][i]);
+			}
+			
+			xMouseClicks = t_xMouseClicks;
+			yMouseClicks = t_yMouseClicks;
+			timeMouseClicks = t_timeMouseClicks;
+			
+			console.log("Loaded " + t_size + " mouse clicks.");
+		}
+		else
+		{
+			console.log("X and Y mouse coords do not match!");
+		}
+	}
+	else
+	{
+		console.log("No mouse click data found!");
+	}
+	
 	if(t_data['testStatistics']['allFixations'])
 	{
 		console.log("Update statistics data");
@@ -520,7 +567,26 @@ function animateMouse()
 				mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 				mousePointer.style.top = yMouseCoords[indexMouse]+'px';
 				
-				indexMouse++;	
+				if(timeMouseClicks[currentMouseClick])
+				{
+					if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
+					{
+						mousePointer.style.zIndex = "1";
+						canvasDiv.style.zIndex = "1";
+						
+						var evt = document.createEvent("MouseEvents"); 
+						evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
+						
+						document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]).dispatchEvent(evt);
+						
+						mousePointer.style.zIndex = "9001";
+						canvasDiv.style.zIndex = "9000";
+
+						currentMouseClick++;
+					}
+				}
+				 	
+				indexMouse++;
 				animateMouse();
 				
 			}, nextFrame);	
@@ -571,6 +637,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			console.log("Start mouse animation!");
 			
 			sizeMouse = timeStampMouse.length;
+			currentMouseClick = 0;
 			indexMouse = 0;
 			timerMouse = 0;
 			animating = true;
@@ -594,6 +661,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			indexEye = 0;
 			timerEye = 0;
 			sizeMouse = timeStampMouse.length;
+			currentMouseClick = 0;
 			indexMouse = 0;
 			timerMouse = 0;
 			animating = true;
@@ -619,6 +687,7 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			console.log("No eye data to animate, animating mouse only!");
 			
 			sizeMouse= timeStampMouse.length;
+			currentMouseClick = 0;
 			indexMouse = 0;
 			timerMouse = 0;
 			animating = true;
@@ -685,7 +754,7 @@ function manageMouseDiv(create)
 		mousePointer.style.position = 'absolute';
 		mousePointer.style.width = "24px";
 		mousePointer.style.height = "24px";
-		mousePointer.style.zIndex = "1";
+		mousePointer.style.zIndex = "9001";
 	    mouseImage = document.createElement('img');
 		mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
 		mousePointer.appendChild(mouseImage);
