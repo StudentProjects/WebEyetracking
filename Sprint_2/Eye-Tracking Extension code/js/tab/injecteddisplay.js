@@ -340,6 +340,19 @@ function drawLines()
 	document.body.appendChild(c);
 }
 
+function hideLines()
+{
+	try
+	{
+		var lineCanvas = document.getElementById("line-canvas");
+		document.body.removeChild(lineCanvas);	
+	}
+	catch(err)
+	{
+		console.log(err.message);
+	}
+}
+
 function drawZones()
 {
 	var height = Math.max($(document).height(), $(window).height());
@@ -1003,5 +1016,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	{
 		sendResponse({message: "Hiding fixation points!"});
 		hideFixationPoints();
+	}
+	else if(request.msg == "injecteddisplay::showGrid")
+	{
+		sendResponse({message: "Showing navigation!"});
+		drawLines();
+	}
+	else if(request.msg == "injecteddisplay::hideGrid")
+	{
+		sendResponse({message: "hiding navigation!"});
+		hideLines();
 	}
 });

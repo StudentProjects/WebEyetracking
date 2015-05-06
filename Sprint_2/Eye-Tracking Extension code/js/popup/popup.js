@@ -24,6 +24,7 @@ var isRenderingPaused = false;
 var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
 var isFixationPointsDisplayed = false;
+var isNavigationDisplayed = false;
 var activeTab = null;
 
 ///////////
@@ -300,6 +301,8 @@ function addPopupMessageListener()
 			isRendering = i_message.content['isRendering'];
 			isRenderingPaused = i_message.content['isRenderingPaused'];
 			isFixationPointsDisplayed = i_message.content['isFixationPointsDisplayed'];
+			isNavigationDisplayed = i_message.content['isNavigationDisplayed'];
+			
 			
 			//Set test info in player
 			if(i_message.content['testInfo'])
@@ -361,6 +364,15 @@ function addPopupMessageListener()
 			else
 			{
 				document.getElementById('fixation_button').innerHTML = "Show fixation points";
+			}
+			
+			if(isNavigationDisplayed)
+			{
+				document.getElementById('grid_button').innerHTML = "Hide navigation";
+			}
+			else
+			{
+				document.getElementById('grid_button').innerHTML = "Show navigation";
 			}
 			
 			if(!isConnected)

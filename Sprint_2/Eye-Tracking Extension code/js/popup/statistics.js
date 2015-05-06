@@ -24,8 +24,11 @@ function initStatistics()
 	//Send animate request to display.js
 	document.getElementById('fixation_button').addEventListener("click", function()
 	{	
-		console.log("Anax");
 		chrome.extension.sendRequest({ msg:"display::handleFixationPoints"});	
+	});
+	document.getElementById('grid_button').addEventListener("click", function()
+	{	
+		chrome.extension.sendRequest({ msg:"display::handleGrid"});	
 	});
 	
 	addStatisticsMessageListener();
@@ -91,6 +94,14 @@ function addStatisticsMessageListener()
 		else if(i_message.msg == "statistics::hidingFixationPoints")
 		{
 			document.getElementById("fixation_button").innerHTML = "Show fixation points";
+		}
+		else if(i_message.msg == "statistics::showingGrid")
+		{
+			document.getElementById("grid_button").innerHTML = "Hide Navigation";
+		}
+		else if(i_message.msg == "statistics::hidingGrid")
+		{
+			document.getElementById("grid_button").innerHTML = "Show Navigation";
 		}
 	});
 }
