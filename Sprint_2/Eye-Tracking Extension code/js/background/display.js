@@ -73,6 +73,17 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			chrome.runtime.sendMessage({msg: 'player::hasMouseData', data: msg.data});
 		}
+		else if(msg.message == "display::hideFixationPoints")
+		{
+			chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
+			chrome.runtime.sendMessage({msg: 'statistics::hidingGrid'});
+			setIsFixationPointsDisplayed(false);
+			setIsNavigationDisplayed(false);
+		}
+		else if(msg.message == "display::clearStatistics")
+		{
+			setStatistics(null);
+		}
 	});
 });
 

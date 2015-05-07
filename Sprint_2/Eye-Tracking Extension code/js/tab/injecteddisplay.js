@@ -323,7 +323,10 @@ function hideLines()
 	try
 	{
 		var lineCanvas = document.getElementById("line-canvas");
-		document.body.removeChild(lineCanvas);	
+		if(lineCanvas)
+		{
+			document.body.removeChild(lineCanvas);		
+		}
 	}
 	catch(err)
 	{
@@ -366,6 +369,19 @@ function drawZones()
 	}
 
 	document.body.appendChild(c);
+}
+
+function controlPreviousTests()
+{
+	if(showingFixationPoints)
+	{
+		hideFixationPoints();
+		hide();
+		xFixationPointCoords = null;
+		yFixationPointCoords = null;
+		port.postMessage({message: "display::hideFixationPoints"});
+		port.postMessage({message: "display::clearStatistics"});
+	}
 }
 
 //Hide fixation points if they are shown
@@ -691,7 +707,7 @@ function startAnimation(animateEyeBool, animateMouseBool, startTime)
 			indexEye = 0;
 			for(i=0; i<sizeEye; i++)
 			{
-				while(startTime > timeStampEye[indexEye])
+				while(startTime > timeStampEYE[indexEye])
 				{
 					indexEye++;
 				}
@@ -754,7 +770,7 @@ function startAnimation(animateEyeBool, animateMouseBool, startTime)
 			indexEye = 0;
 			for(i=0; i<sizeEye; i++)
 			{
-				while(startTime > timeStampEye[indexEye])
+				while(startTime > timeStampEYE[indexEye])
 				{
 					indexEye++;
 				}
@@ -1019,6 +1035,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		else
 		{
 			sendResponse({message: "Updating data!"});
+			controlPreviousTests();
 		}
 		
 	}
