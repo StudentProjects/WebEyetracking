@@ -29,7 +29,6 @@ chrome.commands.onCommand.addListener(function(command)
 			if(currentData)
 			{
 				animateHeatmap(playerEyeBox, playerMouseBox);
-				chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});
 			}
 		}
     } 

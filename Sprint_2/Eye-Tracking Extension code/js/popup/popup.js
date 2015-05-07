@@ -296,9 +296,10 @@ function addPopupMessageListener()
 		//isReady
 		else if(i_message.msg == "popup::isReady")
 		{
-			if(i_message.data)
+			if(i_message.data && !isReady)
 			{
-				console.log("Hide");
+				console.log("Extension is in ready state!");
+				isReady = true;
 				document.getElementById("loading-screen").style.display = "none";
 			}
 		}
@@ -360,11 +361,18 @@ function addPopupMessageListener()
 			{
 				document.getElementById('animatedata_button').innerHTML = "Pause";
 				document.getElementById('animatedata_button').title = "Press to pause";
+				chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});
+				chrome.extension.sendRequest({ msg: "display::animate" });
 			}
 			else
 			{
 				document.getElementById('animatedata_button').innerHTML = "Resume";
 				document.getElementById('animatedata_button').title = "Press to resume";
+				chrome.browserAction.setIcon({path: "../../img/play-icon16.png"});
+				var toSend = new Object();
+				toSend.Eye = document.getElementById("eye_playerbox").checked;
+				toSend.Mouse = document.getElementById("mouse_playerbox").checked;	
+				chrome.extension.sendRequest({ msg: "display::animate", data: toSend });
 			}
 			
 			if(isFixationPointsDisplayed)
@@ -400,8 +408,9 @@ function addPopupMessageListener()
 			if(isRecording)
 			{
 				chrome.extension.sendRequest({ msg: "websocket::pauseRecording" });
+				chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 			}
-			else
+			else if(!isRendering)
 			{
 				//Setting default icon
 				chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});	

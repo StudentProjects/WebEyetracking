@@ -185,6 +185,11 @@ function addPlayerMessageListener()
 		else if(i_message.msg == "player::resumeRendering")
 		{
 			document.getElementById("animatedata_button").innerHTML="Pause";
+			var timer = setTimeout(function()
+			{
+				window.close();
+				clearTimeout(timer);
+			}, 15);
 		}
 		else if(i_message.msg == "player::pauseRendering")
 		{

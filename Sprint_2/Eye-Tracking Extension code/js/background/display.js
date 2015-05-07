@@ -40,7 +40,7 @@ chrome.runtime.onConnect.addListener(function(port)
 			lastAnimateMouse = false;
 			setIsRendering(false);
 			setIsRenderingPaused(false);
-			chrome.browserAction.setIcon({path: "../../img/play-icon16.png"});
+			chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
 			chrome.runtime.sendMessage({msg: 'player::animationFinished'});
 		}
 		else if(msg.message == "display::displayingData")
@@ -176,6 +176,7 @@ function pauseRendering()
 			try
 			{
 				setIsRenderingPaused(true);
+				chrome.browserAction.setIcon({path: "../../img/play-icon16.png"});
 				console.log(response.message);
 			}
 			catch(err)
@@ -195,6 +196,7 @@ function resumeRendering()
 			try
 			{
 				setIsRenderingPaused(false);
+				chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});
 				console.log(response.message);
 			}
 			catch(err)
@@ -307,6 +309,7 @@ function setHeatmapData(i_data, i_resume)
 //Tell injecteddisplay.js to animate heatmap of data.
 function animateHeatmap(animateEye, animateMouse)
 {	
+	console.log("jQuery: " + isJQueryLoaded);
 	if(isJQueryLoaded)
 	{
 		lastAnimateEye = animateEye;
@@ -321,7 +324,7 @@ function animateHeatmap(animateEye, animateMouse)
 					if(response.message != "Failedstart")
 					{
 						console.log(response.message);
-						chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});	
+						chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});
 					}
 					else
 					{
