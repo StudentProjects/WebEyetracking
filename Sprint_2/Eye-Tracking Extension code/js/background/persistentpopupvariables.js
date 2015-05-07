@@ -176,8 +176,5 @@ function setPlayerMouseBoxDisabled(status)
 //and if jQuery is initialized.
 isReadyInterval = setInterval(function()
 {
-	var data = new Object();
-	data.isConnected = isConnected;
-	data.isJQueryLoaded = isJQueryLoaded;
-	chrome.runtime.sendMessage({msg: 'popup::isReady', data: data});
+	chrome.runtime.sendMessage({msg: 'popup::isReady', data: isJQueryLoaded});
 }, 1000);

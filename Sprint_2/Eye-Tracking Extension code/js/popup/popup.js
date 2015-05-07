@@ -296,7 +296,7 @@ function addPopupMessageListener()
 		//isReady
 		else if(i_message.msg == "popup::isReady")
 		{
-			if(i_message.data.isConnected && i_message.data.isJQueryLoaded)
+			if(i_message.data)
 			{
 				console.log("Hide");
 				document.getElementById("loading-screen").style.display = "none";
