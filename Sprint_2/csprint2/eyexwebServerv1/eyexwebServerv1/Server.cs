@@ -43,6 +43,7 @@ namespace tieto.education.eyetrackingwebserver
         private bool m_runListeningThread;
         private bool m_runClientThread;
         private bool m_isStartBitSent;
+        private bool m_isHandshakeDone;
 
         private Thread m_listeningThread;
         private Thread m_recieveDataThread;
@@ -83,6 +84,7 @@ namespace tieto.education.eyetrackingwebserver
             m_startSucceded = false;
             m_outputMessage = "";
             m_clientStatus = -1;
+            m_isHandshakeDone = false;
             m_recorderStatus = -1;
             m_logType = 0;
             m_fileSaver = new FileSaver();
@@ -125,7 +127,7 @@ namespace tieto.education.eyetrackingwebserver
                 m_socketListener.Start();
 
                 // start listening thread
-                m_listeningThread = new Thread(new ThreadStart(listenForConnection));
+                m_listeningThread = new Thread(new ThreadStart(listener));
                 // Run as background thread. Will exit with the program
                 m_listeningThread.IsBackground = true;
                 m_listeningThread.Start();
@@ -362,7 +364,7 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns>A bool which indicates whether the client was successfully disconnected or not</returns>
         public bool handleClientDisconnectRequest()
         {
-            if (m_recieveDataThread.IsAlive && m_recieveDataThread != null)
+            if (m_listeningThread.IsAlive)
             {
                 m_isTerminatingListeningThread = true;
                 // Restarting listening
@@ -377,14 +379,6 @@ namespace tieto.education.eyetrackingwebserver
                 m_recorderInstance.stopRecording();
                 m_recorderInstance.clearPreviousTest(1);
                 recorderStatusProperty = 1;
-
-                // Starting listener thread
-                m_runListeningThread = true;
-                m_listeningThread = null;
-                m_listeningThread = new Thread(new ThreadStart(listenForConnection));
-                m_listeningThread.IsBackground = true;
-                m_listeningThread.Start();
-                Thread.Sleep(1);
                 return true;
             }
             return false;
@@ -610,6 +604,123 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        private void listener()
+        {
+            while (true)
+            {
+                if (!m_isHandshakeDone)
+                {
+                    try
+                    {
+                        // Blocking signal waiting for a client to connect
+                        m_connectedClient = m_socketListener.AcceptTcpClient();
+                        DateTime connectionTime = DateTime.Now;
+                        // Moving forward if client connected
+                        m_logType = 1;
+                        outputTextProperty = "Server: A client connected!";
+                        m_logType = 0;
+                        outputTextProperty = "Server: Performing handshake with new client";
+
+                        NetworkStream t_clientStream = m_connectedClient.GetStream();
+                        while (!t_clientStream.DataAvailable);
+
+                        Byte[] bytes = new Byte[m_connectedClient.Available];
+                        t_clientStream.Read(bytes, 0, bytes.Length);
+                        String t_messageData = Encoding.UTF8.GetString(bytes);
+                        if (new Regex("^GET").IsMatch(t_messageData))
+                        {
+                            // Constructing handshake response message to send to the client
+                            // Adding magic key
+                            Byte[] response = constructHandshakeMessage(t_messageData);
+                            // Write response on client stream and finalize handshake process
+                            t_clientStream.Write(response, 0, response.Length);
+                            // Handshake is done
+                            m_logType = 1;
+                            outputTextProperty = "Server: Handshake with client done!";
+                            clientConnectedProperty = true;
+                            clientTextProperty = 0;
+
+                            m_isTerminatingListeningThread = false;
+                            m_isHandshakeDone = true;
+
+                            m_messageHandler.serverNotificationToClient(18, getAllApplicationData());
+                        }
+
+                    }
+                    catch(Exception)
+                    {
+                        m_logType = 1;
+                        outputTextProperty = "Server: Failed when connecting client!";
+                    }
+                }
+                else // Client is connected
+                {
+                    try
+                    {
+                        if (m_isHandshakeDone)
+                        {
+                            NetworkStream t_incomingStream = m_connectedClient.GetStream();
+                            while (!t_incomingStream.DataAvailable)
+                            {
+                                if (m_isTerminatingListeningThread)
+                                {
+                                    m_logType = 3;
+                                    outputTextProperty = "Server: Restarting listener for new client!";
+                                    m_connectedClient.Close();
+                                    m_isHandshakeDone = false;
+                                    m_isTerminatingListeningThread = true;
+                                    break;
+                                }
+                                else if (!IsConnected())
+                                {
+                                    m_logType = 3;
+                                    outputTextProperty = "Server: Restarting listener for new client!";
+                                    m_isTerminatingListeningThread = true;
+                                    m_connectedClient.Close();
+                                    m_isHandshakeDone = false;
+                                    break;
+                                }
+                            }
+                            if (!m_isTerminatingListeningThread)
+                            {
+                                m_logType = 0;
+                                outputTextProperty = "Server: Message received from client!";
+                                // Read all available data and store it in an array
+                                Byte[] t_receivedBytes = new Byte[m_connectedClient.Available];
+                                t_incomingStream.Read(t_receivedBytes, 0, t_receivedBytes.Length);
+                                t_incomingStream.Flush();
+                                // Sending the message to messagehandler
+                                clientTextProperty = 0;
+                                m_messageHandler.decryptMessage(t_receivedBytes);
+                            }
+                            else
+                            {
+
+                                m_logType = 1;
+                                outputTextProperty = "Server: Good bye!";
+                                m_connectedClient.Close();
+                                m_isHandshakeDone = false;
+                            }
+                        }
+                        else
+                        {
+                            m_logType = 1;
+                            outputTextProperty = "Server: Good bye!";
+                            m_connectedClient.Close();
+                            m_isHandshakeDone = false;
+                        }
+                    }
+                    catch(Exception)
+                    {
+                        m_logType = 3;
+                        outputTextProperty = "Server: Error, restarting listener!";
+                        m_connectedClient.Close();
+                        m_isHandshakeDone = false;
+                    }
+                }
+            }
+        }
+
       
         // VISUAL FORM RELATED
 
@@ -808,12 +919,10 @@ namespace tieto.education.eyetrackingwebserver
             {
                 if(m_connectedClient.Connected)
                 {
-                    if(handleClientDisconnectRequest())
-                    {
-                        m_logType = 1;
-                        outputTextProperty = "Server: Successfully disconnected client on request!";
-                        m_safeToDisconnectClient = true;
-                    }
+                    clientTextProperty = 1;
+                    clientConnectedProperty = false;
+                    m_connectedClient.Close();
+                    m_isHandshakeDone = false;
                 }
                 else
                 {
