@@ -74,6 +74,15 @@ chrome.runtime.onConnect.addListener(function(port)
 			manageMessage(4, "StopRecordingRequest");
 		}
 	});
+	
+	port.onMessage.addListener(function(msg) 
+	{
+		if(msg.message == "tabinfo::pagebeforeload")
+		{
+			console.log("Page is being loaded!");
+			contentScriptReady = false;
+		}
+	});
 });
 
 //Check if the injected scripts are alive, if not

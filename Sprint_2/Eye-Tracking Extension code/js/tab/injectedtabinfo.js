@@ -34,6 +34,12 @@ var tempTimer = setTimeout(function()
 	{	
 		port.postMessage({message: "tabinfo::mouseClick", xCoord: event.pageX, yCoord: event.pageY});
 	});
+	
+	$(window).on("beforeunload",function()
+	{
+		console.log("Page is to be loaded!");
+		port.postMessage({message: "tabinfo::pagebeforeload"});
+	});
 }, 50);
 
 //Listen for messages from tabinfo.js in extension

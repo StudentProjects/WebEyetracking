@@ -36,12 +36,10 @@ var animating = false; //True if animating.
 var indexEye = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeEye = 0; //Size of coordinate arrays.
-var timerEye = 0; //The delay until rendering next eye frame.
 
 var indexMouse = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeMouse = 0; //Size of coordinate arrays.
-var timerMouse = 0; //The delay until rendering next mouse frame.
 
 var mousePointer = null;
 var mouseImage = null;
@@ -81,9 +79,6 @@ function initializeCanvas(mouse,eye)
 		canvasDiv.className = "canvas-class";	
 		canvasDiv.style.position = "absolute";	
 		document.body.appendChild(canvasDiv);
-		
-		console.log($(document).width() + "px - " + $(document).height() + "px");
-		console.log($(window).width() + "px - " + $(window).height() + "px");
 	}
 	
 	if(eye)
@@ -300,6 +295,8 @@ function drawLines()
 	document.body.appendChild(c);
 }
 
+
+//Never used. Draws zones to check reliability of percentage of page calculation.
 function drawZones()
 {
 	var height = Math.max($(document).height(), $(window).height());
@@ -336,6 +333,7 @@ function drawZones()
 	document.body.appendChild(c);
 }
 
+//Hide fixation points if they are shown
 function hideFixationPoints()
 {
 	if(showingFixationPoints)
@@ -455,8 +453,6 @@ function setData(i_data)
 				t_xMouseClicks[i] = t_data['mouseClickX'][i];
 				t_yMouseClicks[i] = t_data['mouseClickY'][i];
 				t_timeMouseClicks[i] = t_data['mouseClickTimeStamp'][i];
-				
-				console.log("Click " + t_data['mouseClickTimeStamp'][i] + " loaded at: " + t_data['mouseClickX'][i] + " - " + t_data['mouseClickY'][i]);
 			}
 			
 			xMouseClicks = t_xMouseClicks;
@@ -568,6 +564,7 @@ function animateMouse()
 			
 				mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 				mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+				port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
 				
 				try
 				{
@@ -578,10 +575,13 @@ function animateMouse()
 							mousePointer.style.zIndex = "1";
 							canvasDiv.style.zIndex = "1";
 							
+							var target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
+							
 							var evt = document.createEvent("MouseEvents"); 
 							evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
 							
-							document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]).dispatchEvent(evt);
+							target.dispatchEvent(evt);
+							target.focus();
 							
 							mousePointer.style.zIndex = "9001";
 							canvasDiv.style.zIndex = "9000";
@@ -616,7 +616,7 @@ function animateBoth()
 }
 
 //Start the animate function. Gets the length of timeStampEye.
-function startAnimation(animateEyeBool, animateMouseBool)
+function startAnimation(animateEyeBool, animateMouseBool, startTime)
 {
 	console.log("Start animation");
 	if(!animating && animateEyeBool && !animateMouseBool)
@@ -624,11 +624,19 @@ function startAnimation(animateEyeBool, animateMouseBool)
 		if(timeStampEYE)
 		{
 			port.postMessage({message: "display::animationStarted"});
-			console.log("Start eye animation!");
+			console.log("Animating eye data");
 			
-			sizeEye = timeStampEYE.length;
+			//Set eye related variables
+			sizeEye = xEyeCoords.length;
 			indexEye = 0;
-			timerEye = 0;
+			for(i=0; i<sizeEye; i++)
+			{
+				while(startTime > timeStampEye[indexEye])
+				{
+					indexEye++;
+				}
+			}
+			
 			initializeCanvas(false,true);
 			animating = true;
 			animateEye();
@@ -643,12 +651,27 @@ function startAnimation(animateEyeBool, animateMouseBool)
 		if(timeStampMouse)
 		{
 			port.postMessage({message: "display::animationStarted"});
-			console.log("Start mouse animation!");
+			console.log("Animating mouse data");
 			
+			//Set mouse related variables
 			sizeMouse = timeStampMouse.length;
 			currentMouseClick = 0;
 			indexMouse = 0;
-			timerMouse = 0;
+			for(i=0; i<sizeMouse; i++)
+			{
+				while(startTime > timeMouseClicks[currentMouseClick])
+				{
+					currentMouseClick++;
+				}
+				
+				while(startTime > timeStampMouse[indexMouse])
+				{
+					indexMouse++;
+				}
+			}
+			
+			console.log("Animating from frame " + indexMouse);
+			
 			animating = true;
 			manageMouseDiv(true);
 			initializeCanvas(true,false);
@@ -659,50 +682,45 @@ function startAnimation(animateEyeBool, animateMouseBool)
 			console.log("No mouse data to animate!");
 		}
 	}
-	if(!animating && animateEyeBool && animateMouseBool)
+	else if(!animating && animateEyeBool && animateMouseBool)
 	{
 		if(timeStampEYE && timeStampMouse)
 		{
 			port.postMessage({message: "display::animationStarted"});
-			console.log("Start eye & mouse animation!");
+			console.log("Animating eye and mouse data");
 			
+			//Set eye related variables
 			sizeEye = xEyeCoords.length;
 			indexEye = 0;
-			timerEye = 0;
+			for(i=0; i<sizeEye; i++)
+			{
+				while(startTime > timeStampEye[indexEye])
+				{
+					indexEye++;
+				}
+			}
+			
+			//Set mouse related variables
 			sizeMouse = timeStampMouse.length;
 			currentMouseClick = 0;
 			indexMouse = 0;
-			timerMouse = 0;
+			for(i=0; i<sizeMouse; i++)
+			{
+				while(startTime > timeMouseClicks[currentMouseClick])
+				{
+					currentMouseClick++;
+				}
+				
+				while(startTime > timeStampMouse[indexMouse])
+				{
+					indexMouse++;
+				}
+			}
+			
 			animating = true;
 			manageMouseDiv(true);
 			initializeCanvas(true,true);
 			animateBoth();
-		}
-		else if(timeStampEYE)
-		{
-			port.postMessage({message: "display::animationStarted"});
-			console.log("No mouse data to animate, animating eye only!");
-			
-			sizeEye = timeStampEYE.length;
-			indexEye = 0;
-			timerEye = 0;
-			animating = true;
-			initializeCanvas(false,true);
-			animateEye();			
-		}
-		else if(timeStampMouse)
-		{
-			port.postMessage({message: "display::animationStarted"});
-			console.log("No eye data to animate, animating mouse only!");
-			
-			sizeMouse= timeStampMouse.length;
-			currentMouseClick = 0;
-			indexMouse = 0;
-			timerMouse = 0;
-			animating = true;
-			initializeCanvas(true,false);
-			manageMouseDiv(true);
-			animateMouse();			
 		}
 		else
 		{
@@ -880,7 +898,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			{
 				hide(); //Hide before starting animation
 				console.log(request.eye + " - " + request.mouse);
-				startAnimation(request.eye, request.mouse);
+				startAnimation(request.eye, request.mouse, 0);
 				sendResponse({message: "Animating heatmap!"});	
 			}		
 			else
@@ -910,6 +928,13 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		isPaused = false;
 		sendResponse({message: "Resumed!"});	
 	}
+	//If script is leloaded and we were animating, continue animating from the last frame.
+	else if(request.msg == "injecteddisplay::resumeRenderingAfterLoad")
+	{
+		console.log(request.data.lastAnimateEye + " -  " + request.data.lastAnimateMouse + " -  " + request.data.lastFrameTime);
+		startAnimation(request.data.lastAnimateEye, request.data.lastAnimateMouse, request.data.lastFrameTime);
+		sendResponse({message: "Resumed!"});	
+	}
 	else if (request.msg == "injecteddisplay::show")
 	{
 		hide(); //Hide before showing, so that we don't get duplicated heatmaps.
@@ -927,7 +952,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	else if (request.msg == "injecteddisplay::setData")
 	{
 		setData(request.data);
-		sendResponse({message: "Updating data!"});
+		if(request.resume)
+		{
+			sendResponse({message: "resume"});
+		}
+		else
+		{
+			sendResponse({message: "Updating data!"});
+		}
+		
 	}
 	else if(request.msg == "injecteddisplay::showFixationPoints")
 	{
@@ -939,4 +972,21 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		sendResponse({message: "Hiding fixation points!"});
 		hideFixationPoints();
 	}
+	else if(request.msg == "injecteddisplay::jquery")
+	{
+		if(window.jQuery)
+		{
+			console.log("jQuery is initialized!");
+			sendResponse({message: "ready"});
+		}
+		else
+		{
+			console.log("jQuery not initialized!");
+			sendResponse({message: "not ready"});
+		}	
+	}
 });
+
+//Send when finished setup
+console.log("Script ready!");
+port.postMessage({message: "display::injectedDisplayReady"});

@@ -32,7 +32,7 @@ function handleMessage(i_message)
 		//RecordedDataResponse
 		case 6:
 			chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Data received."});	
-			setHeatmapData(currentMessage['MessageContent']);	
+			setHeatmapData(currentMessage['MessageContent'], false);	
 			break;
 		//StartRecordingResponse
 		case 7:

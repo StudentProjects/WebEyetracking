@@ -14,6 +14,10 @@
 var displayTimer = null;
 var displayError = "";
 var currentData = null;
+var lastFrameTime = 0;
+var lastAnimateEye = false;
+var lastAnimateMouse = false;
+var contentScriptReady = false;
 
 ///////////
 //METHODS//
@@ -32,6 +36,9 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::animationFinished")
 		{
+			lastFrameTime = 0;
+			lastAnimateEye = false;
+			lastAnimateMouse = false;
 			setIsRendering(false);
 			setIsRenderingPaused(false);
 			chrome.browserAction.setIcon({path: "../../img/play-icon16.png"});
@@ -40,6 +47,21 @@ chrome.runtime.onConnect.addListener(function(port)
 		else if(msg.message == "display::displayingData")
 		{
 			chrome.runtime.sendMessage({msg: 'player::displayingData'});
+		}
+		else if(msg.message == "display::setLastFrameTime")
+		{
+			lastFrameTime = msg.data;
+		}
+		else if(msg.message == "display::injectedDisplayReady")
+		{
+			console.log("Content script ready!");
+			contentScriptReady = true;
+			executeBootstrap();
+			if(isRendering && !isRenderingPaused)
+			{
+				console.log("Trying to resume animation!");
+				setHeatmapData(currentData, true);
+			}
 		}
 		else if(msg.message == "display::setHeaderToDefault")
 		{
@@ -147,35 +169,94 @@ function injectDisplay()
 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
 		
-		var timer = setTimeout(function()
+		/*var timer = setTimeout(function()
 		{
 			chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
 			chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
 			console.log("Injecting bootstrap");
 			clearTimeout(timer);
-		}, 2000);
-		
-	
-		
+		}, 2000);*/
+	});
+}
+
+function executeBootstrap()
+{
+	chrome.tabs.getSelected(null, function(i_tab)
+	{ 
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::jquery"}, function(response) 
+		{
+			try
+			{
+				if(response.message == "ready")
+				{
+					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
+					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
+					console.log("Injecting bootstrap"); 	
+				}
+				else
+				{
+					console.log("Try again!");
+					executeBootstrap();
+				}
+			}
+			catch(err)
+			{
+				console.log("Error: " + err.message);
+				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
+			}
+		});
+	});
+}
+
+function resumeRenderingAfterLoad(tab_id)
+{
+	var tempData = new Object();
+	tempData.lastFrameTime = lastFrameTime;
+	tempData.lastAnimateEye = lastAnimateEye;
+	tempData.lastAnimateMouse = lastAnimateMouse;
+	chrome.tabs.sendMessage(tab_id, {msg: "injecteddisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
+	{
+		try
+		{
+			console.log(response.message);
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Successfully resumed animation after page load!", type: "Alert"});
+		}
+		catch(err)
+		{	
+			console.log("Error: " + err.message);
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
+		}
 	});
 }
 
 //Tell injecteddisplay.js to set new data.
-function setHeatmapData(i_data)
+function setHeatmapData(i_data, i_resume)
 {
 	console.log("setHeatmapData");
 	currentData = i_data;
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::setData", data: i_data}, function(response) 
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::setData", data: i_data, resume: i_resume}, function(response) 
 		{
 			try
 			{
-				console.log(response.message);
+				if(response.message == "resume")
+				{
+					resumeRenderingAfterLoad(i_tab.id);
+				}
+				else
+				{
+					console.log(response.message);
+				}
 				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Successfully loaded data!", type: "Alert"});
 			}
 			catch(err)
 			{	
+				if(err.message = "Cannot read property 'message' of undefined")
+				{
+					console.log("Set data again!");
+					setHeatmapData(i_data, i_resume);
+				}
 				console.log("Error: " + err.message);
 				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
 			}
@@ -186,34 +267,41 @@ function setHeatmapData(i_data)
 //Tell injecteddisplay.js to animate heatmap of data.
 function animateHeatmap(animateEye, animateMouse)
 {	
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{		
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::animate", eye: animateEye, mouse: animateMouse}, function(response) 
-		{
-			try
+	console.log(contentScriptReady);
+	if(contentScriptReady)
+	{
+		lastAnimateEye = animateEye;
+		lastAnimateMouse = animateMouse;
+		
+		chrome.tabs.getSelected(null, function(i_tab) 
+		{		
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::animate", eye: animateEye, mouse: animateMouse}, function(response) 
 			{
-				if(response.message != "Failedstart")
+				try
 				{
-					console.log(response.message);
-					chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});	
-				}
-				else
-				{
-					if(currentData != null)
-					{	
+					if(response.message != "Failedstart")
+					{
 						console.log(response.message);
-						setHeatmapData(currentData);	
-						animateHeatmap(animateEye,animateMouse);
+						chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});	
+					}
+					else
+					{
+						if(currentData != null)
+						{	
+							console.log(response.message);
+							setHeatmapData(currentData, false);	
+							animateHeatmap(animateEye,animateMouse);
+						}
 					}
 				}
-			}
-			catch(err)
-			{
-				console.log("Error: " + err.message);
-				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
-			}
+				catch(err)
+				{
+					console.log("Error: " + err.message);
+					chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
+				}
+			});
 		});
-	});
+	}
 }
 
 //Tell injecteddisplay.js to show heatmap of data.
@@ -287,6 +375,7 @@ displayTimer = setInterval(function()
 							//Check if this was the last error message, if so, do not log again!
 							if(displayError != "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!")
 							{
+								contentScriptReady = false;
 								displayError = "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!";
 								console.log(displayError);
 							}
@@ -298,6 +387,7 @@ displayTimer = setInterval(function()
 							//Check if this was the last error message, if so, do not log again!
 							if(displayError != "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url)
 							{
+								contentScriptReady = false;
 								displayError = "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url;
 								console.log(displayError);
 							}
