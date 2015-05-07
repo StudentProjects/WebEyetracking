@@ -280,6 +280,9 @@ namespace tieto.education.eyetrackingwebserver
            }
        }
 
+       /// <summary>
+       /// Merging fixation points if they are really close to eachother
+       /// </summary>
        private void mergeFixationPoints()
        {
            try
@@ -672,7 +675,7 @@ namespace tieto.education.eyetrackingwebserver
                {
                    m_dataCurrentTest.testStatistics.mostFixated = m_statisticsHandler.getMostFixated(m_fixationPoints.ToArray());
                    m_dataCurrentTest.testStatistics.allFixations = m_statisticsHandler.getAllFixationPoints(m_fixationPoints);
-                   m_dataCurrentTest.testStatistics.firstFixation = m_fixationPoints[0];
+                   m_dataCurrentTest.testStatistics.firstFixation = m_statisticsHandler.getFirstFixated(m_fixationPoints.ToArray());
                }
                log("Recorder: Successfully calculated statistics!", 1);
 

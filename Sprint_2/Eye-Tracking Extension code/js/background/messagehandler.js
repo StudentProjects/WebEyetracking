@@ -337,6 +337,10 @@ chrome.extension.onRequest.addListener
 		{
 			handleFixationPoints();
 		}
+		else if(request.msg == "display::handleGrid")
+		{
+			handleGrid();
+		}
 		//Handled in mouserecorder.js
 		else if(request.msg == "mouserecorder::startRecording") 
 		{

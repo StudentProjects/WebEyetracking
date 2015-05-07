@@ -89,7 +89,9 @@ function handleFixationPoints()
 				try
 				{
 					chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
+					chrome.runtime.sendMessage({msg: 'statistics::hidingGrid'});
 					setIsFixationPointsDisplayed(false);
+					setIsNavigationDisplayed(false);
 					console.log(response.message);
 				}
 				catch(err)
@@ -117,6 +119,53 @@ function handleFixationPoints()
 				}
 			});
 		});
+	}
+}
+
+
+function handleGrid()
+{
+	if(isFixationPointsDisplayed)
+	{
+		if(!isNavigationDisplayed)
+		{
+			chrome.tabs.getSelected(null, function(i_tab) 
+			{
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::showGrid"}, function(response) 
+				{
+					try
+					{
+						chrome.runtime.sendMessage({msg: 'statistics::showingGrid'});
+						console.log(response.message);
+						setIsNavigationDisplayed(true);
+					}
+					catch(err)
+					{	
+						console.log("Error: " + err.message);
+					}
+				});
+			});	
+		}
+		else
+		{
+			chrome.tabs.getSelected(null, function(i_tab) 
+			{
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::hideGrid"}, function(response) 
+				{
+					try
+					{
+						chrome.runtime.sendMessage({msg: 'statistics::hidingGrid'});
+						console.log(response.message);
+						setIsNavigationDisplayed(false);
+					}
+					catch(err)
+					{	
+						console.log("Error: " + err.message);
+					}
+				});
+			});	
+		}
+		
 	}
 }
 
