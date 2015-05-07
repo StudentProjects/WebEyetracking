@@ -65,6 +65,7 @@ var popoverDiv = null;
 
 var width = 0;
 var height = 0;
+var cssLink;
 
 ///////////
 //METHODS//
@@ -123,7 +124,7 @@ function showFixationPoints()
 	try
 	{
 		if(!showingFixationPoints)
-		{
+		{			
 			width = Math.max($(document).width(), $(window).width());
 			height = Math.max($(document).height(), $(window).height());
 			if(xFixationPointCoords)
@@ -143,12 +144,11 @@ function showFixationPoints()
 						sizeDiameter = 48 + (5*(timesMerged[i]+1));
 					}
 					fixationDivs[i] = document.createElement('div');
-					fixationDivs[i].style.textAlign = 'center';
 					fixationDivs[i].style.position = 'absolute';
 					fixationDivs[i].style.width = sizeDiameter +"px";
 					fixationDivs[i].style.height = sizeDiameter +"px";
-					fixationDivs[i].style.left = (xFixationPointCoords[i]-24) +'px';
-					fixationDivs[i].style.top = (yFixationPointCoords[i]-24) +'px';
+					fixationDivs[i].style.left = (xFixationPointCoords[i]-(sizeDiameter/2)) +'px';
+					fixationDivs[i].style.top = (yFixationPointCoords[i]-(sizeDiameter/2)) +'px';
 					fixationDivs[i].style.zIndex = "9001";
 					
 					var id= "myID_" + i;
@@ -199,36 +199,19 @@ function showFixationPoints()
 					var fixationOrderText = "";
 					var numberOfFixations = fixationOrders[i].length;
 					
-					for(var j=0;j<numberOfFixations;j++)
+					if(numberOfFixations > 1)
 					{
-						var tempLine;
-						if(j==0)
-						{
-							tempLine = ""+(fixationOrders[i][j]+1);
-						}
-						else
-						{
-							tempLine = ","+(fixationOrders[i][j]+1);
-						}
-						fixationOrderText += tempLine;
-					}			
-		
-					
+						fixationOrderText = (fixationOrders[i][0]+1) + "(!)";
+					}		
+					else
+					{
+						fixationOrderText = (fixationOrders[i][0]+1);
+					}
+				
 					var text = document.createElement('a');
+					text.className += "fixationDivClass";
 					text.innerHTML = "<a href='#' title='"+header+"' data-toggle='"+ id +"' data-placement='"+popoverPosition+"' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ fixationOrderText + "</a>";
 					text.style.position = 'absolute';
-					
-					text.style.left = '20px';
-					if(i > 9)
-					{
-						text.style.left = '16px';
-					}
-					if(i > 99)
-					{
-						text.style.left = '12px';
-					}
-					
-					text.style.top = '15px';
 					
 					var img = document.createElement('img');
 					img.src = chrome.runtime.getURL("../../img/circle.png");
@@ -1065,6 +1048,13 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		{
 			console.log("jQuery is initialized!");
 			sendResponse({message: "ready"});
+			
+			var cssSource = chrome.runtime.getURL("../../css/injected.css");
+			cssLink = document.createElement('link');
+			cssLink.setAttribute('rel', 'stylesheet');
+			cssLink.setAttribute('type', 'text/css');
+			cssLink.setAttribute('href', cssSource);
+			document.getElementsByTagName('head')[0].appendChild(cssLink);
 		}
 		else
 		{
