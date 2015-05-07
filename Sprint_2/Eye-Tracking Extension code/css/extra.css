@@ -16,7 +16,7 @@ p.debug_alert
 	position: absolute;
     left: 0px;
     top: 0px;
-    z-index: -1;
+    z-index: 200;
 	text-align: center;
 	font-weight: bold;
 	margin: 0px;
@@ -35,7 +35,7 @@ p.debug_error
 	position: absolute;
     left: 0px;
     top: 0px;
-    z-index: -1;
+    z-index: 200;
 	text-align: center;
 	font-weight: bold;
 	margin: 0px;
@@ -46,6 +46,28 @@ p.debug_error
 	
 	-webkit-box-shadow:  0px 3px 3px -1px rgba(0, 0, 0, 0.15);
 	box-shadow:  0px 3px 3px -1px rgba(0, 0, 0, 0.15);
+}
+
+.loading-class
+{
+	background: rgba(255,255,255,0.85);
+	position: absolute;
+    left: 0px;
+    top: 0px;
+    height: 600px;
+    width: 420px;
+    z-index: 100;
+    display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.loading-text
+{
+	font-size: 40px;
+	font-weight: bold;
+	color: #006ebf;
+	z-index: 200;
 }
 
 H1 
