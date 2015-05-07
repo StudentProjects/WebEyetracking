@@ -376,11 +376,9 @@ function controlPreviousTests()
 	if(showingFixationPoints)
 	{
 		hideFixationPoints();
-		hide();
 		xFixationPointCoords = null;
 		yFixationPointCoords = null;
 		port.postMessage({message: "display::hideFixationPoints"});
-		port.postMessage({message: "display::clearStatistics"});
 	}
 }
 

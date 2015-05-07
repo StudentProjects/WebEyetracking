@@ -75,14 +75,11 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::hideFixationPoints")
 		{
+			console.log("Kör upp hela statistics i anax!!!");
 			chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
 			chrome.runtime.sendMessage({msg: 'statistics::hidingGrid'});
 			setIsFixationPointsDisplayed(false);
 			setIsNavigationDisplayed(false);
-		}
-		else if(msg.message == "display::clearStatistics")
-		{
-			setStatistics(null);
 		}
 	});
 });

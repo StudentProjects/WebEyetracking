@@ -49,6 +49,10 @@ function setStatistics(data)
 			var time = statistics['timeOnPage'].split(",");
 			document.getElementById("statistics_timeonpage").innerHTML = "Time on page: " + time[0];	
 		}
+		else
+		{
+			document.getElementById("statistics_timeonpage").innerHTML = "Time on page: ";
+		}
 		
 		//percentageOfPageSeen
 		document.getElementById("statistics_percentageofpageseen").innerHTML = "Percentage of page seen: " + statistics['percentageOfPageSeen'] + "%";
@@ -61,6 +65,10 @@ function setStatistics(data)
 			var time = statistics['firstFixation']['timeStampFixation'];
 			document.getElementById("statistics_firstfixation").innerHTML = "First fixation: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
 		}	
+		else
+		{
+			document.getElementById("statistics_firstfixation").innerHTML = "First fixation: ";
+		}
 		
 		//mostFixated
 		if(statistics['mostFixated'])
@@ -70,12 +78,20 @@ function setStatistics(data)
 			time = statistics['mostFixated']['timeStampFixation'];
 			document.getElementById("statistics_mostfixated").innerHTML = "Most fixated: | X - " + x + " | Y - " + y + " | Time - " + time + " ms |";
 		}
+		else
+		{
+			document.getElementById("statistics_mostfixated").innerHTML = "Most fixated: ";
+		}
 		
 		//nrOfFixations
 		if(statistics['allFixations'])
 		{
 			var nr = statistics['allFixations'];
 			document.getElementById("statistics_nroffixations").innerHTML = "Number of fixations: " + nr.length;		
+		}
+		else
+		{
+			document.getElementById("statistics_nroffixations").innerHTML = "Number of fixations: ";
 		}	
 	}
 }
