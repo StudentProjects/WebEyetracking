@@ -17,7 +17,6 @@ var currentData = null;
 var lastFrameTime = 0;
 var lastAnimateEye = false;
 var lastAnimateMouse = false;
-var contentScriptReady = false;
 
 ///////////
 //METHODS//
@@ -55,7 +54,6 @@ chrome.runtime.onConnect.addListener(function(port)
 		else if(msg.message == "display::injectedDisplayReady")
 		{
 			console.log("Content script ready!");
-			contentScriptReady = true;
 			executeBootstrap();
 			if(isRendering && !isRenderingPaused)
 			{
@@ -217,14 +215,6 @@ function injectDisplay()
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
-		
-		/*var timer = setTimeout(function()
-		{
-			chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
-			chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
-			console.log("Injecting bootstrap");
-			clearTimeout(timer);
-		}, 2000);*/
 	});
 }
 
@@ -241,6 +231,7 @@ function executeBootstrap()
 					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
 					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
 					console.log("Injecting bootstrap"); 	
+					setIsJQueryLoaded(true);
 				}
 				else
 				{
@@ -317,7 +308,7 @@ function setHeatmapData(i_data, i_resume)
 function animateHeatmap(animateEye, animateMouse)
 {	
 	console.log(contentScriptReady);
-	if(contentScriptReady)
+	if(isJQueryLoaded)
 	{
 		lastAnimateEye = animateEye;
 		lastAnimateMouse = animateMouse;

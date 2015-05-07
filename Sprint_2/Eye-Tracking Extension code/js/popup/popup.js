@@ -286,7 +286,7 @@ function addPopupMessageListener()
 		//Disconnected
 		else if(i_message.msg == "popup::disconnected")
 		{
-			isConnected = false;;
+			isConnected = false;
 			var span = document.getElementById('extension_header');
 			span.innerHTML = "Offline";
 			span.className = "h1-fail";

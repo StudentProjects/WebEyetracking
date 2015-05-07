@@ -28,6 +28,9 @@ var isRenderingPaused = false;
 var isFixationPointsDisplayed = false;
 var isNavigationDisplayed = false;
 
+var isConnected = false;
+var isJQueryLoaded = false;
+
 ///////////
 //METHODS//
 ///////////
@@ -53,6 +56,7 @@ function sendPopupVariables()
 	variables.isRenderingPaused = isRenderingPaused;
 	variables.isFixationPointsDisplayed = isFixationPointsDisplayed;
 	variables.isNavigationDisplayed = isNavigationDisplayed;
+	variables.isJQueryLoaded = isJQueryLoaded;
 	
 	chrome.runtime.sendMessage({msg: 'popup::variables', content: variables});
 }
@@ -80,6 +84,16 @@ function setIsRendering(status)
 function setIsRenderingPaused(status)
 {
 	isRenderingPaused = status;
+}
+
+function setIsJQueryLoaded(status)
+{
+	isJQueryLoaded = status;
+}
+
+function setIsConnected(status)
+{
+	isConnected = status;
 }
 
 function setIsFixationPointsDisplayed(status)

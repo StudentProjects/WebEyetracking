@@ -11,7 +11,6 @@
 /////////////
 
 var websocket = null; //WebSocket variable
-var isConnected = false; //Are we connected to the server?
 var messageQueue = null;
 var messageSendInterval = null;
 
@@ -54,7 +53,7 @@ function connectWebSocket()
 	//Happens when a connection is closed.
 	websocket.onclose = function(event)
 	{
-		isConnected = false;
+		setIsConnected(false);
 		clearInterval(messageSendInterval);
 		messageSendInterval = null;
 		messageQueue = null;
@@ -82,7 +81,7 @@ function connectWebSocket()
 
 function afterConnection()
 {
-	isConnected = true;
+	setIsConnected(true);
 	messageQueue = new Array();
 	
 	messageSendInterval = setInterval(function()
