@@ -31,6 +31,8 @@ var isNavigationDisplayed = false;
 var isConnected = false;
 var isJQueryLoaded = false;
 
+var isReadyInterval = null;
+
 ///////////
 //METHODS//
 ///////////
@@ -135,7 +137,6 @@ function setStatistics(newStatistics)
 	statistics = newStatistics;
 }
 
-
 function setActiveTab(newTab)
 {
 	activeTab = newTab;
@@ -170,3 +171,13 @@ function setPlayerMouseBoxDisabled(status)
 {
 	playerMouseBoxDisabled = status;
 }
+
+//Check if client is connected to server
+//and if jQuery is initialized.
+isReadyInterval = setInterval(function()
+{
+	var data = new Object();
+	data.isConnected = isConnected;
+	data.isJQueryLoaded = isJQueryLoaded;
+	chrome.runtime.sendMessage({msg: 'popup::isReady', data: data});
+}, 1000);

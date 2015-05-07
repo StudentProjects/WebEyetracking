@@ -15,6 +15,7 @@
 //popup
 var isConnected = false; //Are we connected to the server?
 var debugQueue = new Array();
+var isReady = false; //If extension is ready to handle input.
 
 //player
 var isRendering = false;
@@ -291,6 +292,15 @@ function addPopupMessageListener()
 			span.innerHTML = "Offline";
 			span.className = "h1-fail";
 			renderInfo("Disconnected from server!", "Error");
+		}
+		//isReady
+		else if(i_message.msg == "popup::isReady")
+		{
+			if(i_message.data.isConnected && i_message.data.isJQueryLoaded)
+			{
+				console.log("Hide");
+				document.getElementById("loading-screen").style.display = "none";
+			}
 		}
 		//Set variables
 		else if(i_message.msg == "popup::variables")
