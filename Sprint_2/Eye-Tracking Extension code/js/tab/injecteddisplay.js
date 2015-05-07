@@ -863,10 +863,13 @@ function manageMouseDiv(create)
 	}
 	else
 	{
-		mousePointer.removeChild(mouseImage);
-		document.body.removeChild(mousePointer);
-		mousePointer = null;
-		mouseImage = null;
+		if(mousePointer)
+		{
+			mousePointer.removeChild(mouseImage);
+			document.body.removeChild(mousePointer);
+			mousePointer = null;
+			mouseImage = null;	
+		}
 	}
 }
 //Show the collected data as a heatmap in the tab
@@ -996,6 +999,17 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	{
 		isPaused = true;
 		sendResponse({message: "Paused!"});	
+	}
+	else if(request.msg == "injecteddisplay::clearPrevious")
+	{
+		stopAnimation();
+		manageMouseDiv(false);
+		hide();
+		animating = false;
+		isPaused = false;
+		isShowing = false;
+		
+		sendResponse({message: "Cleared!"});	
 	}
 	else if(request.msg == "injecteddisplay::resumeRendering")
 	{

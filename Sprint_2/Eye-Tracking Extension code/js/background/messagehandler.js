@@ -123,6 +123,7 @@ function handleMessage(i_message)
 			else
 			{
 				chrome.runtime.sendMessage({msg: 'load::loadSucceeded', data: currentMessage['MessageContent'] });
+				resetTestInfo();
 				setHeatmapData(currentMessage['MessageContent']);
 			}
 			break;

@@ -75,7 +75,6 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::hideFixationPoints")
 		{
-			console.log("Kör upp hela statistics i anax!!!");
 			chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
 			chrome.runtime.sendMessage({msg: 'statistics::hidingGrid'});
 			setIsFixationPointsDisplayed(false);
@@ -83,6 +82,34 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 	});
 });
+
+function resetTestInfo()
+{
+	lastFrameTime = 0;
+	lastAnimateEye = false;
+	lastAnimateMouse = false;
+	setIsRendering(false);
+	setIsRenderingPaused(false);
+	chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
+	chrome.runtime.sendMessage({msg: 'player::animationFinished'});
+	
+	chrome.tabs.getSelected(null, function(i_tab) 
+	{
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::clearPrevious"}, function(response) 
+		{
+			try
+			{
+				setIsRendering(false);
+				setIsRenderingPaused(false);
+				console.log(response.message);
+			}
+			catch(err)
+			{	
+				console.log("Error: " + err.message);
+			}
+		});
+	});
+}
 
 function handleFixationPoints()
 {
