@@ -307,7 +307,6 @@ function setHeatmapData(i_data, i_resume)
 //Tell injecteddisplay.js to animate heatmap of data.
 function animateHeatmap(animateEye, animateMouse)
 {	
-	console.log(contentScriptReady);
 	if(isJQueryLoaded)
 	{
 		lastAnimateEye = animateEye;
@@ -415,7 +414,7 @@ displayTimer = setInterval(function()
 							//Check if this was the last error message, if so, do not log again!
 							if(displayError != "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!")
 							{
-								contentScriptReady = false;
+								setIsJQueryLoaded(false);
 								displayError = "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!";
 								console.log(displayError);
 							}
@@ -427,7 +426,7 @@ displayTimer = setInterval(function()
 							//Check if this was the last error message, if so, do not log again!
 							if(displayError != "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url)
 							{
-								contentScriptReady = false;
+								setIsJQueryLoaded(false);
 								displayError = "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url;
 								console.log(displayError);
 							}
