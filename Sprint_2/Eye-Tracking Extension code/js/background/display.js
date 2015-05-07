@@ -17,7 +17,9 @@ var currentData = null;
 var lastFrameTime = 0;
 var lastAnimateEye = false;
 var lastAnimateMouse = false;
-
+var noResponseCounter = 1;
+var injecting = false;
+var hasPermission = false;
 ///////////
 //METHODS//
 ///////////
@@ -60,6 +62,8 @@ chrome.runtime.onConnect.addListener(function(port)
 				console.log("Trying to resume animation!");
 				setHeatmapData(currentData, true);
 			}
+			noResponseCounter = 0;
+			injecting = false;
 		}
 		else if(msg.message == "display::setHeaderToDefault")
 		{
@@ -245,6 +249,7 @@ function resumeRendering()
 //Inject scripts into the current tab
 function injectDisplay()
 {
+	console.log("Injecting content scripts!");
 	chrome.tabs.getSelected(null, function(i_tab)
 	{ 
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/heatmap/build/heatmap.js'});
@@ -423,64 +428,87 @@ function hideHeatmap()
 	});
 }
 
+//If there is no response, check if we have persmission to inject 
+//a script. If so, do it.
+function checkPermission()
+{
+	console.log("Check persmission!");
+	chrome.tabs.query({currentWindow: true, active: true}, function(tabs)
+	{
+		try
+		{
+			var URLstart = tabs[0].url.split("/");
+			if(URLstart[0] != "chrome:")
+			{
+				setIsJQueryLoaded(false);
+				displayError = "Error: Unable to contact content scripts inside " + tabs[0].url + "!";
+				console.log(displayError);
+				hasPermission = true;
+			}
+			else
+			{	
+				setIsJQueryLoaded(false);
+				displayError = "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url+ "!";
+				console.log(displayError);
+				hasPermission = false;
+			}
+		}
+		catch(err)
+		{
+			displayError = "Error: No tab selected!";
+			console.log(displayError);
+			hasPermission = false;
+		}
+	});
+}
+
 //Check if the injected scripts are alive, if not
 //try to inject them. Also handles errors like 
 //permission denied or browser window not selected.
 //This check is done every two seconds.
 displayTimer = setInterval(function()
 {
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{		
-		//Send message to tab.
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
+	if(noResponseCounter > 0)
+	{
+		console.log("No response counter: " + noResponseCounter); 
+		
+		if(!injecting)
 		{
-			try
+			checkPermission();
+			console.log("Permission: " + hasPermission);
+			if(hasPermission)
 			{
-				response.message;
-			}
-			catch(err1)
-			{
-				//If there is no response, check if we have persmission to inject 
-				//a script. If so, do it.
-				chrome.tabs.query({currentWindow: true, active: true}, function(tabs)
+				injecting = true;
+				injectDisplay();
+				injectTabInfo();
+				var resetInterval = setTimeout(function()
 				{
-					try
+					console.log("Resetting injecting bool!");
+					if(injecting)
 					{
-						var URLstart = tabs[0].url.split("/");
-						if(URLstart[0] != "chrome:")
-						{
-							//Check if this was the last error message, if so, do not log again!
-							if(displayError != "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!")
-							{
-								setIsJQueryLoaded(false);
-								displayError = "Error: Unable to contact content script (injecteddisplay.js) inside " + tabs[0].url + ", reinjecting!";
-								console.log(displayError);
-							}
-							
-							injectDisplay();
-						}
-						else
-						{	
-							//Check if this was the last error message, if so, do not log again!
-							if(displayError != "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url)
-							{
-								setIsJQueryLoaded(false);
-								displayError = "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url;
-								console.log(displayError);
-							}
-						}
+						injecting = false;	
 					}
-					catch(err2)
-					{
-						//Check if this was the last error message, if so, do not log again!
-						if(displayError != "Error: No tab selected!")
-						{
-							displayError = "Error: No tab selected!";
-							console.log(displayError);
-						}	
-					}
-				});
+				}, 5000);
 			}
+		}
+	}
+	else
+	{
+		chrome.tabs.getSelected(null, function(i_tab) 
+		{		
+			//Send message to tab.
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
+			{
+				try
+				{
+					response.message;
+				}
+				catch(err)
+				{
+					console.log("Alive check error!");
+					noResponseCounter++;
+				}
+			});
 		});
-	});
-}, 2000);
+	}
+}, 1000);

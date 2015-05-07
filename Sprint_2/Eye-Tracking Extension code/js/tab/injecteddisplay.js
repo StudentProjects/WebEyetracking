@@ -595,6 +595,8 @@ function animateEye()
 					return false;
 				}
 				
+				port.postMessage({message: "display::setLastFrameTime", data: timeStampEYE[indexMouse]});
+				
 				heatmapEyeInstance.addData(
 				{
 					x: xEyeCoords[indexEye],
@@ -640,6 +642,7 @@ function animateMouse()
 				mousePointer.style.top = yMouseCoords[indexMouse]+'px';
 				port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
 				
+				//Try to call click event on element at position
 				try
 				{
 					if(timeMouseClicks[currentMouseClick])

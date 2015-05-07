@@ -14,6 +14,7 @@
 
 var tabInfoTimer = null;
 var tabInfoError = "";
+var responseAfterPageLoad = false;
 
 ///////////
 //METHODS//
@@ -79,8 +80,8 @@ chrome.runtime.onConnect.addListener(function(port)
 	{
 		if(msg.message == "tabinfo::pagebeforeload")
 		{
+			noResponseCounter = 1; //from display.js
 			console.log("Page is being loaded!");
-			contentScriptReady = false;
 		}
 	});
 });
@@ -89,7 +90,7 @@ chrome.runtime.onConnect.addListener(function(port)
 //try to inject them. Also handles errors like 
 //permission denied or browser window not selected.
 //This check is done every two seconds.
-tabInfoTimer = setInterval(function()
+/*tabInfoTimer = setInterval(function()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{		
@@ -117,7 +118,7 @@ tabInfoTimer = setInterval(function()
 								tabInfoError = "Error: Unable to contact content script (injectedtabinfo.js) inside " + tabs[0].url + ", reinjecting!";
 								console.log(tabInfoError);
 							}
-							injectTabInfo();
+							noResponseCounter++;
 						}
 						else
 						{	
@@ -142,4 +143,4 @@ tabInfoTimer = setInterval(function()
 			}
 		});
 	});
-}, 2000);
+}, 1000);*/
