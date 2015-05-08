@@ -25,14 +25,14 @@ function pushKeyUpdate(key)
 	keyLastTime = time.getTime();
 	console.log(keyCurrentTime);
 	
-	currentKeyRecording['key'].push(key);
+	currentKeyRecording['keys'].push(key);
 	currentKeyRecording['timeStampKey'].push(keyCurrentTime);
 }
 
 function startKeyRecording()
 {
 	//Reset currentMouseRecording object.
-	currentKeyRecording['key'] = new Array();
+	currentKeyRecording['keys'] = new Array();
 	currentKeyRecording['timeStampKey'] = new Array();
 		
 	var time = new Date();
