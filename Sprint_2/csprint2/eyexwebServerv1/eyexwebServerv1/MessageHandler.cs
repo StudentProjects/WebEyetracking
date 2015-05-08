@@ -157,8 +157,7 @@ namespace tieto.education.eyetrackingwebserver
                 {
                     try
                     {
-                        int t_requestedType = getMessageContentAsInt(i_decryptedMessage);
-                        bool t_recordingSucceeded = m_activeServerInstance.requestStartRecording(t_requestedType);
+                        bool t_recordingSucceeded = m_activeServerInstance.requestStartRecording();
                         if (t_recordingSucceeded)
                         {
                             constructResponseMessage(7, true);
@@ -346,8 +345,6 @@ namespace tieto.education.eyetrackingwebserver
                         JObject t_stringToJson = JObject.Parse(i_decryptedMessage);
                         string t_messageContent = t_stringToJson.GetValue("MessageContent").Value<string>();
 
-                        // Casting Message content string to JObject
-                        JObject t_mouseInformation = JObject.Parse(t_messageContent);
                         // Collecting all values from JObject by key
                         MouseCoord t_mouse = JsonConvert.DeserializeObject<MouseCoord>(t_messageContent);
                       
@@ -395,6 +392,39 @@ namespace tieto.education.eyetrackingwebserver
                         m_activeServerInstance.setOutputTextProperty("MessageHandler: Error message: " +e.ToString());
                     }
                 }
+                // Key data from client
+                else if(t_messageType == 27)
+                {
+                    m_activeServerInstance.setLogType(0);
+                    m_activeServerInstance.setOutputTextProperty("MessageHandler: Client sent key data!");
+
+                    try
+                    {
+                        JObject t_stringToJson = JObject.Parse(i_decryptedMessage);
+                        string t_messageContent = t_stringToJson.GetValue("MessageContent").Value<string>();
+
+                        // Collecting all values from JObject by key
+                        KeyData t_keyData = JsonConvert.DeserializeObject<KeyData>(t_messageContent);
+
+                        //Add mouse coordinates 
+                        if (m_activeServerInstance.addKeysToTest(t_keyData.timeStampKey,t_keyData.keys))
+                        {
+                            constructResponseMessage(28, true);
+                        }
+                        else
+                        {
+                            constructResponseMessage(28, false);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        m_activeServerInstance.setLogType(2);
+                        m_activeServerInstance.setOutputTextProperty("MessageHandler: Failed when parsing key data message! Is it valid json?");
+                        m_activeServerInstance.setLogType(2);
+                        m_activeServerInstance.setOutputTextProperty("MessageHandler: Error message: " + e.ToString());
+                        constructResponseMessage(28, false);
+                    }
+                }
                 // Client sending error message
                 else if(t_messageType == 99)
                 {
@@ -416,10 +446,6 @@ namespace tieto.education.eyetrackingwebserver
             if(i_messageType == 18)
             {
                 constructResponseMessage(18, true, i_dataMessage);
-            }
-            else if(i_messageType == 26)
-            {
-                constructResponseMessage(26, true, i_dataMessage);
             }
         }
 
@@ -597,14 +623,21 @@ namespace tieto.education.eyetrackingwebserver
                 }
                 t_messageToSend = JsonConvert.SerializeObject(t_responseObject, Formatting.None);
             }
-            else if(i_messageType == 26)
+            else if(i_messageType == 27)
             {
-                t_responseObject.MessageType = 26;
-                t_responseObject.MessageContent = i_dataMessage;
+                t_responseObject.MessageType = 27;
 
+                if (i_succeeded)
+                {
+                    t_responseObject.MessageContent = "Succeeded";
+                }
+                else
+                {
+                    t_responseObject.MessageContent = "Failed";
+                }
                 t_messageToSend = JsonConvert.SerializeObject(t_responseObject, Formatting.None);
             }
-                // error message
+             // error message
             else if(i_messageType == 99)
             {
                
@@ -614,7 +647,6 @@ namespace tieto.education.eyetrackingwebserver
                  t_messageToSend = JsonConvert.SerializeObject(t_responseObject, Formatting.None);
             }
             
-
             //Send message to server instance
             sendResponseMessage(t_messageToSend);
         }

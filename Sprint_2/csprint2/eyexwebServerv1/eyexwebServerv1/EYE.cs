@@ -25,6 +25,8 @@ namespace tieto.education.eyetrackingwebserver
         private bool m_isInfoSubmitted;
         private bool m_isFirstPointCollected;
         private bool m_isDocumentBoundsSet;
+        private bool m_isMouseSubmitted;
+        private bool m_isKeySubmitted;
 
         private List<int> m_gazeXCoordinates;
         private List<int> m_gazeYCoordinates;
@@ -111,18 +113,10 @@ namespace tieto.education.eyetrackingwebserver
             m_activeTestType = -1;
             m_currentFixationIndex = -1;
 
+            m_isMouseSubmitted = false;
+            m_isKeySubmitted = false;
             m_fileSaver = i_fileSaverInstance;
         }
-
-
-       /// <summary>
-       /// Called when the current recording status is needed
-       /// </summary>
-       /// <returns>the current recording status</returns>
-       public bool isRecording()
-       {
-           return m_isRecording;
-       }
 
        /// <summary>
        /// Function called when the datastring with current test information is needed
@@ -390,56 +384,46 @@ namespace tieto.education.eyetrackingwebserver
        /// <param name="i_pageWidth">The page width of the document which the test is performed on</param>
        /// <param name="i_pageHeight">The page height of the document which the test is performed on</param>
        /// <returns>Did start recording success or not</returns>
-       public bool startRecording(int i_requestedTestType)
+       public bool startRecording()
        {
            // Check so that no recording is active and the user has submitted necessary 
            if (!m_isRecording && m_isInfoSubmitted && m_isDocumentBoundsSet)
            {
-               if (i_requestedTestType == 0 || i_requestedTestType == 2)
-               {
-                   if (m_eyeHost != null && !m_isRecording && m_isInfoSubmitted)
-                   {
-                       // Start if the eye tracker device is available
-                       if (m_eyeHost.EyeTrackingDeviceStatus.Value != EyeTrackingDeviceStatus.DeviceNotConnected)
-                       {
-                           // Initializing datastream which will collect points where the user is looking. LightlyFiltered means that the GazeData will be somehow filtered and not just raw data.
-                           m_gazePointStream = m_eyeHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
-                           // Everytime a new point is looked at the function updateEYEPosition is called.  
-                           m_gazePointStream.Next += (s, e) => saveGazePointAndTimestamp((int)e.X, (int)e.Y, (ulong)e.Timestamp);
+                if (m_eyeHost != null && !m_isRecording && m_isInfoSubmitted)
+                {
+                    // Start if the eye tracker device is available
+                    if (m_eyeHost.EyeTrackingDeviceStatus.Value == EyeTrackingDeviceStatus.Tracking)
+                    {
+                        // Initializing datastream which will collect points where the user is looking. LightlyFiltered means that the GazeData will be somehow filtered and not just raw data.
+                        m_gazePointStream = m_eyeHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
+                        // Everytime a new point is looked at the function updateEYEPosition is called.  
+                        m_gazePointStream.Next += (s, e) => saveGazePointAndTimestamp((int)e.X, (int)e.Y, (ulong)e.Timestamp);
+                        //Initializing fixation stream
+                        m_fixationPointStream = m_eyeHost.CreateFixationDataStream(FixationDataMode.Slow);
+                        // Adding event to handler
+                        m_fixationPointStream.Next += (s, e) => saveFixationPointAndTimestamp(e);
+                        // The application is currently recording
+                        m_isRecording = true;
+                        //Initializing test struct and statistics section
+                        m_dataCurrentTest = new TestData();
+                        m_dataCurrentTest.testStatistics = new AllStatistics();
+                        m_activeTestType = 2;
+                        m_currentTestUserInfo.TestTime = DateTime.Now.ToString("HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
 
-                           //Initializing fixation stream
-                           m_fixationPointStream = m_eyeHost.CreateFixationDataStream(FixationDataMode.Slow);
-                           // Adding event to handler
-                           m_fixationPointStream.Next += (s, e) => saveFixationPointAndTimestamp(e);
-                           // The application is currently recording
-                           m_isRecording = true;
-                           //Initializing test struct and statistics section
-                           m_dataCurrentTest = new TestData();
-                           m_dataCurrentTest.testStatistics = new AllStatistics();
-                           m_activeTestType = i_requestedTestType;
-                           m_currentTestUserInfo.TestTime = DateTime.Now.ToString("HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
+                        log("Recorder: Successfully started new recording instance!", 1);
 
-                           log("Recorder: Successfully started new recording instance!", 1);
-
-                           return true;
-                       }
-                       else
-                       {
-                           log("Recorder: Failed to start test! The EYE-Tracker device is not connected", 2);
-                       }
-                   }
-               }
-                //Mouse test
-               else if(i_requestedTestType == 1)
-               {
-                   m_isRecording = true;
-                   m_activeTestType = i_requestedTestType;
-                   m_dataCurrentTest = new TestData();
-                   m_dataCurrentTest.testStatistics = new AllStatistics();
-                   m_currentTestUserInfo.TestTime = DateTime.Now.ToString("HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
-
-                   return true;
-               }
+                        return true;
+                    }
+                    else
+                    {
+                        m_isRecording = true;
+                        m_activeTestType = 1;
+                        m_dataCurrentTest = new TestData();
+                        m_dataCurrentTest.testStatistics = new AllStatistics();
+                        m_currentTestUserInfo.TestTime = DateTime.Now.ToString("HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
+                        return true;
+                    }
+                }
            }
            else
            {
@@ -450,18 +434,6 @@ namespace tieto.education.eyetrackingwebserver
                else if (!m_isInfoSubmitted)
                {
                    log("Recorder: Could not start a recording. The tester has not submitted necessary test information", 3);
-               }
-           }
-           return false;
-       }
-
-       public bool isEyeTrackerConnected()
-       {
-           if(m_eyeHost != null)
-           {
-               if(m_eyeHost.EyeTrackingDeviceStatus.Value == EyeTrackingDeviceStatus.Tracking)
-               {
-                   return true;
                }
            }
            return false;
@@ -506,26 +478,7 @@ namespace tieto.education.eyetrackingwebserver
            if(m_isRecording)
            {
                m_isRecording = false;
-               if (m_activeTestType == 0)
-               {
-                   if (m_gazePointStream != null && m_fixationPointStream != null)
-                   {
-                       // Stopping the datastream and nullify it
-                       m_gazePointStream.Dispose();
-                       m_gazePointStream = null;
-                       m_fixationPointStream.Dispose();
-                       m_fixationPointStream = null;
-                       if(m_statisticsHandler != null)
-                       {
-                           m_dataCurrentTest.testStatistics.timeOnPage = m_statisticsHandler.getTimeOnPage(m_currentTestUserInfo.TestTime);
-                       }                           
-                       log("Recorder: Successfully stopped EYE-tracking test.. Will now save data", 1);
-
-                       saveDataToFile();
-                       return true;
-                   }
-               }
-               else if (m_activeTestType == 1)
+               if (m_activeTestType == 1)
                {
                    if (m_statisticsHandler != null)
                    {
@@ -565,33 +518,70 @@ namespace tieto.education.eyetrackingwebserver
        /// <returns>Was the operation successful or not</returns>
        public bool addMouseCoordinatesToTest(int[] i_mouseXCoords, int[] i_mouseYCoords, int[] i_mouseTimeStamps,int[] i_mouseClickX,int[] i_mouseClickY,int[] i_mouseClickTimeStamp)
        {
-           if(m_activeTestType == 1 || m_activeTestType == 2)
-           {
-               if (m_dataCurrentTest != null)
-               {
-                   m_dataCurrentTest.mouseX = i_mouseXCoords;
-                   m_dataCurrentTest.mouseY = i_mouseYCoords;
-                   m_dataCurrentTest.timeStampMouse = i_mouseTimeStamps;
-                   m_dataCurrentTest.mouseClickX = i_mouseClickX;
-                   m_dataCurrentTest.mouseClickY = i_mouseClickY;
-                   m_dataCurrentTest.mouseClickTimeStamp = i_mouseClickTimeStamp;
+            if (m_dataCurrentTest != null)
+            {
+                m_dataCurrentTest.mouseX = i_mouseXCoords;
+                m_dataCurrentTest.mouseY = i_mouseYCoords;
+                m_dataCurrentTest.timeStampMouse = i_mouseTimeStamps;
+                m_dataCurrentTest.mouseClickX = i_mouseClickX;
+                m_dataCurrentTest.mouseClickY = i_mouseClickY;
+                m_dataCurrentTest.mouseClickTimeStamp = i_mouseClickTimeStamp;
+                m_isMouseSubmitted = true;
 
-                   if(m_activeTestType == 1)
+                if(m_isKeySubmitted)
+                {
+                    if (m_activeTestType == 1)
+                    {
+                        log("Recorder: Received mouse coordinates!, saving single mouse to file", 1);
+                        saveSingleMouseTest();
+                    }
+                    else
+                    {
+                        log("Recorder: Received mouse coordinates!, saving data to file", 1);
+                        saveDataToFile();
+                    }
+                }
+                else
+                {
+                    log("Recorder: Received mouse coordinates!, waiting for keys!", 3);
+                }
+                return true;
+            }
+            return false;
+       }
+
+       /// <summary>
+       /// Adding key press data to current test
+       /// </summary>
+       /// <param name="i_keyTimeStamps">Int array, key timestamps</param>
+       /// <param name="i_keys">String array, key strings</param>
+       /// <returns></returns>
+       public bool addKeysToTest(int[] i_keyTimeStamps,string[] i_keys)
+       {
+           if(m_dataCurrentTest != null)
+           {
+               m_dataCurrentTest.timeStampKey = i_keyTimeStamps;
+               m_dataCurrentTest.keys = i_keys;
+               m_isKeySubmitted = true;
+
+               if(m_isMouseSubmitted)
+               {
+                   if (m_activeTestType == 1)
                    {
-                       log("Recorder: Received mouse coordinates!, saving single mouse to file", 1);
+                       log("Recorder: Received key data!, saving single mouse to file", 1);
                        saveSingleMouseTest();
                    }
                    else
                    {
-                       log("Recorder: Received mouse coordinates!, saving data to file", 1);
+                       log("Recorder: Received key data!, saving data to file", 1);
                        saveDataToFile();
                    }
-                   return true;
                }
-           }
-           else
-           {
-               log("Recorder: Received mouse coordinates but no mouse test has been started", 3);
+               else
+               {
+                   log("Recorder: Received key data!, waiting for mouse!", 3);
+               }
+               return true;
            }
            return false;
        }
@@ -613,6 +603,8 @@ namespace tieto.education.eyetrackingwebserver
            m_gazePointTimeStamps.Clear();
            m_isDocumentBoundsSet = false;
            m_currentFixationIndex = -1;
+           m_isKeySubmitted = false;
+           m_isMouseSubmitted = false;
 
            if(i_endType == 1)
            {

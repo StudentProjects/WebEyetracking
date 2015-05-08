@@ -50,8 +50,10 @@ namespace tieto.education.eyetrackingwebserver
         public int[] eyeY { get; set; }
         public int[] mouseX { get; set; }
         public int[] mouseY { get; set; }
+        public string[] keys;
         public ulong[] timeStampEYE { get; set; }
         public int[] timeStampMouse { get; set; }
+        public int[] timeStampKey { get; set; }
         public int[] mouseClickX { get; set; }
         public int[] mouseClickY { get; set; }
         public int[] mouseClickTimeStamp { get; set; }
@@ -64,6 +66,12 @@ namespace tieto.education.eyetrackingwebserver
         public int xMin { get; set; }
         public int yMax { get; set; }
         public int yMin { get; set; }
+    }
+
+    public class KeyData
+    {
+        public string[] keys { get; set; }
+        public int[] timeStampKey { get; set; }
     }
 
     public class AllStatistics
@@ -96,17 +104,6 @@ namespace tieto.education.eyetrackingwebserver
         public int[] mouseClickTimeStamp { get; set; }
     }
 
-    public class SubTest
-    {
-        public string Name { get; set; }
-        public int TestNumber { get; set; }
-        public int[] eyeX { get; set; }
-        public int[] eyeY { get; set; }
-        public int[] mouseX { get; set; }
-        public int[] mouseY { get; set; }
-        public ulong[] timeStampEYE { get; set; }
-        public ulong[] timeStampMouse { get; set; }
-    }
 
     public struct UserInfo
     {
@@ -122,14 +119,4 @@ namespace tieto.education.eyetrackingwebserver
         public string TestDate;
         public string TestTime;
     }
-
-    public class MyListBoxItem {
-    public MyListBoxItem(Color c, string m) 
-    { 
-        ItemColor = c; 
-        Message = m;
-    }
-    public Color ItemColor { get; set; }
-    public string Message { get; set; }
-}
 }

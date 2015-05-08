@@ -37,16 +37,12 @@ namespace tieto.education.eyetrackingwebserver
         private string m_outputMessage;     
         
         private bool m_isTerminatingListeningThread;
-        private bool m_safeToDisconnectClient;
         private bool m_startSucceded;
         private bool m_clientConnected;
-        private bool m_runListeningThread;
-        private bool m_runClientThread;
         private bool m_isStartBitSent;
         private bool m_isHandshakeDone;
 
         private Thread m_listeningThread;
-        private Thread m_recieveDataThread;
         private TcpClient m_connectedClient;
         private TcpListener m_socketListener;
         private EYE m_recorderInstance;
@@ -80,7 +76,6 @@ namespace tieto.education.eyetrackingwebserver
             m_ipAddress = i_ipAddress;
             m_portNo = i_portNo;
             m_isTerminatingListeningThread = false;
-            m_safeToDisconnectClient = false;
             m_startSucceded = false;
             m_outputMessage = "";
             m_clientStatus = -1;
@@ -90,8 +85,6 @@ namespace tieto.education.eyetrackingwebserver
             m_fileSaver = new FileSaver();
             m_fileLoader = new FileLoader();
             m_clientConnected = false;
-            m_runListeningThread = true;
-            m_runClientThread = false;
             m_messageSubstrings = new List<string>();
             m_isStartBitSent = false;
             m_messageSender = new System.Timers.Timer();
@@ -189,14 +182,6 @@ namespace tieto.education.eyetrackingwebserver
             m_recorderInstance.onDataSaved += new EventHandler(this.dataSavedEvent);
         }
 
-        private bool getEyeTrackerStatus()
-        {
-            if(m_recorderInstance != null)
-            {
-                return m_recorderInstance.isEyeTrackerConnected();
-            }
-            return false;
-        }
 
         /// <summary>
         /// Updates the current log type 
@@ -293,12 +278,12 @@ namespace tieto.education.eyetrackingwebserver
        /// <param name="i_pageWidth">Page width of the application the test is performed on</param>
        /// <param name="i_pageHeight">Page height of the application the test is performed on</param>
        /// <returns>A bool which indicates if the start recording request was successful</returns>
-        public bool requestStartRecording(int i_requestedTestType)
+        public bool requestStartRecording()
         {
             bool t_startRecordingSucceeded = true;
             if(m_recorderInstance != null)
             {
-                t_startRecordingSucceeded = m_recorderInstance.startRecording(i_requestedTestType);
+                t_startRecordingSucceeded = m_recorderInstance.startRecording();
                 if (t_startRecordingSucceeded)
                 {
                     recorderStatusProperty = 0;
@@ -477,9 +462,6 @@ namespace tieto.education.eyetrackingwebserver
 
                             m_isTerminatingListeningThread = false;
                             m_isHandshakeDone = true;
-
-                            string eyeStatus = getEyeTrackerStatus().ToString();
-                            m_messageHandler.serverNotificationToClient(26, eyeStatus);
                             m_messageHandler.serverNotificationToClient(18, getAllApplicationData());
                         }
 
@@ -657,7 +639,6 @@ namespace tieto.education.eyetrackingwebserver
         private void resetThreadSpecificVariables()
         {
             m_isTerminatingListeningThread = false;
-            m_safeToDisconnectClient = false;
         }
 
         /// <summary>
@@ -837,6 +818,26 @@ namespace tieto.education.eyetrackingwebserver
                 {
                     m_logType = 2;
                     outputTextProperty = "Recorder: Failed when adding mouse coordinates to current test. Is there a started test?";
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        public bool addKeysToTest(int[] i_keyTimestamps, string[] i_keys)
+        {
+            if(m_recorderInstance != null)
+            {
+                if(m_recorderInstance.addKeysToTest(i_keyTimestamps,i_keys))
+                {
+                    m_logType = 1;
+                    outputTextProperty = "Recorder: Successfully added key data to current test";
+                    return true;
+                }
+                else
+                {
+                    m_logType = 2;
+                    outputTextProperty = "Recorder: Failed when adding key data to current test. Is there a started test?";
                     return false;
                 }
             }
