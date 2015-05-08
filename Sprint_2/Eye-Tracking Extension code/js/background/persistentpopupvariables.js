@@ -80,6 +80,7 @@ function setIsRecording(status)
 
 function setIsRendering(status)
 {
+	console.log("Rendering set in persistant: " + status);
 	isRendering = status;
 }
 

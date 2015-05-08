@@ -1005,7 +1005,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if(request.msg == "injecteddisplay::clearPrevious")
 	{
-		stopAnimation();
+		clearInterval(animationEye);
+		clearInterval(animationMouse);
+		animationEye = null;
+		animationMouse = null;
 		manageMouseDiv(false);
 		hide();
 		animating = false;

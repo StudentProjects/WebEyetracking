@@ -31,6 +31,7 @@ chrome.runtime.onConnect.addListener(function(port)
 	{
 		if(msg.message == "display::animationStarted")
 		{
+			console.log("Rendering set to true in display.js by message animationStarted");
 			setIsRendering(true);
 			chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});	
 			chrome.runtime.sendMessage({msg: 'player::animationStarted'});
@@ -41,6 +42,7 @@ chrome.runtime.onConnect.addListener(function(port)
 			lastAnimateEye = false;
 			lastAnimateMouse = false;
 			setIsRendering(false);
+			console.log("Rendering set to false in display.js by message animationFinished");
 			setIsRenderingPaused(false);
 			chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
 			chrome.runtime.sendMessage({msg: 'player::animationFinished'});
@@ -92,6 +94,7 @@ function resetTestInfo()
 	lastFrameTime = 0;
 	lastAnimateEye = false;
 	lastAnimateMouse = false;
+	console.log("Rendering set to false in display.js by resetTestInfo");
 	setIsRendering(false);
 	setIsRenderingPaused(false);
 	chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
@@ -103,8 +106,6 @@ function resetTestInfo()
 		{
 			try
 			{
-				setIsRendering(false);
-				setIsRenderingPaused(false);
 				console.log(response.message);
 			}
 			catch(err)
