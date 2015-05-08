@@ -462,6 +462,8 @@ namespace tieto.education.eyetrackingwebserver
 
                             m_isTerminatingListeningThread = false;
                             m_isHandshakeDone = true;
+                            string t_eyeData = m_recorderInstance.isEyeTrackerOnline().ToString();
+                            m_messageHandler.serverNotificationToClient(26, t_eyeData);
                             m_messageHandler.serverNotificationToClient(18, getAllApplicationData());
                         }
 

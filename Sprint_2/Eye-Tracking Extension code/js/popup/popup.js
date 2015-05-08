@@ -323,8 +323,20 @@ function addPopupMessageListener()
 			}
 			
 			//Mark selected boxes
-			document.getElementById("eye_recordbox").checked = i_message.content['recorderEyeBox'];
-			document.getElementById("mouse_recordbox").checked = i_message.content['recorderMouseBox'];
+			
+			if(i_message.content['eyeTrackerActive'])
+			{
+				var span = document.getElementById('eyeRecorderStatus');
+				span.innerHTML = "Online";
+				span.className = "h1-success";
+			}
+			else
+			{
+				var span = document.getElementById('eyeRecorderStatus');
+				span.innerHTML = "Offline";
+				span.className = "h1-fail";
+			}
+			
 			document.getElementById("eye_playerbox").checked = i_message.content['playerEyeBox'];
 			document.getElementById("eye_playerbox").disabled = i_message.content['playerEyeBoxDisabled'];
 			document.getElementById("mouse_playerbox").checked = i_message.content['playerMouseBox'];

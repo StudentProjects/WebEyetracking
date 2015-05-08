@@ -17,8 +17,6 @@ var userInfo = null; //Information about the user
 var testInfo = null;
 var statistics = null;
 var activeTab = 0;
-var recorderEyeBox = true;
-var recorderMouseBox = true;
 var playerEyeBox = true;
 var playerMouseBox = true;
 var playerEyeBoxDisabled = false;
@@ -50,8 +48,6 @@ function sendPopupVariables()
 	variables.testInfo = testInfo;
 	variables.statistics = statistics;
 	variables.activeTab = activeTab;
-	variables.recorderEyeBox = recorderEyeBox;
-	variables.recorderMouseBox = recorderMouseBox;
 	variables.playerEyeBox = playerEyeBox;
 	variables.playerMouseBox = playerMouseBox;
 	variables.playerEyeBoxDisabled = playerEyeBoxDisabled;
@@ -61,10 +57,15 @@ function sendPopupVariables()
 	variables.isFixationPointsDisplayed = isFixationPointsDisplayed;
 	variables.isNavigationDisplayed = isNavigationDisplayed;
 	variables.isJQueryLoaded = isJQueryLoaded;
+	variables.eyeTrackerActive = eyeTrackerActive;
 	
 	chrome.runtime.sendMessage({msg: 'popup::variables', content: variables});
 }
 
+function setEyeTrackerActive(status)
+{
+	eyeTrackerActive = status;
+}
 function sendUserInfo()
 {
 	chrome.runtime.sendMessage({msg: 'info::setUserInfo', info: userInfo});
@@ -143,16 +144,6 @@ function setStatistics(newStatistics)
 function setActiveTab(newTab)
 {
 	activeTab = newTab;
-}
-
-function setRecorderEyeBox(status)
-{
-	recorderEyeBox = status;
-}
-
-function setRecorderMouseBox(status)
-{
-	recorderMouseBox = status;
 }
 
 function setPlayerEyeBox(status)

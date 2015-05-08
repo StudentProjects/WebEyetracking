@@ -143,13 +143,19 @@ function handleMessage(i_message)
 			}
 			break;
 		case 26:
-			if(currentMessage['MessageContent'] == "True")
+			var msgData = currentMessage['MessageContent'];
+			console.log(msgData);
+			if(msgData == "True")
 			{
-				eyeTrackerActive = true;
+				console.log("Eye tracker online");
+				setEyeTrackerActive(true);
+				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOnline'});
 			}
 			else
 			{
-				eyeTrackerActive = false;
+				console.log("Eye tracker offline");
+				setEyeTrackerActive(false);
+				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOffline'});
 			}
 			break;
 		//Error message
@@ -416,16 +422,6 @@ chrome.extension.onRequest.addListener
 		else if(request.msg == "persistentpopupvariables::setActiveTab")
 		{	
 			setActiveTab(request.data);
-		}
-		//setRecorderEyeBox
-		else if(request.msg == "persistentpopupvariables::setRecorderEyeBox")
-		{
-			setRecorderEyeBox(request.data);
-		}
-		//setRecorderMouseBox
-		else if(request.msg == "persistentpopupvariables::setRecorderMouseBox")
-		{
-			setRecorderMouseBox(request.data);
 		}
 		//setPlayerEyeBox
 		else if(request.msg == "persistentpopupvariables::setPlayerEyeBox")

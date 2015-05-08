@@ -55,6 +55,21 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			lastFrameTime = msg.data;
 		}
+		else if(msg.message == "display::setEyeTrackerStatus")
+		{
+			if(msg.data == "True")
+			{
+				console.log("Eye tracker online");
+				setEyeTrackerActive(true);
+				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOnline'});
+			}
+			else
+			{
+				console.log("Eye tracker offline");
+				setEyeTrackerActive(false);
+				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOffline'});
+			}
+		}
 		else if(msg.message == "display::injectedDisplayReady")
 		{
 			console.log("Content script ready!");

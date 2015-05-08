@@ -90,18 +90,6 @@ function initRecorder()
 		}
 	});
 	
-	//If changed, send eye_recordbox checked value
-	document.getElementById("eye_recordbox").addEventListener("change", function()
-	{
-		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setRecorderEyeBox", data: document.getElementById("eye_recordbox").checked });
-	});
-	
-	//If changed, send mouse_recordbox checked value
-	document.getElementById("mouse_recordbox").addEventListener("change", function()
-	{
-		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setRecorderMouseBox", data: document.getElementById("mouse_recordbox").checked });
-	});
-	
 	//Add listener.
 	addRecorderMessageListener();
 	
@@ -155,6 +143,16 @@ function addRecorderMessageListener()
 					clearTimeout(timer);
 				}, 10);
 			}
+		}
+		else if(i_message.msg == "recorder::setEyeTrackerOnline")
+		{
+			document.getElementById('eyeRecorderStatus').innerHTML = "Online";
+			document.getElementById('eyeRecorderStatus').className = "h1-success";
+		}
+		else if(i_message.msg == "recorder::setEyeTrackerOffline")
+		{
+			document.getElementById('eyeRecorderStatus').innerHTML = "Offline";
+			document.getElementById('eyeRecorderStatus').innerHTML = "h1-fail";
 		}
 		//Stop received
 		else if(i_message.msg == "recorder::stopReceived")

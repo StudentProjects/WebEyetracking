@@ -118,6 +118,22 @@ namespace tieto.education.eyetrackingwebserver
             m_fileSaver = i_fileSaverInstance;
         }
 
+       public bool isEyeTrackerOnline()
+       {
+           if(m_eyeHost != null)
+           {
+               if(m_eyeHost.EyeTrackingDeviceStatus.Value == EyeTrackingDeviceStatus.Tracking)
+               {
+                   return true;
+               }
+               else
+               {
+                   return false;
+               }
+           }
+           return false;
+       }
+
        /// <summary>
        /// Function called when the datastring with current test information is needed
        /// </summary>
