@@ -40,6 +40,35 @@ var tempTimer = setTimeout(function()
 		console.log("Page is to be loaded!");
 		port.postMessage({message: "tabinfo::pagebeforeload"});
 	});
+	
+	$(window).keypress(function(event)
+	{
+		var tempKey;
+		if(event.which == 13)
+		{
+			tempKey = "enter";
+		}
+		else if(event.which == 32)
+		{
+			tempKey = "space";
+		}
+		else
+		{
+			tempKey = String.fromCharCode(event.which);
+		}
+		
+		port.postMessage({message: "tabinfo::keyEvent", data: tempKey});
+	});
+	
+	$(window).keyup(function(event)
+	{
+		console.log(event.which);
+		if(event.which == 8)
+		{
+			console.log("Key: Backspace");
+			port.postMessage({message: "tabinfo::keyEvent", data: "backspace"});
+		}
+	});
 }, 50);
 
 //Listen for messages from tabinfo.js in extension

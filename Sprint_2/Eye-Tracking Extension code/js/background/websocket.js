@@ -202,7 +202,8 @@ function handleStartReceived()
 	
 	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 	
-	startMouseRecording();	
+	startMouseRecording();
+	startKeyRecording();
 	isRecording = true;
 }
 
@@ -253,5 +254,6 @@ function handleStopReceived()
 	
 	chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
 
+    stopKeyRecording();
 	stopMouseRecording();
 }

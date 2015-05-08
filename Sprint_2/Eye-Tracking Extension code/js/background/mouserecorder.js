@@ -13,7 +13,7 @@
 /////////////
 
 var currentMouseRecording = new Object();
-var timer = null; //Variable for interval timer.
+var mouseTimer = null; //Variable for interval timer.
 var isRecording = false;
 var isPaused = false;
 var mouseX = -1;
@@ -22,10 +22,8 @@ var mouseClickX = -1;
 var mouseClickY = -1;
 var mouseClicks = 0;
 
-var lastTime = 0;
-var currentTime = 0;
-
-
+var mouseLastTime = 0;
+var mouseCurrentTime = 0;
 
 ///////////
 //METHODS//
@@ -53,18 +51,18 @@ function pushMousePosition()
 	if(!isPaused)
 	{
 		var time = new Date();
-		currentTime += time.getTime() - lastTime;
-		lastTime = time.getTime();
+		mouseCurrentTime += time.getTime() - mouseLastTime;
+		mouseLastTime = time.getTime();
 		
 		currentMouseRecording['mouseX'].push(mouseX);
 		currentMouseRecording['mouseY'].push(mouseY);	
-		currentMouseRecording['timeStampMouse'].push(currentTime);
+		currentMouseRecording['timeStampMouse'].push(mouseCurrentTime);
 		
 		if(mouseClicks > currentMouseRecording['mouseClickTimeStamp'].length)
 		{
 			currentMouseRecording['mouseClickX'].push(mouseClickX);
 			currentMouseRecording['mouseClickY'].push(mouseClickY);	
-			currentMouseRecording['mouseClickTimeStamp'].push(currentTime);
+			currentMouseRecording['mouseClickTimeStamp'].push(mouseCurrentTime);
 		}	
 	}
 }
@@ -84,14 +82,14 @@ function startMouseRecording()
 		
 	mouseClicks = 0;
 	var time = new Date();
-	currentTime = 0;
-	lastTime = time.getTime();
+	mouseCurrentTime = 0;
+	mouseLastTime = time.getTime();
 	
 	//Run once before interval starts
 	pushMousePosition();
 	
 	//Push at 60fps
-	timer = setInterval(function()
+	mouseTimer = setInterval(function()
 	{
 		if(mouseX > 0 && mouseY > 0)
 		{
@@ -116,7 +114,7 @@ function resumeMouseRecording()
 //Stop mouse recording
 function stopMouseRecording()
 {
-	clearInterval(timer);
+	clearInterval(mouseTimer);
 	isPaused = false;
 	
 	manageMessage(23, JSON.stringify(currentMouseRecording));
