@@ -1025,7 +1025,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	//If script is leloaded and we were animating, continue animating from the last frame.
 	else if(request.msg == "injecteddisplay::resumeRenderingAfterLoad")
 	{
-		console.log(request.data.lastAnimateEye + " -  " + request.data.lastAnimateMouse + " -  " + request.data.lastFrameTime);
 		startAnimation(request.data.lastAnimateEye, request.data.lastAnimateMouse, request.data.lastFrameTime);
 		sendResponse({message: "Resumed!"});	
 	}
@@ -1055,7 +1054,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			sendResponse({message: "Updating data!"});
 			controlPreviousTests();
 		}
-		
 	}
 	else if(request.msg == "injecteddisplay::showFixationPoints")
 	{
@@ -1090,6 +1088,18 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			cssLink.setAttribute('type', 'text/css');
 			cssLink.setAttribute('href', cssSource);
 			document.getElementsByTagName('head')[0].appendChild(cssLink);
+			
+			$(window).on("beforeunload",function()
+			{
+				if(animationEye)
+				{
+					clearTimeout(animationEye);
+				}
+				if(animationMouse)
+				{
+					clearTimeout(animationMouse);
+				}
+			});
 		}
 		else
 		{

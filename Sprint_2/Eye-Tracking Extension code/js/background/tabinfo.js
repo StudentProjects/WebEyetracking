@@ -25,8 +25,6 @@ function injectTabInfo()
 {
 	chrome.tabs.getSelected(null, function(i_tab)
 	{ 
-		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
-
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedtabinfo.js'});
 	});	
 }

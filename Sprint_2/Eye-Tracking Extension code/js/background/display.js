@@ -274,6 +274,7 @@ function executeBootstrap()
 		{
 			try
 			{
+				console.log("Response jquery: " + response.message);
 				if(response.message == "ready")
 				{
 					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
@@ -439,7 +440,6 @@ function hideHeatmap()
 //a script. If so, do it.
 function checkPermission()
 {
-	console.log("Check persmission!");
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs)
 	{
 		try
@@ -448,14 +448,14 @@ function checkPermission()
 			if(URLstart[0] != "chrome:")
 			{
 				setIsJQueryLoaded(false);
-				displayError = "Error: Unable to contact content scripts inside " + tabs[0].url + "!";
+				displayError = "Error: Unable to contact content scripts inside " + tabs[0].url;
 				console.log(displayError);
 				hasPermission = true;
 			}
 			else
 			{	
 				setIsJQueryLoaded(false);
-				displayError = "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url+ "!";
+				displayError = "Error: Not allowed to inject injecteddisplay.js into " + tabs[0].url;
 				console.log(displayError);
 				hasPermission = false;
 			}
@@ -476,13 +476,10 @@ function checkPermission()
 displayTimer = setInterval(function()
 {
 	if(noResponseCounter > 0)
-	{
-		console.log("No response counter: " + noResponseCounter); 
-		
+	{		
 		if(!injecting)
 		{
 			checkPermission();
-			console.log("Permission: " + hasPermission);
 			if(hasPermission)
 			{
 				injecting = true;
@@ -492,7 +489,6 @@ displayTimer = setInterval(function()
 				{
 					if(injecting)
 					{
-						console.log("Resetting injecting bool!");
 						injecting = false;	
 					}
 				}, 5000);
@@ -512,7 +508,6 @@ displayTimer = setInterval(function()
 				}
 				catch(err)
 				{
-					console.log("Alive check error!");
 					noResponseCounter++;
 				}
 			});
