@@ -59,11 +59,6 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			console.log("Content script ready!");
 			executeBootstrap();
-			if(isRendering && !isRenderingPaused)
-			{
-				console.log("Trying to resume animation!");
-				setHeatmapData(currentData, true);
-			}
 			noResponseCounter = 0;
 			injecting = false;
 		}
@@ -253,12 +248,22 @@ function injectDisplay()
 	console.log("Injecting content scripts!");
 	chrome.tabs.getSelected(null, function(i_tab)
 	{ 
-		chrome.tabs.executeScript(i_tab.id, {file: 'ext/heatmap/build/heatmap.js'});
-		
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
+		
+		chrome.tabs.executeScript(i_tab.id, {file: 'ext/heatmap/build/heatmap.js'});
 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
 	});
+}
+
+function checkResumeRendering()
+{
+	console.log("Is rendering after load: " + isRendering);
+	if(isRendering && !isRenderingPaused)
+	{
+		console.log("Trying to resume animation!");
+		setHeatmapData(currentData, true);
+	}
 }
 
 function executeBootstrap()
@@ -275,6 +280,7 @@ function executeBootstrap()
 					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
 					console.log("Injecting bootstrap"); 	
 					setIsJQueryLoaded(true);
+					checkResumeRendering();
 				}
 				else
 				{
@@ -484,9 +490,9 @@ displayTimer = setInterval(function()
 				injectTabInfo();
 				var resetInterval = setTimeout(function()
 				{
-					console.log("Resetting injecting bool!");
 					if(injecting)
 					{
+						console.log("Resetting injecting bool!");
 						injecting = false;	
 					}
 				}, 5000);
