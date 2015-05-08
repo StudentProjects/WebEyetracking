@@ -142,6 +142,16 @@ function handleMessage(i_message)
 				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Failed to send mouse data!", type: "Error"});
 			}
 			break;
+		case 25:
+			if(currentMessage['MessageContent'])
+			{
+				console.log("Eye-tracker is active");
+			}
+			else
+			{
+				console.log("Eye-tracker is inactive");
+			}
+			break;
 		//Error message
 		case 99:
 			console.log("Error: " + currentMessage['MessageContent']);
