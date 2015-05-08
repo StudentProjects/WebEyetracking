@@ -189,6 +189,15 @@ namespace tieto.education.eyetrackingwebserver
             m_recorderInstance.onDataSaved += new EventHandler(this.dataSavedEvent);
         }
 
+        private bool getEyeTrackerStatus()
+        {
+            if(m_recorderInstance != null)
+            {
+                return m_recorderInstance.isEyeTrackerConnected();
+            }
+            return false;
+        }
+
         /// <summary>
         /// Updates the current log type 
         /// </summary>
@@ -203,6 +212,7 @@ namespace tieto.education.eyetrackingwebserver
         /// <summary>
         /// fires event of type onOutputTextUpdate if the value changes
         /// </summary>
+        /// 
         private string outputTextProperty
         {
             get { return m_outputMessage; }
@@ -468,6 +478,8 @@ namespace tieto.education.eyetrackingwebserver
                             m_isTerminatingListeningThread = false;
                             m_isHandshakeDone = true;
 
+                            string eyeStatus = getEyeTrackerStatus().ToString();
+                            m_messageHandler.serverNotificationToClient(26, eyeStatus);
                             m_messageHandler.serverNotificationToClient(18, getAllApplicationData());
                         }
 

@@ -455,6 +455,18 @@ namespace tieto.education.eyetrackingwebserver
            return false;
        }
 
+       public bool isEyeTrackerConnected()
+       {
+           if(m_eyeHost != null)
+           {
+               if(m_eyeHost.EyeTrackingDeviceStatus.Value == EyeTrackingDeviceStatus.Tracking)
+               {
+                   return true;
+               }
+           }
+           return false;
+       }
+
        /// <summary>
        /// Will try to pause a currently active recording
        /// </summary>
