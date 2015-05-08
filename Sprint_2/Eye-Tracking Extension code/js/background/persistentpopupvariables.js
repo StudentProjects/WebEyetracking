@@ -33,6 +33,8 @@ var isJQueryLoaded = false;
 
 var isReadyInterval = null;
 
+var eyeTrackerActive = false;
+
 ///////////
 //METHODS//
 ///////////

@@ -189,19 +189,8 @@ function handleStartRecording()
 		var timer = setTimeout(function()
 		{	
 			//Request start recording
-			if(recorderEyeBox && recorderMouseBox)
-			{
-				manageMessage(1, 2);
-			}
-			else if(recorderEyeBox)
-			{
-				manageMessage(1, 0);
-			}
-			else if(recorderMouseBox)
-			{
-				manageMessage(1, 1);
-			}
-			
+			manageMessage(1, "StartRecordingRequest");
+		
 			console.log("Start sent");
 		}, 50);
 	}
@@ -213,11 +202,7 @@ function handleStartReceived()
 	
 	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 	
-	if(recorderMouseBox)
-	{
-		startMouseRecording();
-	}
-	
+	startMouseRecording();	
 	isRecording = true;
 }
 
@@ -225,26 +210,12 @@ function handlePauseRecording()
 {
 	console.log("Pause");
 	
-	if(recorderEyeBox && recorderMouseBox)
-	{
-		manageMessage(2, "PauseRecordingRequest");
-		pauseMouseRecording();
-	}
-	else if(recorderEyeBox)
-	{
-		manageMessage(2, "PauseRecordingRequest");
-	}
-	else if(recorderMouseBox)
-	{
-		pauseMouseRecording();
-		chrome.runtime.sendMessage({ msg: "recorder::pauseReceived" });
-		chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});
-		isRecordingPaused = true;
-	}
+	manageMessage(2, "PauseRecordingRequest");
 }
 
 function handlePauseReceived()
 {
+	pauseMouseRecording();
 	chrome.runtime.sendMessage({ msg: "recorder::pauseReceived" });
 	chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});
 	isRecordingPaused = true;
@@ -253,27 +224,13 @@ function handlePauseReceived()
 function handleResumeRecording()
 {
 	console.log("Resume");
-	
-	if(recorderEyeBox && recorderMouseBox)
-	{
-		manageMessage(3, "ResumeRecordingRequest");
-		resumeMouseRecording();
-	}
-	else if(recorderEyeBox)
-	{
-		manageMessage(3, "ResumeRecordingRequest");
-	}
-	else if(recorderMouseBox)
-	{
-		resumeMouseRecording();
-		chrome.runtime.sendMessage({ msg: "recorder::resumeReceived" });
-		chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
-		isRecordingPaused = false;
-	}
+
+	manageMessage(3, "ResumeRecordingRequest");
 }
 
 function handleResumeReceived()
 {
+	resumeMouseRecording();
 	chrome.runtime.sendMessage({ msg: "recorder::resumeReceived" });
 	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 	isRecordingPaused = false;
@@ -295,9 +252,6 @@ function handleStopReceived()
 	isRecordingPaused = false;
 	
 	chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
-	
-	if(recorderMouseBox)
-	{
-		stopMouseRecording();
-	}
+
+	stopMouseRecording();
 }
