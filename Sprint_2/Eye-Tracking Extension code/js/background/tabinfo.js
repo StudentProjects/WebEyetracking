@@ -80,7 +80,17 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			noResponseCounter = 1; //from display.js
 			console.log("Page is being loaded!");
-			console.log("Is rendering before load: " + isRendering);
+		}
+	});
+	
+	port.onMessage.addListener(function(msg) 
+	{
+		if(msg.message == "tabinfo::keyEvent")
+		{
+			if(isRecording && !isRecordingPaused)
+			{
+				pushKeyUpdate(msg.data);
+			}
 		}
 	});
 });

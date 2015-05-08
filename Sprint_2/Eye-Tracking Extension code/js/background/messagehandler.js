@@ -158,6 +158,16 @@ function handleMessage(i_message)
 				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOffline'});
 			}
 			break;
+		case 28:
+			if(currentMessage['MessageContent'] == "Succeeded")
+			{
+				console.log("Successfully send key data!");
+			}
+			else
+			{
+				console.log("Failed to send key data!");
+			}
+			break;
 		//Error message
 		case 99:
 			console.log("Error: " + currentMessage['MessageContent']);
