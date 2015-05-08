@@ -152,7 +152,7 @@ function addRecorderMessageListener()
 		else if(i_message.msg == "recorder::setEyeTrackerOffline")
 		{
 			document.getElementById('eyeRecorderStatus').innerHTML = "Offline";
-			document.getElementById('eyeRecorderStatus').innerHTML = "h1-fail";
+			document.getElementById('eyeRecorderStatus').className = "h1-fail";
 		}
 		//Stop received
 		else if(i_message.msg == "recorder::stopReceived")
