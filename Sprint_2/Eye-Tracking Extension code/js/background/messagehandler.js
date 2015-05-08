@@ -143,7 +143,8 @@ function handleMessage(i_message)
 			}
 			break;
 		case 26:
-			if(currentMessage['MessageContent'])
+			console.log(currentMessage['MessageContent']);
+			if(currentMessage['MessageContent'] == "true")
 			{
 				console.log("Eye-tracker is active");
 			}
