@@ -636,7 +636,7 @@ namespace tieto.education.eyetrackingwebserver
             }
             else if(i_messageType == 28)
             {
-                t_responseObject.MessageType = 27;
+                t_responseObject.MessageType = 28;
 
                 if (i_succeeded)
                 {
