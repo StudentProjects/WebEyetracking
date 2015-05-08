@@ -525,6 +525,24 @@ namespace tieto.education.eyetrackingwebserver
            return false;
        }
 
+       public bool stopCriticalRecording()
+       {
+           if(m_isRecording)
+           {
+               m_isRecording = false;
+               if (m_gazePointStream != null)
+               {
+                   // Stopping the datastream and nullify it
+                   m_gazePointStream.Dispose();
+                   m_gazePointStream = null;
+                   m_fixationPointStream.Dispose();
+                   m_fixationPointStream = null;
+               }
+               return true;
+           }
+           return false;
+       }
+
        /// <summary>
        /// Adding mouse data received from client to the current test instance and then calls the save function 
        /// </summary>

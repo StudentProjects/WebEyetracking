@@ -490,6 +490,15 @@ namespace tieto.education.eyetrackingwebserver
                                     m_connectedClient.Close();
                                     m_isHandshakeDone = false;
                                     m_isTerminatingListeningThread = true;
+
+                                    if(m_recorderInstance != null)
+                                    {
+                                        bool result = m_recorderInstance.stopCriticalRecording();
+                                        if(result)
+                                        {
+                                            m_recorderStatus = 1;
+                                        }
+                                    }
                                     break;
                                 }
                                 else if (!IsConnected())
@@ -498,6 +507,16 @@ namespace tieto.education.eyetrackingwebserver
                                     outputTextProperty = "Server: Restarting listener for new client!";
                                     m_isTerminatingListeningThread = true;
                                     m_connectedClient.Close();
+
+                                    if (m_recorderInstance != null)
+                                    {
+                                        bool result = m_recorderInstance.stopCriticalRecording();
+                                        if (result)
+                                        {
+                                            m_recorderStatus = 1;
+                                        }
+                                    }
+
                                     m_isHandshakeDone = false;
                                     break;
                                 }
@@ -520,6 +539,16 @@ namespace tieto.education.eyetrackingwebserver
                                 m_logType = 1;
                                 outputTextProperty = "Server: Good bye!";
                                 m_connectedClient.Close();
+
+                                if (m_recorderInstance != null)
+                                {
+                                    bool result = m_recorderInstance.stopCriticalRecording();
+                                    if (result)
+                                    {
+                                        m_recorderStatus = 1;
+                                    }
+                                }
+
                                 m_isHandshakeDone = false;
                             }
                         }
@@ -528,6 +557,16 @@ namespace tieto.education.eyetrackingwebserver
                             m_logType = 1;
                             outputTextProperty = "Server: Good bye!";
                             m_connectedClient.Close();
+
+                            if (m_recorderInstance != null)
+                            {
+                                bool result = m_recorderInstance.stopCriticalRecording();
+                                if (result)
+                                {
+                                    m_recorderStatus = 1;
+                                }
+                            }
+
                             m_isHandshakeDone = false;
                         }
                     }
@@ -536,6 +575,16 @@ namespace tieto.education.eyetrackingwebserver
                         m_logType = 3;
                         outputTextProperty = "Server: Error, restarting listener!";
                         m_connectedClient.Close();
+
+                        if (m_recorderInstance != null)
+                        {
+                            bool result = m_recorderInstance.stopCriticalRecording();
+                            if (result)
+                            {
+                                m_recorderStatus = 1;
+                            }
+                        }
+
                         m_isHandshakeDone = false;
                     }
                 }
