@@ -58,7 +58,7 @@ chrome.runtime.onConnect.addListener(function(port)
 		else if(msg.message == "display::injectedDisplayReady")
 		{
 			console.log("Content script ready!");
-			executeBootstrap();
+			PerformJQueryVersionCheck();
 			noResponseCounter = 0;
 			injecting = false;
 		}
@@ -247,9 +247,7 @@ function injectDisplay()
 {
 	console.log("Injecting content scripts!");
 	chrome.tabs.getSelected(null, function(i_tab)
-	{ 
-		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
-		
+	{ 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/heatmap/build/heatmap.js'});
 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
@@ -264,6 +262,15 @@ function checkResumeRendering()
 		console.log("Trying to resume animation!");
 		setHeatmapData(currentData, true);
 	}
+}
+
+function executeJQuery()
+{
+	chrome.tabs.getSelected(null, function(i_tab)
+	{ 
+		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
+	});
+	executeBootstrap();
 }
 
 function executeBootstrap()
@@ -282,7 +289,6 @@ function executeBootstrap()
 					console.log("Injecting bootstrap"); 	
 					setIsJQueryLoaded(true);
 					checkResumeRendering();
-					PerformJQueryVersionCheck();
 				}
 				else
 				{
@@ -508,13 +514,26 @@ function PerformJQueryVersionCheck()
 		{
 			try
 			{
-				console.log(response.message);
 				if(response.message.trim() != "")
 				{
 					var result = compareJQueryVersions("1.11.2",response.message);	
+					if(result == 1)
+					{
+						console.log("Injected version is to low! Injecting new!");
+						executeJQuery();
+					}
+					else
+					{
+						console.log("Injected version is valid! Injecting bootstrap!");
+						executeBootstrap();
+					}
 				}
-				
-				console.log(result);
+				else
+				{
+					console.log("No JQuery version detected. Injecting!");
+					executeJQuery();
+				}
+			
 			}
 			catch(err)
 			{

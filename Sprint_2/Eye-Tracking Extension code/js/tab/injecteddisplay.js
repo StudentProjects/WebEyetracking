@@ -1077,7 +1077,14 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if(request.msg == "injecteddisplay::jqueryversion")
 	{
-		sendResponse({message: $().jquery });
+		if(window.jquery)
+		{
+			sendResponse({message: $().jquery });	
+		}
+		else
+		{
+			sendResponse({message: ""});	
+		}
 	}
 	else if(request.msg == "injecteddisplay::jquery")
 	{
