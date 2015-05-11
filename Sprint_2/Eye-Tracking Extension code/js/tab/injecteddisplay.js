@@ -24,6 +24,11 @@ var yMouseClicks = null; //Array of mouse click y coordinates.
 var timeMouseClicks = null; //Array of mouse click time stamps.
 var currentMouseClick = 0;
 
+var key = null;
+var timeStampKey = null;
+var keyEventTriggered = false;
+var currentKey = 0;
+
 var xFixationPointCoords = null;
 var yFixationPointCoords = null;
 var timeStampFixation = null;
@@ -76,16 +81,27 @@ function initializeCanvas(mouse,eye)
 	if(!canvasDiv)
 	{
 		canvasDiv = document.createElement("div");
+		canvasDiv.style.position = "absolute";
 		canvasDiv.style.top = "0px";
-		canvasDiv.style.left = "0px";	
+		canvasDiv.style.left = "0px";
 		canvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
 		canvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
 		canvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
 		canvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
 		canvasDiv.style.zIndex = "9000";	
 		canvasDiv.id = "canvas-div";
-		canvasDiv.className = "canvas-class";	
-		canvasDiv.style.position = "absolute";	
+		canvasDiv.className = "canvas-class";
+		
+		//console.log(canvasDiv.width);
+		//console.log(canvasDiv.height);
+        
+        var w = window,
+	    d = document,
+	    e = d.documentElement,
+	    g = d.getElementsByTagName('body')[0],
+	    y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+	    console.log(y);
+	        
 		document.body.appendChild(canvasDiv);
 	}
 	
@@ -415,9 +431,9 @@ function setData(i_data)
 	//If eye data exists
 	if(t_data['timeStampEYE'])
 	{		
-		t_xEyeCoords = new Array();
-		t_yEyeCoords = new Array();
-		t_timeStampEye = new Array();
+		var t_xEyeCoords = new Array();
+		var t_yEyeCoords = new Array();
+		var t_timeStampEye = new Array();
 		
 		//Check so that there are an equal amount of x and y coordinates.
 		if(t_data['eyeX'].length == t_data['eyeY'].length)
@@ -452,9 +468,9 @@ function setData(i_data)
 	if(t_data['timeStampMouse'])
 	{
 		console.log("Update mouse data!");		
-		t_xMouseCoords = new Array();
-		t_yMouseCoords = new Array();
-		t_timeStampMouse = new Array();
+		var t_xMouseCoords = new Array();
+		var t_yMouseCoords = new Array();
+		var t_timeStampMouse = new Array();
 		
 		//Check so that there are an equal amount of x and y coordinates.
 		if(t_data['mouseX'].length == t_data['mouseY'].length)
@@ -489,9 +505,9 @@ function setData(i_data)
 	if(t_data['mouseClickTimeStamp'])
 	{
 		console.log("Update mouse click data!");		
-		t_xMouseClicks = new Array();
-		t_yMouseClicks = new Array();
-		t_timeMouseClicks = new Array();
+		var t_xMouseClicks = new Array();
+		var t_yMouseClicks = new Array();
+		var t_timeMouseClicks = new Array();
 		
 		//Check so that there are an equal amount of x and y coordinates.
 		if(t_data['mouseClickX'].length == t_data['mouseClickY'].length)
@@ -518,6 +534,31 @@ function setData(i_data)
 	else
 	{
 		console.log("No mouse click data found!");
+	}
+	
+	//If key events exist
+	if(t_data['timeStampKey'])
+	{
+		console.log("Update key event data!");		
+		var t_keys = new Array();
+		var t_timeStampKey = new Array();
+		
+		//Check so that there are an equal amount of x and y coordinates.
+		var t_size = t_data['timeStampKey'].length;
+		for(var i = 0; i < t_size; i++)
+		{
+			t_keys[i] = t_data['keys'][i];
+			t_timeStampKey[i] = t_data['timeStampKey'][i];
+		}
+		
+		keys = t_keys;
+		timeStampKey = t_timeStampKey;
+		
+		console.log("Loaded " + t_size + " key events.");
+	}
+	else
+	{
+		console.log("No key event data found!");
 	}
 	
 	if(t_data['testStatistics']['allFixations'])
@@ -620,6 +661,8 @@ function animateEye()
 //as long as index is less than the size of the timeStampMouse array.
 function animateMouse()
 {	
+	document.getElementById('canvas-div').style.position = 'absolute';
+	
 	if(!isPaused)
 	{
 		var nextFrame = 0;
@@ -669,8 +712,44 @@ function animateMouse()
 				}
 				catch(err)
 				{
-					
-				}			
+					console.log("BROKEN MOUSE!!");
+				}
+				
+				try
+				{
+					if(timeStampKey[currentKey])
+					{
+						if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
+						{
+							console.log("Key " + currentKey + ": " + keys[currentKey]);
+							
+							keyEventTriggered = true;
+							
+							var active = document.activeElement;
+							
+							if(keys[currentKey] == 8)
+							{
+								var currentValue = active.value;
+								var newValue = currentValue.substring(0, currentValue.length - 1);
+								active.value = newValue;
+							}
+							else
+							{
+								var currentChar = String.fromCharCode(keys[currentKey]);
+								active.value += currentChar;
+							}
+						}
+						else if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && keyEventTriggered)
+						{
+							keyEventTriggered = false;
+							currentKey++;
+						}
+					}
+				}
+				catch(err)
+				{
+					console.log("BROKEN KEY!! - " + err);
+				}
 				 	
 				indexMouse++;
 				animateMouse();
@@ -696,6 +775,22 @@ function animateBoth()
 function startAnimation(animateEyeBool, animateMouseBool, startTime)
 {
 	console.log("Start animation");
+	
+	//Check which mouse click and key event index
+	currentMouseClick = 0;
+	currentKey = 0;
+	keyEventTriggered = false;
+	
+	while(startTime > timeMouseClicks[currentMouseClick])
+	{
+		currentMouseClick++;
+	}
+		
+	while(startTime > timeStampKey[currentKey])
+	{
+		currentKey++;
+	}
+	
 	if(!animating && animateEyeBool && !animateMouseBool)
 	{
 		if(timeStampEYE)
@@ -706,12 +801,9 @@ function startAnimation(animateEyeBool, animateMouseBool, startTime)
 			//Set eye related variables
 			sizeEye = xEyeCoords.length;
 			indexEye = 0;
-			for(i=0; i<sizeEye; i++)
+			while(startTime > timeStampEYE[indexEye])
 			{
-				while(startTime > timeStampEYE[indexEye])
-				{
-					indexEye++;
-				}
+				indexEye++;
 			}
 			
 			initializeCanvas(false,true);
@@ -732,19 +824,10 @@ function startAnimation(animateEyeBool, animateMouseBool, startTime)
 			
 			//Set mouse related variables
 			sizeMouse = timeStampMouse.length;
-			currentMouseClick = 0;
 			indexMouse = 0;
-			for(i=0; i<sizeMouse; i++)
+			while(startTime > timeStampMouse[indexMouse])
 			{
-				while(startTime > timeMouseClicks[currentMouseClick])
-				{
-					currentMouseClick++;
-				}
-				
-				while(startTime > timeStampMouse[indexMouse])
-				{
-					indexMouse++;
-				}
+				indexMouse++;
 			}
 			
 			console.log("Animating from frame " + indexMouse);
@@ -769,29 +852,17 @@ function startAnimation(animateEyeBool, animateMouseBool, startTime)
 			//Set eye related variables
 			sizeEye = xEyeCoords.length;
 			indexEye = 0;
-			for(i=0; i<sizeEye; i++)
+			while(startTime > timeStampEYE[indexEye])
 			{
-				while(startTime > timeStampEYE[indexEye])
-				{
-					indexEye++;
-				}
+				indexEye++;
 			}
 			
 			//Set mouse related variables
 			sizeMouse = timeStampMouse.length;
-			currentMouseClick = 0;
-			indexMouse = 0;
-			for(i=0; i<sizeMouse; i++)
+			indexMouse = 0;		
+			while(startTime > timeStampMouse[indexMouse])
 			{
-				while(startTime > timeMouseClicks[currentMouseClick])
-				{
-					currentMouseClick++;
-				}
-				
-				while(startTime > timeStampMouse[indexMouse])
-				{
-					indexMouse++;
-				}
+				indexMouse++;
 			}
 			
 			animating = true;
@@ -1088,7 +1159,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			cssLink.setAttribute('type', 'text/css');
 			cssLink.setAttribute('href', cssSource);
 			document.getElementsByTagName('head')[0].appendChild(cssLink);
-			
+		
 			$(window).on("beforeunload",function()
 			{
 				if(animationEye)
@@ -1108,6 +1179,44 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		}	
 	}
 });
+
+/*function makeSendKeys()
+{
+	(function($)
+	{
+
+		$.fn.sendkeys = function (x)
+		{
+			x = x.replace(/([^{])\n/g, '$1{enter}'); // turn line feeds into explicit break insertions, but not if escaped
+			return this.each( function()
+			{
+				bililiteRange(this).bounds('selection').sendkeys(x).select();
+				this.focus();
+			});
+		}; // sendkeys
+		
+		// add a default handler for keydowns so that we can send keystrokes, even though code-generated events 
+		// are untrusted (http://www.w3.org/TR/DOM-Level-3-Events/#trusted-events)
+		// documentation of special event handlers is at http://learn.jquery.com/events/event-extensions/
+		$.event.special.keydown = $.event.special.keydown || {};
+		$.event.special.keydown._default = function (evt)
+		{
+			if (evt.isTrusted) return false;
+			if (evt.ctrlKey || evt.altKey || evt.metaKey) return false; // only deal with printable characters. This may be a false assumption
+			if (evt.key == null) return false; // nothing to print. Use the keymap plugin to set this 
+			var target = evt.target;
+			if (target.isContentEditable || target.nodeName == 'INPUT' || target.nodeName == 'TEXTAREA') 
+			{
+				// only insert into editable elements
+				var key = evt.key;
+				if (key.length > 1 && key.charAt(0) != '{') key = '{'+key+'}'; // sendkeys notation
+				$(target).sendkeys(key);
+				return true;
+			}
+			return false;
+		};
+	})(window.jQuery);
+}*/
 
 //Send when finished setup
 console.log("Script ready!");

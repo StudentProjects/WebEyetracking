@@ -46,15 +46,15 @@ var tempTimer = setTimeout(function()
 		var tempKey;
 		if(event.which == 13)
 		{
-			tempKey = "enter";
+			tempKey = event.which;
 		}
 		else if(event.which == 32)
 		{
-			tempKey = "space";
+			tempKey = event.which;
 		}
 		else
 		{
-			tempKey = String.fromCharCode(event.which);
+			tempKey = event.which;
 		}
 		
 		port.postMessage({message: "tabinfo::keyEvent", data: tempKey});
@@ -65,8 +65,7 @@ var tempTimer = setTimeout(function()
 		console.log(event.which);
 		if(event.which == 8)
 		{
-			console.log("Key: Backspace");
-			port.postMessage({message: "tabinfo::keyEvent", data: "backspace"});
+			port.postMessage({message: "tabinfo::keyEvent", data: event.which});
 		}
 	});
 }, 50);
