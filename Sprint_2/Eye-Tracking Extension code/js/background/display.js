@@ -55,25 +55,10 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			lastFrameTime = msg.data;
 		}
-		else if(msg.message == "display::setEyeTrackerStatus")
-		{
-			if(msg.data == "True")
-			{
-				console.log("Eye tracker online");
-				setEyeTrackerActive(true);
-				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOnline'});
-			}
-			else
-			{
-				console.log("Eye tracker offline");
-				setEyeTrackerActive(false);
-				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOffline'});
-			}
-		}
 		else if(msg.message == "display::injectedDisplayReady")
 		{
 			console.log("Content script ready!");
-			executeBootstrap();
+			PerformJQueryVersionCheck();
 			noResponseCounter = 0;
 			injecting = false;
 		}
@@ -262,9 +247,7 @@ function injectDisplay()
 {
 	console.log("Injecting content scripts!");
 	chrome.tabs.getSelected(null, function(i_tab)
-	{ 
-		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
-		
+	{ 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/heatmap/build/heatmap.js'});
 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
@@ -279,6 +262,15 @@ function checkResumeRendering()
 		console.log("Trying to resume animation!");
 		setHeatmapData(currentData, true);
 	}
+}
+
+function executeJQuery()
+{
+	chrome.tabs.getSelected(null, function(i_tab)
+	{ 
+		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
+	});
+	executeBootstrap();
 }
 
 function executeBootstrap()
@@ -484,6 +476,72 @@ function checkPermission()
 	});
 }
 
+function compareJQueryVersions(version1,version2)
+{
+	if(version1 == version2)
+	{
+		return 0;	
+	}
+
+    var version1Parts = version1.split('.');
+    var numVersion1Parts = version1Parts.length; 
+
+    var version2Parts = version2.split('.');
+    var numVersion2Parts = version2Parts.length; 
+
+    for(var i = 0; i < numVersion1Parts && i < numVersion2Parts; i++)
+    {
+        var version1Part = parseInt(version1Parts[i], 10);
+        var version2Part = parseInt(version2Parts[i], 10);
+        if(version1Part > version2Part)
+        {
+            return 1;
+        }
+        else if(version1Part < version2Part)
+        {
+            return -1;
+        }
+    }
+
+    return numVersion1Parts < numVersion2Parts ? -1 : 1;
+}
+
+function PerformJQueryVersionCheck()
+{
+	chrome.tabs.getSelected(null, function(i_tab) 
+	{
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::jqueryversion"}, function(response) 
+		{
+			try
+			{
+				if(response.message.trim() != "")
+				{
+					var result = compareJQueryVersions("1.11.2",response.message);	
+					if(result == 1)
+					{
+						console.log("Injected version is to low! Injecting new!");
+						executeJQuery();
+					}
+					else
+					{
+						console.log("Injected version is valid! Injecting bootstrap!");
+						executeBootstrap();
+					}
+				}
+				else
+				{
+					console.log("No JQuery version detected. Injecting!");
+					executeJQuery();
+				}
+			
+			}
+			catch(err)
+			{
+				console.log("Error: " + err.message);
+			}
+		});
+	});
+}
 //Check if the injected scripts are alive, if not
 //try to inject them. Also handles errors like 
 //permission denied or browser window not selected.

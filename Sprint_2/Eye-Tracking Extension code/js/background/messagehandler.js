@@ -32,6 +32,7 @@ function handleMessage(i_message)
 		//RecordedDataResponse
 		case 6:
 			chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Data received."});	
+			resetTestInfo();
 			setHeatmapData(currentMessage['MessageContent'], false);	
 			break;
 		//StartRecordingResponse
@@ -123,8 +124,7 @@ function handleMessage(i_message)
 			else
 			{
 				chrome.runtime.sendMessage({msg: 'load::loadSucceeded', data: currentMessage['MessageContent'] });
-				//resetTestInfo();
-				console.log(JSON.parse(currentMessage['MessageContent']));
+				resetTestInfo();
 				setHeatmapData(currentMessage['MessageContent']);
 			}
 			break;
