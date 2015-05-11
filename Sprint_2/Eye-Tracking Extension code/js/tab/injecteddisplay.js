@@ -1075,6 +1075,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		sendResponse({message: "hiding navigation!"});
 		hideLines();
 	}
+	else if(request.msg == "injecteddisplay::jqueryversion")
+	{
+		sendResponse({message: $().jquery });
+	}
 	else if(request.msg == "injecteddisplay::jquery")
 	{
 		if(window.jQuery)
