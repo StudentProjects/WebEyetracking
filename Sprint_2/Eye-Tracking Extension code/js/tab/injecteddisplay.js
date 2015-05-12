@@ -48,29 +48,31 @@ var indexMouse = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeMouse = 0; //Size of coordinate arrays.
 
-var mousePointer = null;
-var mouseImage = null;
+var mousePointer = null; //Div for mouse pointer
+var mouseImage = null; //Mouse pointer image
 
-var fixationDivs = new Array();
-var maxHeight = 9001;
+var fixationDivs = new Array(); //Divs for fixation points
+var maxHeight = 9001; //The current max height
 
-var heatmapEyeInstance = null;
-var heatmapMouseInstance = null;
+var heatmapEyeInstance = null; //Heatmap instance for eye heatmap
+var heatmapMouseInstance = null; //Heatmap instance for mouse heatmap
 var mostFixatedOrder = -1;
-var mostFixatedIndex = -1;
+var mostFixatedIndex = -1; //Index of the most fixated point
 
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
 
-var isPaused = false;
+var isPaused = false; //isPaused bool
 var showingFixationPoints = false;
 var isWindowStatic = false;
 
-var canvasDiv = null;
-var popoverDiv = null;
+var canvasDiv = null; //Canvas for rendering heatmap
+var popoverDiv = null; //Div for popovers
 
 var width = 0;
 var height = 0;
 var cssLink;
+
+var renderEye = false;
 
 ///////////
 //METHODS//
@@ -91,16 +93,6 @@ function initializeCanvas(mouse,eye)
 		canvasDiv.style.zIndex = "9000";	
 		canvasDiv.id = "canvas-div";
 		canvasDiv.className = "canvas-class";
-		
-		//console.log(canvasDiv.width);
-		//console.log(canvasDiv.height);
-        
-        var w = window,
-	    d = document,
-	    e = d.documentElement,
-	    g = d.getElementsByTagName('body')[0],
-	    y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-	    console.log(y);
 	        
 		document.body.appendChild(canvasDiv);
 	}
@@ -348,43 +340,6 @@ function hideLines()
 	{
 		console.log(err.message);
 	}
-}
-
-//Never used. Draws zones to check reliability of percentage of page calculation.
-function drawZones()
-{
-	var height = Math.max($(document).height(), $(window).height());
-	var width = Math.max($(document).width(), $(window).width());
-	
-	var c = document.createElement("canvas");
-	c.height = height;
-	c.width = width;
-	c.style.position = "absolute";
-	c.style.top = "0px";
-	c.style.left = "0px";
-	c.style.zIndex = 9002;
-	
-	var ctx=c.getContext("2d");
-	
-	for(i=0; i<12; i++)
-	{
-		ctx.beginPath();
-		ctx.moveTo(i*(width/12), 0);
-		ctx.lineTo(i*(width/12), height);
-		ctx.lineWidth = 3;
-		ctx.stroke();
-	}
-	
-	for(i=0; i<9; i++)
-	{
-		ctx.beginPath();
-		ctx.moveTo(0, i*(height/9));
-		ctx.lineTo(width, i*(height/9));
-		ctx.lineWidth = 3;
-		ctx.stroke();
-	}
-
-	document.body.appendChild(c);
 }
 
 function controlPreviousTests()
@@ -672,35 +627,36 @@ function animateMouse()
 			var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
 		}
 		
-		if(mousePointer)
+		try
 		{
-			animationMouse = setTimeout(function()
-			{	
-				if(indexMouse >= sizeMouse)
-				{
-					stopAnimation();
-					return false;
-				}
-			
-				mousePointer.style.left = xMouseCoords[indexMouse]+'px';
-				mousePointer.style.top = yMouseCoords[indexMouse]+'px';
-				port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
+			if(mousePointer)
+			{
+				animationMouse = setTimeout(function()
+				{	
+					if(indexMouse >= sizeMouse)
+					{
+						stopAnimation();
+						return false;
+					}
 				
-				//Try to call click event on element at position
-				try
-				{
+					mousePointer.style.left = xMouseCoords[indexMouse]+'px';
+					mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+					port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
+					
+					//If there are mouseclicks left to handle
 					if(timeMouseClicks[currentMouseClick])
 					{
 						if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
 						{
-							mousePointer.style.zIndex = "1";
-							canvasDiv.style.zIndex = "1";
+							mousePointer.style.zIndex = "-1";
+							canvasDiv.style.zIndex = "-1";
 							
 							var target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
 							
 							var evt = document.createEvent("MouseEvents"); 
 							evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
 							
+							console.log(target);
 							target.dispatchEvent(evt);
 							target.focus();
 							
@@ -710,14 +666,8 @@ function animateMouse()
 							currentMouseClick++;
 						}
 					}
-				}
-				catch(err)
-				{
-					console.log("BROKEN MOUSE!!");
-				}
-				
-				try
-				{
+					
+					//If there are key events left to handle
 					if(timeStampKey[currentKey])
 					{
 						if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
@@ -728,11 +678,45 @@ function animateMouse()
 							
 							var active = document.activeElement;
 							
+							//If the keycode is 8, a backspace event should be dispathes.
+							//Instead, this function gets the value of the current element,
+							//and then removes the last element in that string.
 							if(keys[currentKey] == 8)
 							{
 								var currentValue = active.value;
 								var newValue = currentValue.substring(0, currentValue.length - 1);
 								active.value = newValue;
+							}
+							
+							//If keycode is 13, an enter event should be dispatched. 
+							//The following code checks if the current element is
+							//a input element, and if so, it tries to find its
+							//parent form and submit it.
+							else if(keys[currentKey] == 13)
+							{				
+								try
+								{
+									var current = document.activeElement;
+									
+									if(current.nodeName == "INPUT")
+									{								
+										console.log(current);
+									
+										while(current.nodeName != "FORM")
+										{
+											current = current.parentNode;
+											console.log(current);
+										}
+										
+										current.submit();
+									}
+								}
+								catch(err)
+								{
+									console.log("Unable to generate ENTER event: " + err); 	
+								}
+							//In all other cases, add the char value of the key code to
+							//the current element.
 							}
 							else
 							{
@@ -746,21 +730,21 @@ function animateMouse()
 							currentKey++;
 						}
 					}
-				}
-				catch(err)
-				{
-					console.log("BROKEN KEY!! - " + err);
-				}
-				 	
-				indexMouse++;
-				animateMouse();
-				
-			}, nextFrame);	
-		}
-		else
-		{
-			return false;
-		}
+					 	
+					indexMouse++;
+					animateMouse();
+					
+				}, nextFrame);	
+			}
+			else
+			{
+				return false;
+			}
+		 }
+		 catch(err)
+		 {
+		 	
+		 }
 	}
 }
 
@@ -782,14 +766,20 @@ function startAnimation(animateEyeBool, animateMouseBool, startTime)
 	currentKey = 0;
 	keyEventTriggered = false;
 	
-	while(startTime > timeMouseClicks[currentMouseClick])
+	if(timeMouseClicks[currentMouseClick])
 	{
-		currentMouseClick++;
+		while(startTime > timeMouseClicks[currentMouseClick])
+		{
+			currentMouseClick++;
+		}
 	}
-		
-	while(startTime > timeStampKey[currentKey])
+
+	if(timeStampKey[currentKey])
 	{
-		currentKey++;
+		while(startTime > timeStampKey[currentKey])
+		{
+			currentKey++;
+		}
 	}
 	
 	if(!animating && animateEyeBool && !animateMouseBool)
@@ -881,7 +871,6 @@ function startAnimation(animateEyeBool, animateMouseBool, startTime)
 //Stop the animate function
 function stopAnimation()
 {
-	
 	if(animationEye && indexEye >= sizeEye)
 	{
 		console.log("Stop eye animation!");
@@ -905,6 +894,14 @@ function stopAnimation()
 	{
 		port.postMessage({message: "display::animationFinished"});
 		animating = false;
+	}
+	
+	//If eye data was not rendered, then nothing
+	//is shown on the screen anymore, so the canvas
+	//can safely be removed.
+	if(!renderEye)
+	{
+		hide();
 	}
 }
 
@@ -947,6 +944,7 @@ function manageMouseDiv(create)
 		}
 	}
 }
+
 //Show the collected data as a heatmap in the tab
 function showEye()
 {	
@@ -1075,7 +1073,14 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			if(timeStampEYE || timeStampMouse)
 			{
 				hide(); //Hide before starting animation
-				console.log(request.eye + " - " + request.mouse);
+				if(request.eye)
+				{
+					renderEye = true;
+				}
+				else
+				{
+					renderEye = false;
+				}
 				startAnimation(request.eye, request.mouse, 0);
 				sendResponse({message: "Animating heatmap!"});	
 			}		
@@ -1140,6 +1145,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		isShowing = false;
 		sendResponse({message: "Hiding heatmap!"});
 	}
+	else if (request.msg == "injecteddisplay::clearCanvas")
+	{
+		hide();
+	}
 	else if (request.msg == "injecteddisplay::setData")
 	{
 		setData(request.data);
@@ -1170,7 +1179,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if(request.msg == "injecteddisplay::hideGrid")
 	{
-		sendResponse({message: "hiding navigation!"});
+		sendResponse({message: "Hiding navigation!"});
 		hideLines();
 	}
 	else if(request.msg == "injecteddisplay::jqueryversion")
@@ -1217,44 +1226,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		}	
 	}
 });
-
-/*function makeSendKeys()
-{
-	(function($)
-	{
-
-		$.fn.sendkeys = function (x)
-		{
-			x = x.replace(/([^{])\n/g, '$1{enter}'); // turn line feeds into explicit break insertions, but not if escaped
-			return this.each( function()
-			{
-				bililiteRange(this).bounds('selection').sendkeys(x).select();
-				this.focus();
-			});
-		}; // sendkeys
-		
-		// add a default handler for keydowns so that we can send keystrokes, even though code-generated events 
-		// are untrusted (http://www.w3.org/TR/DOM-Level-3-Events/#trusted-events)
-		// documentation of special event handlers is at http://learn.jquery.com/events/event-extensions/
-		$.event.special.keydown = $.event.special.keydown || {};
-		$.event.special.keydown._default = function (evt)
-		{
-			if (evt.isTrusted) return false;
-			if (evt.ctrlKey || evt.altKey || evt.metaKey) return false; // only deal with printable characters. This may be a false assumption
-			if (evt.key == null) return false; // nothing to print. Use the keymap plugin to set this 
-			var target = evt.target;
-			if (target.isContentEditable || target.nodeName == 'INPUT' || target.nodeName == 'TEXTAREA') 
-			{
-				// only insert into editable elements
-				var key = evt.key;
-				if (key.length > 1 && key.charAt(0) != '{') key = '{'+key+'}'; // sendkeys notation
-				$(target).sendkeys(key);
-				return true;
-			}
-			return false;
-		};
-	})(window.jQuery);
-}*/
 
 //Send when finished setup
 

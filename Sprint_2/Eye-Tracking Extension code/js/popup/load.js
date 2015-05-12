@@ -246,6 +246,31 @@ function createLinkTable(input)
 		currentData = input;
 	}
 	
+	//Sort first by name in ascending order, then by
+	//time in descending order.
+	for(i = 0; i < data['Dates'].length; i++)
+	{
+		data['Dates'][i]['Names'].sort(function(a, b)
+		{
+			var aName = a['Name'];
+			var bName = b['Name'];
+			
+			var result = bName.localeCompare(aName);
+			
+			if(result == 0)
+			{
+				var aTime = a['Time'];
+				var bTime = b['Time'];
+				aTime = aTime[0] + aTime[1] + aTime[3] + aTime[4] + aTime[6] + aTime[7];
+				bTime = bTime[0] + bTime[1] + bTime[3] + bTime[4] + bTime[6] + bTime[7];
+				
+				result = aTime - bTime;
+			}
+			
+			return result;
+		});
+	}
+	
 	//Build link list of tests.
 	var linkArray = new Array();	
 	var sizeDate = data['Dates'].length;

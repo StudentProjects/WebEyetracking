@@ -143,6 +143,7 @@ function handleMessage(i_message)
 				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Failed to send mouse data!", type: "Error"});
 			}
 			break;
+		//EyeTrackerStatus
 		case 26:
 			var msgData = currentMessage['MessageContent'];
 			console.log(msgData);
@@ -159,6 +160,7 @@ function handleMessage(i_message)
 				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOffline'});
 			}
 			break;
+		//keyDataResponse
 		case 28:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
@@ -347,20 +349,20 @@ chrome.extension.onRequest.addListener
 			if(!isRendering)
 			{
 				var data = request.data;
+				manageMessage(31, "StartRendering");
 				animateHeatmap(data.Eye, data.Mouse);	
-				console.log("Rendering");
 			}
 			else if(isRendering && !isRenderingPaused)
 			{
 				chrome.runtime.sendMessage({msg: 'player::pauseRendering'});
+				manageMessage(32, "PauseRendering");
 				setIsRenderingPaused(true);
 				pauseRendering();
-				console.log("Pausing");
 			}
 			else if(isRendering && isRenderingPaused)
 			{
-				console.log("Resuming");
 				chrome.runtime.sendMessage({msg: 'player::resumeRendering'});
+				manageMessage(33, "ResumeRendering");
 				setIsRenderingPaused(false);
 				resumeRendering();
 				var data = request.data;
@@ -380,10 +382,6 @@ chrome.extension.onRequest.addListener
 		else if(request.msg == "display::handleFixationPoints")
 		{
 			handleFixationPoints();
-		}
-		else if(request.msg == "display::handleGrid")
-		{
-			handleGrid();
 		}
 		//Handled in mouserecorder.js
 		else if(request.msg == "mouserecorder::startRecording") 

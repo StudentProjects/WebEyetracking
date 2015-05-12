@@ -444,6 +444,25 @@ function hideHeatmap()
 	});
 }
 
+//Tell injecteddisplay.js to hide heatmap.
+function clearCanvas()
+{
+	chrome.tabs.getSelected(null, function(i_tab) 
+	{
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::clearCanvas"}, function(response) 
+		{
+			try
+			{
+				console.log("Canvas cleared!");
+			}
+			catch(err)
+			{
+				console.log("Error: " + err.message);
+			}
+		});
+	});
+}
+
 //If there is no response, check if we have persmission to inject 
 //a script. If so, do it.
 function checkPermission()
