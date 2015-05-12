@@ -68,6 +68,11 @@ namespace tieto.education.eyetrackingwebserver
         public int yMin { get; set; }
     }
 
+    public class SoundData
+    {
+        public Byte[] soundData { get; set; }
+    }
+
     public class KeyData
     {
         public string[] keys { get; set; }
