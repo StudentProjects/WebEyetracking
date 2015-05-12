@@ -32,6 +32,7 @@ var isJQueryLoaded = false;
 var isReadyInterval = null;
 
 var eyeTrackerActive = false;
+var microphoneConnected = false;
 
 ///////////
 //METHODS//
@@ -58,10 +59,15 @@ function sendPopupVariables()
 	variables.isNavigationDisplayed = isNavigationDisplayed;
 	variables.isJQueryLoaded = isJQueryLoaded;
 	variables.eyeTrackerActive = eyeTrackerActive;
+	variables.microphoneConnected = microphoneConnected;
 	
 	chrome.runtime.sendMessage({msg: 'popup::variables', content: variables});
 }
 
+function setMicrophone(status)
+{
+	microphoneConnected = status;
+}
 function setEyeTrackerActive(status)
 {
 	eyeTrackerActive = status;

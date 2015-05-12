@@ -426,6 +426,7 @@ function hideFixationPoints()
 //Update the xCoords and yCoords with the latest collected data.
 function setData(i_data)
 {
+	
 	var t_data = JSON.parse(i_data);
 	
 	//If eye data exists
@@ -1006,6 +1007,32 @@ function showMouse()
 	document.getElementById('canvas-div').style.position = 'absolute';
 }
 
+function checkIfIncluded(file) 
+{
+    var links = document.getElementsByTagName("link");
+    for(var i = 0; i < links.length; i++) 
+    {
+    	console.log("Link: " + links[i].href);
+        if (links[i].href.indexOf(file) != -1)
+        {
+        	
+        	//return 1;	
+        }
+    }
+
+    var scripts = document.getElementsByTagName("script");
+    for(var i = 0; i < scripts.length; i++) 
+    {
+    	console.log("Script: " + scripts[i].src);
+        if (scripts[i].src.indexOf(file) != -1)
+        {
+        	 
+        	 //return 1;	
+        }
+    }
+    //return 0;
+}
+
 //Hide the heatmap
 function hide()
 {
@@ -1169,7 +1196,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			cssLink.setAttribute('rel', 'stylesheet');
 			cssLink.setAttribute('type', 'text/css');
 			cssLink.setAttribute('href', cssSource);
-			document.getElementsByTagName('head')[0].appendChild(cssLink);
+			document.getElementsByTagName('head')[0].appendChild(cssLink);	
 		
 			$(window).on("beforeunload",function()
 			{
@@ -1230,5 +1257,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 }*/
 
 //Send when finished setup
+
 console.log("Script ready!");
 port.postMessage({message: "display::injectedDisplayReady"});
