@@ -14,6 +14,8 @@ using System.Threading;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 
 namespace tieto.education.eyetrackingwebserver
 {
@@ -27,6 +29,7 @@ namespace tieto.education.eyetrackingwebserver
         private bool m_isDocumentBoundsSet;
         private bool m_isMouseSubmitted;
         private bool m_isKeySubmitted;
+        private bool m_isMicrophoneRecording;
 
         private List<int> m_gazeXCoordinates;
         private List<int> m_gazeYCoordinates;
@@ -116,6 +119,8 @@ namespace tieto.education.eyetrackingwebserver
             m_isMouseSubmitted = false;
             m_isKeySubmitted = false;
             m_fileSaver = i_fileSaverInstance;
+
+            m_isMicrophoneRecording = false;
         }
 
        public bool isEyeTrackerOnline()
@@ -130,6 +135,16 @@ namespace tieto.education.eyetrackingwebserver
                {
                    return false;
                }
+           }
+           return false;
+       }
+
+       public bool isMicrophoneConnected()
+       {
+           Microphone mic = Microphone.Default;
+           if(mic != null)
+           {
+               return true;
            }
            return false;
        }

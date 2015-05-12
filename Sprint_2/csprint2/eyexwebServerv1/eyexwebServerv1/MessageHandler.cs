@@ -451,6 +451,10 @@ namespace tieto.education.eyetrackingwebserver
             {
                 constructResponseMessage(26, true, i_dataMessage);
             }
+            else if(i_messageType == 30)
+            {
+                constructResponseMessage(30, true, i_dataMessage);
+            }
         }
 
 
@@ -646,6 +650,13 @@ namespace tieto.education.eyetrackingwebserver
                 {
                     t_responseObject.MessageContent = "Failed";
                 }
+                t_messageToSend = JsonConvert.SerializeObject(t_responseObject, Formatting.None);
+            }
+            else if(i_messageType == 30)
+            {
+                t_responseObject.MessageType = 30;
+                t_responseObject.MessageContent = i_dataMessage;
+
                 t_messageToSend = JsonConvert.SerializeObject(t_responseObject, Formatting.None);
             }
              // error message
