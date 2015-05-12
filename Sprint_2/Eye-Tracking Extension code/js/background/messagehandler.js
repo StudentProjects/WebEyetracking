@@ -143,6 +143,7 @@ function handleMessage(i_message)
 				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Failed to send mouse data!", type: "Error"});
 			}
 			break;
+		//EyeTrackerStatus
 		case 26:
 			var msgData = currentMessage['MessageContent'];
 			console.log(msgData);
@@ -159,6 +160,7 @@ function handleMessage(i_message)
 				chrome.runtime.sendMessage({msg: 'recorder::setEyeTrackerOffline'});
 			}
 			break;
+		//keyDataResponse
 		case 28:
 			if(currentMessage['MessageContent'] == "Succeeded")
 			{
@@ -364,10 +366,6 @@ chrome.extension.onRequest.addListener
 		else if(request.msg == "display::handleFixationPoints")
 		{
 			handleFixationPoints();
-		}
-		else if(request.msg == "display::handleGrid")
-		{
-			handleGrid();
 		}
 		//Handled in mouserecorder.js
 		else if(request.msg == "mouserecorder::startRecording") 
