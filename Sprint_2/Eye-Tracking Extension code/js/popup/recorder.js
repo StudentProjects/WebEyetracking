@@ -154,6 +154,16 @@ function addRecorderMessageListener()
 			document.getElementById('eyeRecorderStatus').innerHTML = "Offline";
 			document.getElementById('eyeRecorderStatus').className = "h1-fail";
 		}
+		else if(i_message.msg == "recorder::setMicrophoneConnected")
+		{
+			document.getElementById('microphoneStatus').innerHTML = "Connected";
+			document.getElementById('microphoneStatus').className = "h1-success";
+		}
+		else if(i_message.msg == "recorder::setMicrophoneDisconnected")
+		{
+			document.getElementById('microphoneStatus').innerHTML = "Not connected";
+			document.getElementById('microphoneStatus').className = "h1-fail";
+		}
 		//Stop received
 		else if(i_message.msg == "recorder::stopReceived")
 		{
