@@ -32,7 +32,7 @@ function handleMessage(i_message)
 		//RecordedDataResponse
 		case 6:
 			chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Data received."});	
-			resetTestInfo();
+			//resetTestInfo();
 			setHeatmapData(currentMessage['MessageContent'], false);	
 			break;
 		//StartRecordingResponse
@@ -124,7 +124,7 @@ function handleMessage(i_message)
 			else
 			{
 				chrome.runtime.sendMessage({msg: 'load::loadSucceeded', data: currentMessage['MessageContent'] });
-				resetTestInfo();
+				//resetTestInfo();
 				setHeatmapData(currentMessage['MessageContent']);
 			}
 			break;
@@ -167,6 +167,22 @@ function handleMessage(i_message)
 			else
 			{
 				console.log("Failed to send key data!");
+			}
+			break;
+		case 30:
+			var msgData = currentMessage['MessageContent'];
+			console.log(msgData);
+			if(msgData == "True")
+			{
+				console.log("Mouse connected");
+				setMicrophone(true);
+				chrome.runtime.sendMessage({msg: 'recorder::setMicrophoneConnected'});
+			}
+			else
+			{
+				console.log("Mouse not connected");
+				setMicrophone(false);
+				chrome.runtime.sendMessage({msg: 'recorder::setMicrophoneDisconnected'});
 			}
 			break;
 		//Error message

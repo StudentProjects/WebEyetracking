@@ -284,6 +284,7 @@ function executeBootstrap()
 				console.log("Response jquery: " + response.message);
 				if(response.message == "ready")
 				{
+					injectTabInfo();
 					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
 					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
 					console.log("Injecting bootstrap"); 	
@@ -557,7 +558,6 @@ displayTimer = setInterval(function()
 			{
 				injecting = true;
 				injectDisplay();
-				injectTabInfo();
 				var resetInterval = setTimeout(function()
 				{
 					if(injecting)
