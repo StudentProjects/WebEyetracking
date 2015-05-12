@@ -362,6 +362,30 @@ namespace tieto.education.eyetrackingwebserver
             return t_stopRecordingSucceeded;
         }
 
+        public void startAudioPlayer()
+        {
+            if(m_recorderInstance != null)
+            {
+                m_recorderInstance.startAudio();
+            }
+        }
+
+        public void pauseAudioPlayer()
+        {
+            if (m_recorderInstance != null)
+            {
+                m_recorderInstance.pauseAudio();
+            }
+        }
+
+        public void resumeAudioPlayer()
+        {
+            if (m_recorderInstance != null)
+            {
+                m_recorderInstance.resumeAudio();
+            }
+        }
+
         /// <summary>
         /// Handles a client disconnect request received from server or if the client disconnected unexpectiedly
         /// Logging messages and ends all possible active recordings.
@@ -707,6 +731,10 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns>String, containing the collected data from the File Loader</returns>
         public string getSpecificData(string i_application,string i_date,string i_testerName,int i_id)
         {
+            Byte[] m_loadedAudio = m_fileLoader.tryGetAudioWithParameters(i_application, i_date, i_testerName, i_id);
+            m_recorderInstance.setLoadedAudio(m_loadedAudio);
+
+
             return m_fileLoader.getSpecificTestData(i_application, i_date, i_testerName, i_id);
         }
 
