@@ -48,29 +48,31 @@ var indexMouse = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeMouse = 0; //Size of coordinate arrays.
 
-var mousePointer = null;
-var mouseImage = null;
+var mousePointer = null; //Div for mouse pointer
+var mouseImage = null; //Mouse pointer image
 
-var fixationDivs = new Array();
-var maxHeight = 9001;
+var fixationDivs = new Array(); //Divs for fixation points
+var maxHeight = 9001; //The current max height
 
-var heatmapEyeInstance = null;
-var heatmapMouseInstance = null;
+var heatmapEyeInstance = null; //Heatmap instance for eye heatmap
+var heatmapMouseInstance = null; //Heatmap instance for mouse heatmap
 var mostFixatedOrder = -1;
-var mostFixatedIndex = -1;
+var mostFixatedIndex = -1; //Index of the most fixated point
 
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
 
-var isPaused = false;
+var isPaused = false; //isPaused bool
 var showingFixationPoints = false;
 var isWindowStatic = false;
 
-var canvasDiv = null;
-var popoverDiv = null;
+var canvasDiv = null; //Canvas for rendering heatmap
+var popoverDiv = null; //Div for popovers
 
 var width = 0;
 var height = 0;
 var cssLink;
+
+var renderEye = false;
 
 ///////////
 //METHODS//
@@ -646,14 +648,15 @@ function animateMouse()
 					{
 						if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
 						{
-							mousePointer.style.zIndex = "1";
-							canvasDiv.style.zIndex = "1";
+							mousePointer.style.zIndex = "-1";
+							canvasDiv.style.zIndex = "-1";
 							
 							var target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
 							
 							var evt = document.createEvent("MouseEvents"); 
 							evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
 							
+							console.log(target);
 							target.dispatchEvent(evt);
 							target.focus();
 							
@@ -868,7 +871,6 @@ function startAnimation(animateEyeBool, animateMouseBool, startTime)
 //Stop the animate function
 function stopAnimation()
 {
-	
 	if(animationEye && indexEye >= sizeEye)
 	{
 		console.log("Stop eye animation!");
@@ -892,6 +894,14 @@ function stopAnimation()
 	{
 		port.postMessage({message: "display::animationFinished"});
 		animating = false;
+	}
+	
+	//If eye data was not rendered, then nothing
+	//is shown on the screen anymore, so the canvas
+	//can safely be removed.
+	if(!renderEye)
+	{
+		hide();
 	}
 }
 
@@ -934,6 +944,7 @@ function manageMouseDiv(create)
 		}
 	}
 }
+
 //Show the collected data as a heatmap in the tab
 function showEye()
 {	
@@ -1062,7 +1073,14 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			if(timeStampEYE || timeStampMouse)
 			{
 				hide(); //Hide before starting animation
-				console.log(request.eye + " - " + request.mouse);
+				if(request.eye)
+				{
+					renderEye = true;
+				}
+				else
+				{
+					renderEye = false;
+				}
 				startAnimation(request.eye, request.mouse, 0);
 				sendResponse({message: "Animating heatmap!"});	
 			}		
@@ -1127,6 +1145,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		isShowing = false;
 		sendResponse({message: "Hiding heatmap!"});
 	}
+	else if (request.msg == "injecteddisplay::clearCanvas")
+	{
+		hide();
+	}
 	else if (request.msg == "injecteddisplay::setData")
 	{
 		setData(request.data);
@@ -1157,7 +1179,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if(request.msg == "injecteddisplay::hideGrid")
 	{
-		sendResponse({message: "hiding navigation!"});
+		sendResponse({message: "Hiding navigation!"});
 		hideLines();
 	}
 	else if(request.msg == "injecteddisplay::jqueryversion")
@@ -1204,44 +1226,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		}	
 	}
 });
-
-/*function makeSendKeys()
-{
-	(function($)
-	{
-
-		$.fn.sendkeys = function (x)
-		{
-			x = x.replace(/([^{])\n/g, '$1{enter}'); // turn line feeds into explicit break insertions, but not if escaped
-			return this.each( function()
-			{
-				bililiteRange(this).bounds('selection').sendkeys(x).select();
-				this.focus();
-			});
-		}; // sendkeys
-		
-		// add a default handler for keydowns so that we can send keystrokes, even though code-generated events 
-		// are untrusted (http://www.w3.org/TR/DOM-Level-3-Events/#trusted-events)
-		// documentation of special event handlers is at http://learn.jquery.com/events/event-extensions/
-		$.event.special.keydown = $.event.special.keydown || {};
-		$.event.special.keydown._default = function (evt)
-		{
-			if (evt.isTrusted) return false;
-			if (evt.ctrlKey || evt.altKey || evt.metaKey) return false; // only deal with printable characters. This may be a false assumption
-			if (evt.key == null) return false; // nothing to print. Use the keymap plugin to set this 
-			var target = evt.target;
-			if (target.isContentEditable || target.nodeName == 'INPUT' || target.nodeName == 'TEXTAREA') 
-			{
-				// only insert into editable elements
-				var key = evt.key;
-				if (key.length > 1 && key.charAt(0) != '{') key = '{'+key+'}'; // sendkeys notation
-				$(target).sendkeys(key);
-				return true;
-			}
-			return false;
-		};
-	})(window.jQuery);
-}*/
 
 //Send when finished setup
 

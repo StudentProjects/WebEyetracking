@@ -202,6 +202,7 @@ function handleStartReceived()
 	
 	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 	
+	clearCanvas();
 	startMouseRecording();
 	startKeyRecording();
 	isRecording = true;

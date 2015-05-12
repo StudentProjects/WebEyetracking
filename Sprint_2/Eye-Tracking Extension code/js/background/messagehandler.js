@@ -349,20 +349,20 @@ chrome.extension.onRequest.addListener
 			if(!isRendering)
 			{
 				var data = request.data;
+				manageMessage(31, "StartRendering");
 				animateHeatmap(data.Eye, data.Mouse);	
-				console.log("Rendering");
 			}
 			else if(isRendering && !isRenderingPaused)
 			{
 				chrome.runtime.sendMessage({msg: 'player::pauseRendering'});
+				manageMessage(32, "PauseRendering");
 				setIsRenderingPaused(true);
 				pauseRendering();
-				console.log("Pausing");
 			}
 			else if(isRendering && isRenderingPaused)
 			{
-				console.log("Resuming");
 				chrome.runtime.sendMessage({msg: 'player::resumeRendering'});
+				manageMessage(33, "ResumeRendering");
 				setIsRenderingPaused(false);
 				resumeRendering();
 				var data = request.data;
