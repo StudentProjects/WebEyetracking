@@ -93,6 +93,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioHandler.cs" />
     <Compile Include="CustomArgs.cs" />
     <Compile Include="DataStructs.cs" />
     <Compile Include="EYE.cs" />

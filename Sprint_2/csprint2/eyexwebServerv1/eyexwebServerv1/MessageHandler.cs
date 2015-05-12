@@ -425,6 +425,27 @@ namespace tieto.education.eyetrackingwebserver
                         constructResponseMessage(28, false);
                     }
                 }
+                else if(t_messageType == 31)
+                {
+                    if(m_activeServerInstance != null)
+                    {
+                        m_activeServerInstance.startAudioPlayer();
+                    }
+                }
+                else if(t_messageType == 32)
+                {
+                    if (m_activeServerInstance != null)
+                    {
+                        m_activeServerInstance.pauseAudioPlayer();
+                    }
+                }
+                else if(t_messageType == 33)
+                {
+                    if (m_activeServerInstance != null)
+                    {
+                        m_activeServerInstance.resumeAudioPlayer();
+                    }
+                }
                 // Client sending error message
                 else if(t_messageType == 99)
                 {

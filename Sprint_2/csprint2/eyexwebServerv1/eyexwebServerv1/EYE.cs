@@ -16,6 +16,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using System.Timers;
 
 namespace tieto.education.eyetrackingwebserver
 {
@@ -29,7 +30,6 @@ namespace tieto.education.eyetrackingwebserver
         private bool m_isDocumentBoundsSet;
         private bool m_isMouseSubmitted;
         private bool m_isKeySubmitted;
-        private bool m_isMicrophoneRecording;
 
         private List<int> m_gazeXCoordinates;
         private List<int> m_gazeYCoordinates;
@@ -70,6 +70,9 @@ namespace tieto.education.eyetrackingwebserver
         private FixationDataStream m_fixationPointStream;
         private FixationPoint m_currentFixationPoint;
         private DocumentArea[,] m_documentAreas;
+        private AudioHandler m_audioHandler;
+
+        Byte[] m_loadedAudio;
 
        /// <summary>
        /// Initializing all necessary class objects and variables
@@ -111,6 +114,7 @@ namespace tieto.education.eyetrackingwebserver
             //Initializing statistics manager
             m_statisticsHandler = new StatisticsHandler();
 
+
             m_logType = -1;
             // 0 = EYE, 1=Mouse, 2= Both
             m_activeTestType = -1;
@@ -120,7 +124,9 @@ namespace tieto.education.eyetrackingwebserver
             m_isKeySubmitted = false;
             m_fileSaver = i_fileSaverInstance;
 
-            m_isMicrophoneRecording = false;
+            m_loadedAudio = null;
+
+            m_audioHandler = new AudioHandler(this);
         }
 
        public bool isEyeTrackerOnline()
@@ -185,6 +191,38 @@ namespace tieto.education.eyetrackingwebserver
            m_activeDisplayWidth = i_displayWidth;
        }
 
+       public void setLoadedAudio(Byte[] i_audioData)
+       {
+           m_loadedAudio = i_audioData;
+       }
+
+       public void startAudio()
+       {
+           if(m_audioHandler != null)
+           {
+               m_audioHandler.playbackAudio(m_loadedAudio);
+               log("Recorder: Calling audio player start", 1);
+           }
+       }
+
+       public void pauseAudio()
+       {
+           if (m_audioHandler != null)
+           {
+               m_audioHandler.pausePlayback();
+               log("Recorder: Calling audio player pause", 1);
+           }
+       }
+
+       public void resumeAudio()
+       {
+           if (m_audioHandler != null)
+           {
+               m_audioHandler.resumePlayback();
+               log("Recorder: Calling audio player resume", 1);
+           }
+       }
+
        /// <summary>
        /// Setting the width and height of the current test document
        /// with coordinates received from client.
@@ -221,6 +259,7 @@ namespace tieto.education.eyetrackingwebserver
 
            m_isDocumentBoundsSet = true;
        }
+
 
 
        /// <summary>Adds the received coordinates from the GazePointDataStream if the recording is not paused
@@ -441,6 +480,13 @@ namespace tieto.education.eyetrackingwebserver
                         m_activeTestType = 2;
                         m_currentTestUserInfo.TestTime = DateTime.Now.ToString("HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
 
+                        if(isMicrophoneConnected())
+                        {
+                            m_audioHandler.startAudioRecording();
+
+                            log("Recorder: Recording audio!", 1);
+                        }
+
                         log("Recorder: Successfully started new recording instance!", 1);
 
                         return true;
@@ -452,6 +498,12 @@ namespace tieto.education.eyetrackingwebserver
                         m_dataCurrentTest = new TestData();
                         m_dataCurrentTest.testStatistics = new AllStatistics();
                         m_currentTestUserInfo.TestTime = DateTime.Now.ToString("HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
+
+                        if (isMicrophoneConnected())
+                        {
+                            m_audioHandler.startAudioRecording();
+                        }
+
                         return true;
                     }
                 }
@@ -478,6 +530,7 @@ namespace tieto.education.eyetrackingwebserver
        {
            if(!m_isPaused && m_isRecording)
            {
+               m_audioHandler.pauseMicrophoneRecording();
                m_isPaused = true;
                return true;
            }
@@ -492,6 +545,7 @@ namespace tieto.education.eyetrackingwebserver
        {
            if(m_isPaused && m_isRecording)
            {
+               m_audioHandler.resumeMicrophoneRecording();
                m_isPaused = false;
                return true;
            }
@@ -514,7 +568,7 @@ namespace tieto.education.eyetrackingwebserver
                    if (m_statisticsHandler != null)
                    {
                        m_dataCurrentTest.testStatistics.timeOnPage = m_statisticsHandler.getTimeOnPage(m_currentTestUserInfo.TestTime);
-                   } 
+                   }
                    log("Recorder: Successfully stopped Mouse-tracking test.. Waiting for mouse coordinates", 1);
                    log("Recorder: Time on page: " + m_dataCurrentTest.testStatistics.timeOnPage, 1);
                    return true;
@@ -531,7 +585,8 @@ namespace tieto.education.eyetrackingwebserver
                        if (m_statisticsHandler != null)
                        {
                            m_dataCurrentTest.testStatistics.timeOnPage = m_statisticsHandler.getTimeOnPage(m_currentTestUserInfo.TestTime);
-                       } 
+                       }
+                       //m_audioHandler.playbackAudio(m_audioHandler.stopAudioRecording());
                        log("Recorder: Successfully stopped EYE and Mouse-tracking test.. Waiting for mouse coordinates", 1);
                        return true;
                    }
@@ -552,6 +607,7 @@ namespace tieto.education.eyetrackingwebserver
                    m_gazePointStream = null;
                    m_fixationPointStream.Dispose();
                    m_fixationPointStream = null;
+                   m_audioHandler.stopAudioRecording();
                }
                return true;
            }
@@ -733,7 +789,9 @@ namespace tieto.education.eyetrackingwebserver
                log("Recorder: Successfully calculated statistics!", 1);
 
                // Tell file saver to save files
-               m_fileSaver.saveAllData(m_currentTestUserInfo.Application, m_currentTestUserInfo.TestDate, m_dataCurrentTest, m_currentTestUserInfo);
+               SoundData t_soundData = new SoundData();
+               t_soundData.soundData = m_audioHandler.stopAudioRecording();
+               m_fileSaver.saveAllData(m_currentTestUserInfo.Application, m_currentTestUserInfo.TestDate, m_dataCurrentTest, m_currentTestUserInfo, t_soundData);
                onDataSaved(this, new SavedArgs("Data"));
 
                //Saving current test data in string if user requests it
@@ -755,7 +813,9 @@ namespace tieto.education.eyetrackingwebserver
        {
            log("Recorder: Saving single mouse test!", 0);
            // Tell file saver to save files
-           m_fileSaver.saveAllData(m_currentTestUserInfo.Application, m_currentTestUserInfo.TestDate, m_dataCurrentTest, m_currentTestUserInfo);
+           SoundData t_soundData = new SoundData();
+           t_soundData.soundData = m_audioHandler.stopAudioRecording();
+           m_fileSaver.saveAllData(m_currentTestUserInfo.Application, m_currentTestUserInfo.TestDate, m_dataCurrentTest, m_currentTestUserInfo,t_soundData);
            //Saving current test data in string if user requests it
            m_convertedTestData = JsonConvert.SerializeObject(m_dataCurrentTest, Newtonsoft.Json.Formatting.None);
            onDataSaved(this, new SavedArgs("Data"));
@@ -789,7 +849,7 @@ namespace tieto.education.eyetrackingwebserver
        /// </summary>
        /// <param name="i_logMessage">The wanted log message</param>
        /// <param name="i_logType">The log type. 0=Normal, 1=Success,2=Error and 3=Warning</param>
-       private void log(string i_logMessage,int i_logType)
+       public void log(string i_logMessage,int i_logType)
        {
            m_logType = i_logType;
            _LogUpdateProperty = i_logMessage;

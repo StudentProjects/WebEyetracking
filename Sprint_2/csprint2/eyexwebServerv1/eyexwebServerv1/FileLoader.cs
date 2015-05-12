@@ -253,6 +253,57 @@ namespace tieto.education.eyetrackingwebserver
             return t_completeTestResults;
         }
 
+        public Byte[] tryGetAudioWithParameters(string i_application,string i_date,string i_testerName,int i_id)
+        {
+            Byte[] loadedAudio = null;
+
+
+            //Constructing paths to necessary directories
+            string[] t_testerName = i_testerName.Split(' ');
+            string t_testerNameUnderscored = t_testerName[0];
+            for (int i = 1; i < t_testerName.Length; i++)
+            {
+                t_testerNameUnderscored = t_testerNameUnderscored + "_" + t_testerName[i];
+            }
+
+            string t_nameFolder = t_testerNameUnderscored + "_" + i_id.ToString();
+            string t_applicationLocation = Path.Combine(m_defaultLocation, i_application);
+            string t_dateLocation = Path.Combine(t_applicationLocation, i_date);
+            string t_nameLocation = Path.Combine(t_dateLocation, t_nameFolder);
+
+            if (Directory.Exists(t_nameLocation))
+            {
+                //Checking that file exists
+                string t_dataFilePath = Path.Combine(t_nameLocation, @"audiodata.json");
+
+                if(File.Exists(t_dataFilePath))
+                {
+                    using (StreamReader r = new StreamReader(t_dataFilePath))
+                    {
+                        string json = r.ReadToEnd();
+
+                        try
+                        {
+                            SoundData t_testData = JsonConvert.DeserializeObject<SoundData>(json);
+
+                            //Final message to send
+                            loadedAudio = t_testData.soundData;
+
+                            m_logType = 1;
+                            loadNotificationProperty = "File Loader: The file " + t_dataFilePath + " was successfully read from and is saved as current audio";
+                        }
+                        catch(Exception)
+                        {
+                            m_logType = 2;
+                            loadNotificationProperty = "File Loader: The file " + t_dataFilePath + " contains invalid data";
+                        }
+                    }
+                }
+            }
+
+            return loadedAudio;
+        }
+
         // PROPERTIES //
 
         /// <summary>

@@ -69,7 +69,7 @@ namespace tieto.education.eyetrackingwebserver
         /// <param name="i_date">String, the date when the test was performed</param>
         /// <param name="i_testData">TestData, all testdata collected during test. Contains X,Y coordinates etc</param>
         /// <param name="i_userInfo">UserInfo, all userinfo received before starting the test.</param>
-        public void saveAllData(string i_application,string i_date,TestData i_testData,UserInfo i_userInfo)
+        public void saveAllData(string i_application,string i_date,TestData i_testData,UserInfo i_userInfo,SoundData i_audioData)
         { 
             if(i_date == null)
             {
@@ -109,6 +109,14 @@ namespace tieto.education.eyetrackingwebserver
             t_testData.TESTID = t_testID;
             saveUserInfo(t_userInfoFileName, t_userInfo);
             saveTestData(t_testDataFileName, t_testData);
+
+            if(i_audioData != null)
+            {
+                string t_audioDataFileName = Path.Combine(t_fullPathDirectory, @"audiodata.json");
+                createFileWithNameAtPath(t_fullPathDirectory, @"audiodata.json");
+                SoundData t_soundData = i_audioData;
+                saveAudioData(t_audioDataFileName, t_soundData);
+            }
         }
 
         /// <summary>
@@ -232,6 +240,25 @@ namespace tieto.education.eyetrackingwebserver
             {
                 m_logType = 2;
                 saveNotificationProperty = "File Saver: Failed to save property USERINFO: " + e.ToString();
+            }
+        }
+
+        private void saveAudioData(string i_path,SoundData i_soundData)
+        {
+            try
+            {
+                // Serializing data before inserting into json file
+                string t_audioStructToJson = JsonConvert.SerializeObject(i_soundData, Newtonsoft.Json.Formatting.Indented);
+                //write string of data to file
+                System.IO.File.WriteAllText(i_path, t_audioStructToJson);
+
+                m_logType = 1;
+                saveNotificationProperty = "File Saver: Successfully saved property AUDIO";
+            }
+            catch (FileNotFoundException e)
+            {
+                m_logType = 2;
+                saveNotificationProperty = "File Saver: Failed to save property AUDIO: " + e.ToString();
             }
         }
 
