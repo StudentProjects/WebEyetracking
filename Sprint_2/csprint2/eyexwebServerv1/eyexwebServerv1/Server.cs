@@ -540,6 +540,10 @@ namespace tieto.education.eyetrackingwebserver
                                 m_lastEyeTrackerStatus = m_recorderInstance.isEyeTrackerOnline();
                                 m_lastMicrophoneStatus = m_recorderInstance.isMicrophoneConnected();
 
+                                m_messageHandler.serverNotificationToClient(26, m_lastEyeTrackerStatus.ToString());
+                                m_messageHandler.serverNotificationToClient(30, m_lastMicrophoneStatus.ToString());
+                                m_messageHandler.serverNotificationToClient(18, getAllApplicationData());
+
                                 m_checkStatusTimer.AutoReset = true;
                                 m_checkStatusTimer.Start();
 
