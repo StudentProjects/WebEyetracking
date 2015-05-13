@@ -650,9 +650,7 @@ function animateMouse()
 					
 					var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
 					
-					console.log(target);
-					
-					/*if(lastTarget)
+					if(lastTarget)
 					{
 						if(lastTarget != target)
 						{
@@ -661,23 +659,18 @@ function animateMouse()
 							
 							lastTarget.dispatchEvent(evt1);
 							
-							var evt2 = document.createEvent("MouseEvents"); 
-							evt2.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-							
-							target.dispatchEvent(evt2);
-							
-							lastTarget = target;						
+							lastTarget = null;						
 						}
 					}
 					else
-					{
+					{					
 						var evt = document.createEvent("MouseEvents"); 
 						evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 						
-						lartTarget = target;
+						lastTarget = target;
 						
 						target.dispatchEvent(evt);
-					}*/
+					}
 					
 					mousePointer.style.zIndex = "9001";
 					canvasDiv.style.zIndex = "9000";
