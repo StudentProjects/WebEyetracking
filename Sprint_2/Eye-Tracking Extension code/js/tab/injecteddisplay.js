@@ -914,8 +914,10 @@ function stopAnimation()
 		manageMouseDiv(false);
 	}
 	
+	console.log("AnimationEYE: " + animationEye + " - AnimationMouse: " + animationMouse); 
 	if(!animationEye && !animationMouse)
 	{
+		console.log("Send Anim finnished");
 		port.postMessage({message: "display::animationFinished"});
 		animating = false;
 	}
@@ -927,6 +929,29 @@ function stopAnimation()
 	{
 		hide();
 	}
+}
+
+function forceAnimationStop()
+{
+	//Eye
+	indexEye = 0;
+	
+	clearTimeout(animationEye);
+	animationEye = null;
+	
+	//Mouse
+	indexMouse = 0;
+		
+	clearTimeout(animationMouse);
+	animationMouse = null;
+	manageMouseDiv(false);
+	
+	
+	port.postMessage({message: "display::animationFinished"});
+	animating = false;
+	isPaused = false;
+	
+	hide();
 }
 
 function show(eyeShow, mouseShow)
@@ -1130,6 +1155,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		isPaused = true;
 		sendResponse({message: "Paused!"});	
 	}
+	else if(request.msg == "injecteddisplay::resumeRendering")
+	{
+		isPaused = false;
+		sendResponse({message: "Resumed!"});	
+	}
 	else if(request.msg == "injecteddisplay::clearPrevious")
 	{
 		clearInterval(animationEye);
@@ -1143,11 +1173,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		isShowing = false;
 		
 		sendResponse({message: "Cleared!"});	
-	}
-	else if(request.msg == "injecteddisplay::resumeRendering")
-	{
-		isPaused = false;
-		sendResponse({message: "Resumed!"});	
 	}
 	//If script is leloaded and we were animating, continue animating from the last frame.
 	else if(request.msg == "injecteddisplay::resumeRenderingAfterLoad")
@@ -1164,8 +1189,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if (request.msg == "injecteddisplay::hide")
 	{
-		stopAnimation();
-		hide();
+		forceAnimationStop();
 		isShowing = false;
 		sendResponse({message: "Hiding heatmap!"});
 	}
