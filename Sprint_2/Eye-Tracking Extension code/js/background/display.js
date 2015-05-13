@@ -17,7 +17,7 @@ var currentData = null;
 var lastFrameTime = 0;
 var lastAnimateEye = false;
 var lastAnimateMouse = false;
-var noResponseCounter = 1;
+var noResponseCounter = 0;
 var injecting = false;
 var hasPermission = false;
 ///////////
@@ -590,7 +590,7 @@ displayTimer = setInterval(function()
 		}
 	}
 	else
-	{
+	{		
 		chrome.tabs.getSelected(null, function(i_tab) 
 		{		
 			//Send message to tab.
