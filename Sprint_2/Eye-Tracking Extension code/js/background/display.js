@@ -95,6 +95,8 @@ function resetTestInfo()
 	chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
 	chrome.runtime.sendMessage({msg: 'player::animationFinished'});
 	
+	manageMessage(34,"StopRendering");
+	
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
 		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::clearPrevious"}, function(response) 

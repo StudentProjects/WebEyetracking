@@ -223,6 +223,15 @@ namespace tieto.education.eyetrackingwebserver
            }
        }
 
+       public void stopAudio()
+       {
+           if(m_audioHandler != null)
+           {
+               m_audioHandler.stopPlayback();
+               log("Recorder: Calling audio player stop", 1);
+           }
+       }
+
        /// <summary>
        /// Setting the width and height of the current test document
        /// with coordinates received from client.

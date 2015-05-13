@@ -446,6 +446,13 @@ namespace tieto.education.eyetrackingwebserver
                         m_activeServerInstance.resumeAudioPlayer();
                     }
                 }
+                else if(t_messageType == 34)
+                {
+                    if(m_activeServerInstance != null)
+                    {
+                        m_activeServerInstance.stopAudioPlayer();
+                    }
+                }
                 // Client sending error message
                 else if(t_messageType == 99)
                 {

@@ -387,6 +387,14 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        public void stopAudioPlayer()
+        {
+            if(m_recorderInstance != null)
+            {
+                m_recorderInstance.stopAudio();
+            }
+        }
+
         /// <summary>
         /// Handles a client disconnect request received from server or if the client disconnected unexpectiedly
         /// Logging messages and ends all possible active recordings.
@@ -527,6 +535,17 @@ namespace tieto.education.eyetrackingwebserver
                     {
                         if (m_isHandshakeDone)
                         {
+                            if(m_checkStatusTimer.Enabled == false && !m_isTerminatingListeningThread)
+                            {
+                                m_lastEyeTrackerStatus = m_recorderInstance.isEyeTrackerOnline();
+                                m_lastMicrophoneStatus = m_recorderInstance.isMicrophoneConnected();
+
+                                m_checkStatusTimer.AutoReset = true;
+                                m_checkStatusTimer.Start();
+
+                                clientConnectedProperty = true;
+                                clientTextProperty = 0;
+                            }
                             NetworkStream t_incomingStream = m_connectedClient.GetStream();
                             while (!t_incomingStream.DataAvailable)
                             {
