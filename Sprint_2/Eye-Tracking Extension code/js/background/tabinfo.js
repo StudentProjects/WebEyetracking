@@ -87,10 +87,7 @@ chrome.runtime.onConnect.addListener(function(port)
 	{
 		if(msg.message == "tabinfo::keyEvent")
 		{
-			if(isRecording && !isRecordingPaused)
-			{
-				pushKeyUpdate(msg.data);
-			}
+			pushKeyUpdate(msg.data);
 		}
 	});
 });

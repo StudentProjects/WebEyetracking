@@ -62,7 +62,6 @@ var tempTimer = setTimeout(function()
 	
 	$(window).keyup(function(event)
 	{
-		console.log(event.which);
 		if(event.which == 8)
 		{
 			port.postMessage({message: "tabinfo::keyEvent", data: event.which});

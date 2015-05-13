@@ -22,9 +22,10 @@ var mouseClickX = -1;
 var mouseClickY = -1;
 var mouseClicks = 0;
 
-var mouseLastTime = 0;
-var mouseCurrentTime = 0;
+var lastTime = 0;
+var currentTime = 0;
 
+var pauseOffset = 0;
 ///////////
 //METHODS//
 ///////////
@@ -51,19 +52,24 @@ function pushMousePosition()
 	if(!isPaused)
 	{
 		var time = new Date();
-		mouseCurrentTime += time.getTime() - mouseLastTime;
-		mouseLastTime = time.getTime();
+		currentTime += time.getTime() - lastTime;
+		lastTime = time.getTime();
 		
 		currentMouseRecording['mouseX'].push(mouseX);
 		currentMouseRecording['mouseY'].push(mouseY);	
-		currentMouseRecording['timeStampMouse'].push(mouseCurrentTime);
+		currentMouseRecording['timeStampMouse'].push(currentTime - pauseOffset);
 		
 		if(mouseClicks > currentMouseRecording['mouseClickTimeStamp'].length)
 		{
 			currentMouseRecording['mouseClickX'].push(mouseClickX);
 			currentMouseRecording['mouseClickY'].push(mouseClickY);	
-			currentMouseRecording['mouseClickTimeStamp'].push(mouseCurrentTime);
+			currentMouseRecording['mouseClickTimeStamp'].push(currentTime - pauseOffset);
 		}	
+	}
+	else
+	{
+		var time = new Date();
+		lastTime = time.getTime();
 	}
 }
 
@@ -82,8 +88,8 @@ function startMouseRecording()
 		
 	mouseClicks = 0;
 	var time = new Date();
-	mouseCurrentTime = 0;
-	mouseLastTime = time.getTime();
+	currentTime = 0;
+	lastTime = time.getTime();
 	
 	//Run once before interval starts
 	pushMousePosition();

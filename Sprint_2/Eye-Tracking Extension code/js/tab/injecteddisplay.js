@@ -659,7 +659,7 @@ function animateMouse()
 							console.log(target);
 							target.dispatchEvent(evt);
 							target.focus();
-							
+														
 							mousePointer.style.zIndex = "9001";
 							canvasDiv.style.zIndex = "9000";
 	
