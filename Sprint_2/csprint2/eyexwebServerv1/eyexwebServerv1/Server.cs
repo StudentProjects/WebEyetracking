@@ -42,6 +42,9 @@ namespace tieto.education.eyetrackingwebserver
         private bool m_isStartBitSent;
         private bool m_isHandshakeDone;
 
+        private bool m_lastEyeTrackerStatus;
+        private bool m_lastMicrophoneStatus;
+
         private Thread m_listeningThread;
         private TcpClient m_connectedClient;
         private TcpListener m_socketListener;
@@ -51,6 +54,7 @@ namespace tieto.education.eyetrackingwebserver
         private FileLoader m_fileLoader;
         private List<string> m_messageSubstrings;
         private System.Timers.Timer m_messageSender;
+        private System.Timers.Timer m_checkStatusTimer;
 
         // declare event
         public event EventHandler onOutputTextUpdate = delegate { };
@@ -92,6 +96,15 @@ namespace tieto.education.eyetrackingwebserver
             m_messageSender.Enabled = false;
             m_messageSender.Elapsed += new ElapsedEventHandler(this.timerTimeout);
             //Listening for file messages
+
+            m_checkStatusTimer = new System.Timers.Timer();
+            m_checkStatusTimer.Interval = 1000;
+            m_checkStatusTimer.Enabled = false;
+            m_checkStatusTimer.AutoReset = true;
+            m_checkStatusTimer.Elapsed += new ElapsedEventHandler(this.checkStatuses);
+
+            m_lastEyeTrackerStatus = false;
+            m_lastMicrophoneStatus = false;
             
             // Initializing server and recorder
             initializeServerComponents();
@@ -487,8 +500,18 @@ namespace tieto.education.eyetrackingwebserver
                             m_isTerminatingListeningThread = false;
                             m_isHandshakeDone = true;
                             string t_eyeData = m_recorderInstance.isEyeTrackerOnline().ToString();
+                            string t_micData = m_recorderInstance.isMicrophoneConnected().ToString();
+
+                            m_lastEyeTrackerStatus = m_recorderInstance.isEyeTrackerOnline();
+                            m_lastMicrophoneStatus = m_recorderInstance.isMicrophoneConnected();
+
+
                             m_messageHandler.serverNotificationToClient(26, t_eyeData);
+                            m_messageHandler.serverNotificationToClient(30, t_micData);
                             m_messageHandler.serverNotificationToClient(18, getAllApplicationData());
+
+                            m_checkStatusTimer.AutoReset = true;
+                            m_checkStatusTimer.Start();
                         }
 
                     }
@@ -515,6 +538,8 @@ namespace tieto.education.eyetrackingwebserver
                                     m_isHandshakeDone = false;
                                     m_isTerminatingListeningThread = true;
 
+                                    m_checkStatusTimer.Stop();
+
                                     if(m_recorderInstance != null)
                                     {
                                         bool result = m_recorderInstance.stopCriticalRecording();
@@ -531,6 +556,8 @@ namespace tieto.education.eyetrackingwebserver
                                     outputTextProperty = "Server: Restarting listener for new client!";
                                     m_isTerminatingListeningThread = true;
                                     m_connectedClient.Close();
+
+                                    m_checkStatusTimer.Stop();
 
                                     if (m_recorderInstance != null)
                                     {
@@ -564,6 +591,8 @@ namespace tieto.education.eyetrackingwebserver
                                 outputTextProperty = "Server: Good bye!";
                                 m_connectedClient.Close();
 
+                                m_checkStatusTimer.Stop();
+
                                 if (m_recorderInstance != null)
                                 {
                                     bool result = m_recorderInstance.stopCriticalRecording();
@@ -582,6 +611,8 @@ namespace tieto.education.eyetrackingwebserver
                             outputTextProperty = "Server: Good bye!";
                             m_connectedClient.Close();
 
+                            m_checkStatusTimer.Stop();
+
                             if (m_recorderInstance != null)
                             {
                                 bool result = m_recorderInstance.stopCriticalRecording();
@@ -599,6 +630,8 @@ namespace tieto.education.eyetrackingwebserver
                         m_logType = 3;
                         outputTextProperty = "Server: Error, restarting listener!";
                         m_connectedClient.Close();
+
+                        m_checkStatusTimer.Stop();
 
                         if (m_recorderInstance != null)
                         {
@@ -944,6 +977,23 @@ namespace tieto.education.eyetrackingwebserver
                     writeLargeMessageToSocket(m_messageSubstrings[0], false, false);
                     m_messageSubstrings.RemoveAt(0);
                 }
+            }
+        }
+
+        private void checkStatuses(object sender,ElapsedEventArgs e)
+        {
+            bool tempEyeTrackerStatus = m_recorderInstance.isEyeTrackerOnline();
+            if(tempEyeTrackerStatus != m_lastEyeTrackerStatus)
+            {
+                m_lastEyeTrackerStatus = tempEyeTrackerStatus;
+                m_messageHandler.serverNotificationToClient(26, m_lastEyeTrackerStatus.ToString());
+            }
+
+            bool currentMicrophoneStatus = m_recorderInstance.isMicrophoneConnected();
+            if(currentMicrophoneStatus != m_lastMicrophoneStatus)
+            {
+                m_lastMicrophoneStatus = currentMicrophoneStatus;
+                m_messageHandler.serverNotificationToClient(30, m_lastMicrophoneStatus.ToString());
             }
         }
 
