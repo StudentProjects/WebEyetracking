@@ -84,6 +84,7 @@ namespace tieto.education.eyetrackingwebserver
                 m_microphoneBuffer = new Byte[Microphone.Default.GetSampleSizeInBytes(TimeSpan.FromSeconds(1000))];
                 m_microphoneDevice.Start();
                 m_isMicrophoneRecording = true;
+                m_isMicrophoneRecordingPaused = false;
 
                 m_eyeInstance.log("Starting sound recorder", 1);
             }
@@ -94,6 +95,7 @@ namespace tieto.education.eyetrackingwebserver
             Byte[] tempAudiobuffer = null;
             if(m_isMicrophoneRecording && m_microphoneBuffer != null)
             {
+                m_isMicrophoneRecordingPaused = false;
                 m_isMicrophoneRecording = false;
                 m_microphoneDevice.Stop();
 
@@ -146,7 +148,7 @@ namespace tieto.education.eyetrackingwebserver
 
         public void pauseMicrophoneRecording()
         {
-            if(m_isMicrophoneRecording)
+            if(m_isMicrophoneRecording && !m_isMicrophoneRecordingPaused)
             {
                 m_isMicrophoneRecordingPaused = true;
             }
@@ -154,7 +156,7 @@ namespace tieto.education.eyetrackingwebserver
 
         public void resumeMicrophoneRecording()
         {
-            if(m_isMicrophoneRecording)
+            if(m_isMicrophoneRecording && m_isMicrophoneRecordingPaused)
             {
                 m_isMicrophoneRecordingPaused = false;
             }
