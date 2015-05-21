@@ -966,31 +966,6 @@ function showMouse()
 	document.getElementById('canvas-div').style.position = 'absolute';
 }
 
-function checkIfIncluded(file) 
-{
-    var links = document.getElementsByTagName("link");
-    for(var i = 0; i < links.length; i++) 
-    {
-    	console.log("Link: " + links[i].href);
-        if (links[i].href.indexOf(file) != -1)
-        {   	
-        	//return 1;	
-        }
-    }
-
-    var scripts = document.getElementsByTagName("script");
-    for(var i = 0; i < scripts.length; i++) 
-    {
-    	console.log("Script: " + scripts[i].src);
-        if (scripts[i].src.indexOf(file) != -1)
-        {
-        	 
-        	 //return 1;	
-        }
-    }
-    //return 0;
-}
-
 //Hide the heatmap
 function hide()
 {

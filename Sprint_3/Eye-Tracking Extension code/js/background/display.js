@@ -61,7 +61,7 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			lastFrameTime = msg.data;
 		}
-		else if(msg.message == "display::injectedDisplayReady")
+		else if(msg.message == "display::injectedContentReady")
 		{
 			console.log("Content script ready!");
 			PerformJQueryVersionCheck();
@@ -209,7 +209,9 @@ function injectDisplay()
 	{ 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'ext/heatmap/build/heatmap.js'});
 		
-		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injecteddisplay.js'});
+		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedconfig.js'});
+		
+		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedeyedisplay.js'});
 	});
 }
 
@@ -238,7 +240,7 @@ function executeBootstrap()
 {
 	chrome.tabs.getSelected(null, function(i_tab)
 	{ 
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::jquery"}, function(response) 
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedconfig::jquery"}, function(response) 
 		{
 			try
 			{
@@ -303,7 +305,7 @@ function setHeatmapData(i_data, i_resume)
 	currentData = i_data;
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::setData", data: i_data, resume: i_resume}, function(response) 
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::setEyeData", data: i_data, resume: i_resume}, function(response) 
 		{
 			try
 			{
@@ -342,11 +344,11 @@ function animateHeatmap(animateEye, animateMouse)
 		
 		chrome.tabs.getSelected(null, function(i_tab) 
 		{		
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::animate", eye: animateEye, mouse: animateMouse}, function(response) 
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::animate"}, function(response) 
 			{
 				try
 				{
-					if(response.message != "Failedstart")
+					if(response.message != "Failed")
 					{
 						console.log(response.message);
 						chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating heatmap!", type: "Alert"});
@@ -376,7 +378,7 @@ function showHeatmap(showEye, showMouse)
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::show", eye: showEye, mouse: showMouse}, function(response) 
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::show"}, function(response) 
 		{
 			try
 			{
@@ -397,7 +399,7 @@ function hideHeatmap()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::hide"}, function(response) 
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::hide"}, function(response) 
 		{
 			try
 			{
@@ -418,7 +420,7 @@ function clearCanvas()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::clearCanvas"}, function(response) 
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::clearCanvas"}, function(response) 
 		{
 			try
 			{
@@ -499,7 +501,7 @@ function PerformJQueryVersionCheck()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::jqueryversion"}, function(response) 
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedconfig::jqueryversion"}, function(response) 
 		{
 			try
 			{

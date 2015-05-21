@@ -409,15 +409,6 @@ function addPopupMessageListener()
 				document.getElementById('fixation_button').innerHTML = "Show fixation points";
 			}
 			
-			if(isNavigationDisplayed)
-			{
-				document.getElementById('grid_button').innerHTML = "Hide navigation";
-			}
-			else
-			{
-				document.getElementById('grid_button').innerHTML = "Show navigation";
-			}
-			
 			if(!isConnected)
 			{
 				chrome.extension.sendRequest({ msg: "websocket::connectWebSocket" });
