@@ -42,7 +42,7 @@ chrome.runtime.onConnect.addListener(function(port)
 			lastAnimateEye = false;
 			lastAnimateMouse = false;
 			setIsRendering(false);
-			console.log("Rendering set to false in display.js by message animationFinished");
+			console.log("Received Anim finnished");
 			setIsRenderingPaused(false);
 			chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
 			chrome.runtime.sendMessage({msg: 'player::animationFinished'});
@@ -77,7 +77,6 @@ chrome.runtime.onConnect.addListener(function(port)
 		else if(msg.message == "display::hideFixationPoints")
 		{
 			chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
-			chrome.runtime.sendMessage({msg: 'statistics::hidingGrid'});
 			setIsFixationPointsDisplayed(false);
 			setIsNavigationDisplayed(false);
 		}
@@ -154,53 +153,6 @@ function handleFixationPoints()
 				}
 			});
 		});
-	}
-}
-
-
-function handleGrid()
-{
-	if(isFixationPointsDisplayed)
-	{
-		if(!isNavigationDisplayed)
-		{
-			chrome.tabs.getSelected(null, function(i_tab) 
-			{
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::showGrid"}, function(response) 
-				{
-					try
-					{
-						chrome.runtime.sendMessage({msg: 'statistics::showingGrid'});
-						console.log(response.message);
-						setIsNavigationDisplayed(true);
-					}
-					catch(err)
-					{	
-						console.log("Error: " + err.message);
-					}
-				});
-			});	
-		}
-		else
-		{
-			chrome.tabs.getSelected(null, function(i_tab) 
-			{
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injecteddisplay::hideGrid"}, function(response) 
-				{
-					try
-					{
-						chrome.runtime.sendMessage({msg: 'statistics::hidingGrid'});
-						console.log(response.message);
-						setIsNavigationDisplayed(false);
-					}
-					catch(err)
-					{	
-						console.log("Error: " + err.message);
-					}
-				});
-			});	
-		}
-		
 	}
 }
 
@@ -289,7 +241,7 @@ function executeBootstrap()
 					injectTabInfo();
 					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
 					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
-					console.log("Injecting bootstrap"); 	
+					console.log("Injected bootstrap"); 	
 					setIsJQueryLoaded(true);
 					checkResumeRendering();
 				}
