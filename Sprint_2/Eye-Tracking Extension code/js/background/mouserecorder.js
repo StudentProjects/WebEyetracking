@@ -26,6 +26,7 @@ var lastTime = 0;
 var currentTime = 0;
 
 var pauseOffset = 0;
+
 ///////////
 //METHODS//
 ///////////
