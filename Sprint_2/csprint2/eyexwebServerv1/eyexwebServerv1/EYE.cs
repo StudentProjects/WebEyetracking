@@ -453,6 +453,7 @@ namespace tieto.education.eyetrackingwebserver
                                            }
 
                                            tempFixationPoint.fixationTimePoints = allTimePoints;
+                                           tempFixationPoint.page = m_fixationPoints[i].page;
 
                                            m_fixationPoints[i] = tempFixationPoint;
                                            m_fixationPoints.RemoveAt(iterator);
