@@ -57,6 +57,7 @@ namespace tieto.education.eyetrackingwebserver
         public int[] mouseClickX { get; set; }
         public int[] mouseClickY { get; set; }
         public int[] mouseClickTimeStamp { get; set; }
+        public int[] pageTimestamp { get; set; }
         public AllStatistics testStatistics { get; set; }
     }
 

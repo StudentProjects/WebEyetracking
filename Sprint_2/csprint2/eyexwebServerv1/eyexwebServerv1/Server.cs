@@ -363,36 +363,9 @@ namespace tieto.education.eyetrackingwebserver
             return t_stopRecordingSucceeded;
         }
 
-        public void startAudioPlayer()
+        public EYE getRecorderInstance()
         {
-            if(m_recorderInstance != null)
-            {
-                m_recorderInstance.startAudio();
-            }
-        }
-
-        public void pauseAudioPlayer()
-        {
-            if (m_recorderInstance != null)
-            {
-                m_recorderInstance.pauseAudio();
-            }
-        }
-
-        public void resumeAudioPlayer()
-        {
-            if (m_recorderInstance != null)
-            {
-                m_recorderInstance.resumeAudio();
-            }
-        }
-
-        public void stopAudioPlayer()
-        {
-            if(m_recorderInstance != null)
-            {
-                m_recorderInstance.stopAudio();
-            }
+            return m_recorderInstance;
         }
 
         /// <summary>
@@ -422,24 +395,6 @@ namespace tieto.education.eyetrackingwebserver
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Request the data string of a test from the recorder class
-        /// </summary>
-        /// <returns>A string with the test data inside</returns>
-        public string requestDataString()
-        {
-            return m_recorderInstance.getConvertedTestData();
-        }
-
-        /// <summary>
-        /// Requests recorder to update scroll position with a parameter received from client
-        /// </summary>
-        /// <param name="i_newScrollHeight">The new scroll height sent from client</param>
-        public void requestScrollUpdate(int i_newScrollHeight)
-        {
-            m_recorderInstance.setScrollPosition(i_newScrollHeight);
         }
 
         /// <summary>
@@ -703,42 +658,6 @@ namespace tieto.education.eyetrackingwebserver
         }
 
         /// <summary>
-        /// Collects user data received from messagehandler as a string.
-        /// Tries to convert the data to JSON and get all the values from the user form
-        /// If the operation succeeded the data will be sent to the recording instance
-        /// </summary>
-        /// <param name="i_values">The decrypted message received from client</param>
-        public void setRecorderUserData(string i_values)
-        {
-            try
-            {
-                JObject t_stringToJSON = JObject.Parse(i_values);
-                string t_messageContent = t_stringToJSON.GetValue("MessageContent").Value<string>();
-                m_logType = 0;
-                outputTextProperty = t_messageContent;
-                t_stringToJSON = JObject.Parse(t_messageContent);
-                string t_name = t_stringToJSON.GetValue("Name").Value<string>().Trim();
-                string t_age = t_stringToJSON.GetValue("Age").Value<string>().Trim();
-                string t_occupation = t_stringToJSON.GetValue("Occupation").Value<string>().Trim();
-                string t_location = t_stringToJSON.GetValue("Location").Value<string>().Trim();
-                string t_computerusage = t_stringToJSON.GetValue("ComputerUsage").Value<string>().Trim();
-                string t_application = t_stringToJSON.GetValue("Application").Value<string>().Trim();
-                string t_gender = t_stringToJSON.GetValue("Gender").Value<string>().Trim();
-                string t_otherinfo = t_stringToJSON.GetValue("Other").Value<string>().Trim();
-
-                m_recorderInstance.insertUserData(t_name, t_age, t_occupation, t_location, t_computerusage, t_application, t_otherinfo,t_gender);
-
-            }
-            catch (Exception e)
-            {
-                m_logType = 2;
-                outputTextProperty = "Server: Error when parsing USERINFO received from client: " + e.ToString();
-                m_logType = 3;
-                outputTextProperty = "Server: Is the form filled in correctly in the extension?";
-            }
-        }
-
-        /// <summary>
         /// Server forwarding new document bounds received by messagehandler, to recorder
         /// </summary>
         /// <param name="width">Integer, the document width</param>
@@ -763,8 +682,6 @@ namespace tieto.education.eyetrackingwebserver
         {
             Byte[] m_loadedAudio = m_fileLoader.tryGetAudioWithParameters(i_application, i_date, i_testerName, i_id);
             m_recorderInstance.setLoadedAudio(m_loadedAudio);
-
-
             return m_fileLoader.getSpecificTestData(i_application, i_date, i_testerName, i_id);
         }
 
@@ -792,7 +709,6 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns></returns>
         public string getApplicationData(string i_applicationName)
         {
-            clientConnectedProperty = true;
             return m_fileLoader.getApplicationData(i_applicationName);
         }
 
@@ -802,7 +718,6 @@ namespace tieto.education.eyetrackingwebserver
         /// <returns>A parsed JSON string containing all the applications</returns>
         public string getAllApplicationData()
         {
-            clientConnectedProperty = true;
             return m_fileLoader.getAllApplicationData();
         }
 

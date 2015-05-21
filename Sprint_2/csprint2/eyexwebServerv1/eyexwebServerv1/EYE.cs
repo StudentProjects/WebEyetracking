@@ -31,6 +31,7 @@ namespace tieto.education.eyetrackingwebserver
         private bool m_isMouseSubmitted;
         private bool m_isKeySubmitted;
 
+        private List<int> m_pageTimestamps;
         private List<int> m_gazeXCoordinates;
         private List<int> m_gazeYCoordinates;
         private List<ulong> m_gazePointTimeStamps;
@@ -100,6 +101,8 @@ namespace tieto.education.eyetrackingwebserver
             m_isFirstPointCollected = false;
             // User info must be submitted before a test can start
             m_isInfoSubmitted = false;
+            //List for timestamps per test page
+            m_pageTimestamps = new List<int>();
             // Will contain the coordinates
             m_gazeXCoordinates = new List<int>(); 
             //Will contains timestamps
@@ -194,6 +197,15 @@ namespace tieto.education.eyetrackingwebserver
        public void setLoadedAudio(Byte[] i_audioData)
        {
            m_loadedAudio = i_audioData;
+       }
+
+       /// <summary>
+       /// Inserts a given timestamp into the list of page timestamps
+       /// </summary>
+       /// <param name="i_timestamp">timestamp to be added</param>
+       public void addPageTimestamp(int i_timestamp)
+       {
+           m_pageTimestamps.Add(i_timestamp);
        }
 
        public void startAudio()
@@ -617,6 +629,13 @@ namespace tieto.education.eyetrackingwebserver
                    m_fixationPointStream.Dispose();
                    m_fixationPointStream = null;
                    m_audioHandler.stopAudioRecording();
+
+                   m_gazeXCoordinates.Clear();
+                   m_gazeYCoordinates.Clear();
+                   m_gazePointTimeStamps.Clear();
+                   m_fixationPoints.Clear();
+                   m_pageTimestamps.Clear();
+                   m_isFirstPointCollected = false;
                }
                return true;
            }
@@ -719,6 +738,7 @@ namespace tieto.education.eyetrackingwebserver
            m_currentFixationIndex = -1;
            m_isKeySubmitted = false;
            m_isMouseSubmitted = false;
+           m_pageTimestamps.Clear();
 
            if(i_endType == 1)
            {
@@ -785,6 +805,9 @@ namespace tieto.education.eyetrackingwebserver
                m_dataCurrentTest.eyeY = m_gazeYCoordinates.ToArray();
                m_dataCurrentTest.timeStampEYE = m_gazePointTimeStamps.ToArray();
 
+               //Adding page timestamps to current test
+               m_dataCurrentTest.pageTimestamp = m_pageTimestamps.ToArray();
+
                mergeFixationPoints();
                //Statistics
                log("Recorder: Calculating statistics!", 0);
@@ -821,6 +844,10 @@ namespace tieto.education.eyetrackingwebserver
        private void saveSingleMouseTest()
        {
            log("Recorder: Saving single mouse test!", 0);
+
+           //Adding page timestamps to current test
+           m_dataCurrentTest.pageTimestamp = m_pageTimestamps.ToArray();
+
            // Tell file saver to save files
            SoundData t_soundData = new SoundData();
            t_soundData.soundData = m_audioHandler.stopAudioRecording();

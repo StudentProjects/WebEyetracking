@@ -216,7 +216,7 @@ namespace tieto.education.eyetrackingwebserver
                 // Client requesting data from the last recording
                 else if(t_messageType == 5)
                 {
-                    string t_jsonMessage = m_activeServerInstance.requestDataString();
+                    string t_jsonMessage = m_activeServerInstance.getRecorderInstance().getConvertedTestData();
                     m_activeServerInstance.setOutputTextProperty(t_jsonMessage);
 
                     if(t_jsonMessage != "")
@@ -248,7 +248,8 @@ namespace tieto.education.eyetrackingwebserver
                     int t_scrollPosition = getMessageContentAsInt(i_decryptedMessage);
                     if(t_scrollPosition != -1)
                     {
-                        m_activeServerInstance.requestScrollUpdate(t_scrollPosition);
+
+                        m_activeServerInstance.getRecorderInstance().setScrollPosition(t_scrollPosition);
                         m_activeServerInstance.setLogType(0);
                         m_activeServerInstance.setOutputTextProperty("Recorder: Updated scroll height to " + t_scrollPosition.ToString());
                     }
@@ -261,7 +262,7 @@ namespace tieto.education.eyetrackingwebserver
                 //Client sending form data
                 else if (t_messageType == 14)
                 {
-                    m_activeServerInstance.setRecorderUserData(i_decryptedMessage);
+                    manageUserInfo(i_decryptedMessage);
                 }
                 //Client requesting info from specific application
                 else if(t_messageType == 15)
@@ -425,32 +426,63 @@ namespace tieto.education.eyetrackingwebserver
                         constructResponseMessage(28, false);
                     }
                 }
+                // start audio recording
                 else if(t_messageType == 31)
                 {
                     if(m_activeServerInstance != null)
                     {
-                        m_activeServerInstance.startAudioPlayer();
+                        if (m_activeServerInstance.getRecorderInstance() != null)
+                        {
+                            m_activeServerInstance.getRecorderInstance().startAudio();
+                        }
                     }
                 }
+                // pause audio recoring on request
                 else if(t_messageType == 32)
                 {
                     if (m_activeServerInstance != null)
                     {
-                        m_activeServerInstance.pauseAudioPlayer();
+                        if (m_activeServerInstance.getRecorderInstance() != null)
+                        {
+                            m_activeServerInstance.getRecorderInstance().pauseAudio();
+                        }
                     }
                 }
+                // resume audio recording on request
                 else if(t_messageType == 33)
                 {
                     if (m_activeServerInstance != null)
                     {
-                        m_activeServerInstance.resumeAudioPlayer();
+                        if (m_activeServerInstance.getRecorderInstance() != null)
+                        {
+                            m_activeServerInstance.getRecorderInstance().resumeAudio();
+                        }
                     }
                 }
+                // stop audio recording on request
                 else if(t_messageType == 34)
                 {
                     if(m_activeServerInstance != null)
                     {
-                        m_activeServerInstance.stopAudioPlayer();
+                        if (m_activeServerInstance.getRecorderInstance() != null)
+                        {
+                            m_activeServerInstance.getRecorderInstance().stopAudio();
+                        }
+                    }
+                }
+                // add new page timestamp
+                else if(t_messageType == 35)
+                {
+                    if(m_activeServerInstance != null)
+                    {
+                        int t_pageTimestamp = getMessageContentAsInt(i_decryptedMessage);
+                        if (t_pageTimestamp > -1)
+                        {
+                            if(m_activeServerInstance.getRecorderInstance() != null)
+                            {
+                                m_activeServerInstance.getRecorderInstance().addPageTimestamp(t_pageTimestamp);
+                            }
+                        }
                     }
                 }
                 // Client sending error message
@@ -754,6 +786,44 @@ namespace tieto.education.eyetrackingwebserver
                 m_activeServerInstance.setOutputTextProperty("Something went wrong (message is not an int)" + e.ToString());
             }
             return t_messageContent;
+        }
+
+
+        /// <summary>
+        /// Collects user data
+        /// Tries to convert the data to JSON and get all the values from the user form
+        /// If the operation succeeded the data will be sent to the recording instance
+        /// </summary>
+        /// <param name="i_values">The decrypted message received from client</param>
+        public void manageUserInfo(string i_values)
+        {
+            try
+            {
+                JObject t_stringToJSON = JObject.Parse(i_values);
+                string t_messageContent = t_stringToJSON.GetValue("MessageContent").Value<string>();
+                t_stringToJSON = JObject.Parse(t_messageContent);
+                string t_name = t_stringToJSON.GetValue("Name").Value<string>().Trim();
+                string t_age = t_stringToJSON.GetValue("Age").Value<string>().Trim();
+                string t_occupation = t_stringToJSON.GetValue("Occupation").Value<string>().Trim();
+                string t_location = t_stringToJSON.GetValue("Location").Value<string>().Trim();
+                string t_computerusage = t_stringToJSON.GetValue("ComputerUsage").Value<string>().Trim();
+                string t_application = t_stringToJSON.GetValue("Application").Value<string>().Trim();
+                string t_gender = t_stringToJSON.GetValue("Gender").Value<string>().Trim();
+                string t_otherinfo = t_stringToJSON.GetValue("Other").Value<string>().Trim();
+
+               m_activeServerInstance.getRecorderInstance().insertUserData(t_name, t_age, t_occupation, t_location, t_computerusage, t_application, t_otherinfo, t_gender);
+
+                m_activeServerInstance.setLogType(0);
+                m_activeServerInstance.setOutputTextProperty("MessageHandler: Handling user info from client");
+
+            }
+            catch (Exception e)
+            {
+                m_activeServerInstance.setLogType(2);
+                m_activeServerInstance.setOutputTextProperty("MessageHandler: Error when parsing USERINFO received from client: " + e.ToString());
+                m_activeServerInstance.setLogType(3);
+                m_activeServerInstance.setOutputTextProperty("MessageHandler: Is the form filled in correctly in the extension?");
+            }
         }
     }
 }
