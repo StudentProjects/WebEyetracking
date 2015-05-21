@@ -260,6 +260,8 @@ function executeBootstrap()
 	});
 }
 
+//Tell the content script injecteddisplay.js to
+//resume rendering from the specific timestamp.
 function resumeRenderingAfterLoad(tab_id)
 {
 	var tempData = new Object();
@@ -282,6 +284,8 @@ function resumeRenderingAfterLoad(tab_id)
 }
 
 //Tell injecteddisplay.js to set new data.
+//If i_resume is true, the injectionscript
+//will send back a resume request.
 function setHeatmapData(i_data, i_resume)
 {
 	console.log("setHeatmapData");

@@ -29,12 +29,23 @@ function injectTabInfo()
 	});	
 }
 
-//Check if tab har been loaded.
+//Check if document in tab has been loaded.
 chrome.tabs.onUpdated.addListener(function(tabId , info) 
 {
-    if (info.status == "complete") 
+    if (info.status == "complete")
     {
-        manageMessage(3, "ResumeRecordingRequest");
+    	console.log("Page finished loading!");
+    	
+		if(isRecording)
+		{
+	    	manageMessage(3, "ResumeRecordingRequest");
+	    	
+	    	var time = new Date();
+			var resumeTimestamp = currentTime + (time.getTime() - lastTime);
+	    	
+	    	manageMessage(35, resumeTimestamp);
+	    	console.log("Resumed recording at " + resumeTimestamp);
+		}
     }
 });
 
