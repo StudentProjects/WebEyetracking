@@ -12,14 +12,20 @@
 /////////////
 
 var displayTimer = null;
-var displayError = "";
-var currentData = null;
-var lastFrameTime = 0;
-var lastAnimateEye = false;
-var lastAnimateMouse = false;
-var noResponseCounter = 0;
-var injecting = false;
-var hasPermission = false;
+var displayError = ""; 
+var currentData = null; //The latest data loaded into the content scripts
+var lastFrameTime = 0; //Holds the last rendered frames timestamp, used for resuming 
+					   //rendering after page load.
+var lastAnimateEye = false; //Holds the value of the eye rendering index, used for resuming 
+							//rendering after page load.
+var lastAnimateMouse = false; //Holds the value of the mouse rendering index, used for resuming 
+							  //rendering after page load.
+var noResponseCounter = 0; //For each failed try to communicate with the content scripts, this 
+						   //variable is increased by one. Variable is set to 0 when content
+						   //script is initialized.
+var injecting = false; //Is the script already trying to inject content scripts?
+var hasPermission = false; //Does the script have permission to inject scripts into this tab?
+
 ///////////
 //METHODS//
 ///////////
@@ -156,6 +162,7 @@ function handleFixationPoints()
 	}
 }
 
+//Tell the content script to pause rendering.
 function pauseRendering()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
@@ -176,6 +183,7 @@ function pauseRendering()
 	});
 }
 
+//Tell the content script to resume rendering.
 function resumeRendering()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
@@ -208,6 +216,8 @@ function injectDisplay()
 	});
 }
 
+//Check if the extension was rendering data when last page was unloaded.
+//If so, set heat map data in content script.
 function checkResumeRendering()
 {
 	console.log("Is rendering after load: " + isRendering);
@@ -268,6 +278,10 @@ function resumeRenderingAfterLoad(tab_id)
 	tempData.lastFrameTime = lastFrameTime;
 	tempData.lastAnimateEye = lastAnimateEye;
 	tempData.lastAnimateMouse = lastAnimateMouse;
+	
+	//Tell the server to 
+	manageMessage(33, "ResumeRendering");
+	
 	chrome.tabs.sendMessage(tab_id, {msg: "injecteddisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
 	{
 		try
@@ -346,7 +360,7 @@ function animateHeatmap(animateEye, animateMouse)
 						{	
 							console.log(response.message);
 							setHeatmapData(currentData, false);	
-							animateHeatmap(animateEye,animateMouse);
+							animateHeatmap(animateEye, animateMouse);
 						}
 					}
 				}
