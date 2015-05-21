@@ -200,6 +200,8 @@ function handleStartReceived()
 {
 	chrome.runtime.sendMessage({ msg: "recorder::startReceived" });
 	
+	manageMessage(35, 0);
+	
 	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 	
 	clearCanvas();

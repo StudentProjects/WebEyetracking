@@ -98,7 +98,15 @@ chrome.runtime.onConnect.addListener(function(port)
 	{
 		if(msg.message == "tabinfo::pagebeforeload")
 		{
-			manageMessage(2, "PauseRecordingRequest");
+			if(isRecording)
+			{
+				manageMessage(2, "PauseRecordingRequest");
+			}
+			else if(isRendering)
+			{
+				manageMessage(32, "PauseRendering");
+			}
+			
 			noResponseCounter = 0; //from display.js
 			console.log("Page is being loaded!");
 		}
