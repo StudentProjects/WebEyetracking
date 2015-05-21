@@ -26,10 +26,6 @@ function initStatistics()
 	{	
 		chrome.extension.sendRequest({ msg:"display::handleFixationPoints"});	
 	});
-	document.getElementById('grid_button').addEventListener("click", function()
-	{	
-		chrome.extension.sendRequest({ msg:"display::handleGrid"});	
-	});
 	
 	addStatisticsMessageListener();
 	
@@ -110,14 +106,6 @@ function addStatisticsMessageListener()
 		else if(i_message.msg == "statistics::hidingFixationPoints")
 		{
 			document.getElementById("fixation_button").innerHTML = "Show fixation points";
-		}
-		else if(i_message.msg == "statistics::showingGrid")
-		{
-			document.getElementById("grid_button").innerHTML = "Hide Navigation";
-		}
-		else if(i_message.msg == "statistics::hidingGrid")
-		{
-			document.getElementById("grid_button").innerHTML = "Show Navigation";
 		}
 	});
 }
