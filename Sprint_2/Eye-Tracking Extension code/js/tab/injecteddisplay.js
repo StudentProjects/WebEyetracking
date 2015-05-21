@@ -1070,8 +1070,7 @@ function checkIfIncluded(file)
     {
     	console.log("Link: " + links[i].href);
         if (links[i].href.indexOf(file) != -1)
-        {
-        	
+        {   	
         	//return 1;	
         }
     }
@@ -1115,6 +1114,9 @@ function hide()
 		document.body.removeChild(document.getElementById("canvas-div"));
 		canvasDiv = null;
 	}
+
+	//Reset this to zero when ending test.
+	currentPageOnPlayback = 0;
 }
 
 //Listen for messages from displayheatmap.js in extension
@@ -1186,6 +1188,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	//If script is leloaded and we were animating, continue animating from the last frame.
 	else if(request.msg == "injecteddisplay::resumeRenderingAfterLoad")
 	{
+		currentPageOnPlayback++;
 		startAnimation(request.data.lastAnimateEye, request.data.lastAnimateMouse, request.data.lastFrameTime);
 		sendResponse({message: "Resumed!"});	
 	}
