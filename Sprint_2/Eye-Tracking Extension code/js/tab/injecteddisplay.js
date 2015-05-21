@@ -95,7 +95,7 @@ function initializeCanvas(mouse,eye)
 		canvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
 		canvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
 		canvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
-		canvasDiv.style.zIndex = "9999";	
+		canvasDiv.style.zIndex = "999996";	
 		canvasDiv.id = "canvas-div";
 		canvasDiv.className = "canvas-class";
 	        
@@ -144,7 +144,7 @@ function showFixationPoints()
 			{
 				showingFixationPoints = true;	
 				popoverDiv = document.createElement('div');
-				popoverDiv.style.zIndex = "9999";
+				popoverDiv.style.zIndex = "999998";
 				for(i = 0; i < xFixationPointCoords.length; i++)
 				{
 					if(currentPageOnPlayback == individualFixationPage[i])
@@ -164,7 +164,7 @@ function showFixationPoints()
 						fixationDivs[i].style.height = sizeDiameter +"px";
 						fixationDivs[i].style.left = (xFixationPointCoords[i]-(sizeDiameter/2)) +'px';
 						fixationDivs[i].style.top = (yFixationPointCoords[i]-(sizeDiameter/2)) +'px';
-						fixationDivs[i].style.zIndex = "9001";
+						fixationDivs[i].style.zIndex = "999997";
 						
 						var id= "myID_" + i;
 						
@@ -237,7 +237,7 @@ function showFixationPoints()
 						fixationDivs[i].appendChild(img);
 						fixationDivs[i].appendChild(text);
 						
-						fixationDivs[i].childNodes[0].style.zIndex = 9999;
+						fixationDivs[i].childNodes[0].style.zIndex = 999997;
 						document.body.appendChild(fixationDivs[i]);	
 						$("[data-toggle='"+id+"']").popover({position: 'fixed',container: popoverDiv});		
 					}
@@ -681,8 +681,8 @@ function animateMouse()
 						target.dispatchEvent(evt);
 					}
 					
-					mousePointer.style.zIndex = "9001";
-					canvasDiv.style.zIndex = "9999";
+					mousePointer.style.zIndex = "999999";
+					canvasDiv.style.zIndex = "999996";
 					
 					//If there are mouseclicks left to handle
 					if(timeMouseClicks[currentMouseClick])
@@ -985,7 +985,7 @@ function manageMouseDiv(create)
 		mousePointer.style.position = 'absolute';
 		mousePointer.style.width = "24px";
 		mousePointer.style.height = "24px";
-		mousePointer.style.zIndex = "9001";
+		mousePointer.style.zIndex = "999999";
 	    mouseImage = document.createElement('img');
 		mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
 		mousePointer.appendChild(mouseImage);
