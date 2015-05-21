@@ -84,7 +84,6 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
 			setIsFixationPointsDisplayed(false);
-			setIsNavigationDisplayed(false);
 		}
 	});
 });
@@ -129,9 +128,7 @@ function handleFixationPoints()
 				try
 				{
 					chrome.runtime.sendMessage({msg: 'statistics::hidingFixationPoints'});
-					chrome.runtime.sendMessage({msg: 'statistics::hidingGrid'});
 					setIsFixationPointsDisplayed(false);
-					setIsNavigationDisplayed(false);
 					console.log(response.message);
 				}
 				catch(err)
