@@ -72,7 +72,7 @@ namespace tieto.education.eyetrackingwebserver
             }
             catch(Exception)
             {
-                m_eyeInstance.log("Stuck in catch", 3);
+                m_eyeInstance.log("Possible overflow in audio buffer", 3);
             }
         }
 
@@ -81,7 +81,7 @@ namespace tieto.education.eyetrackingwebserver
             if(!m_isMicrophoneRecording && m_microphoneDevice != null)
             {
                 m_recorderData = 0;
-                m_microphoneBuffer = new Byte[Microphone.Default.GetSampleSizeInBytes(TimeSpan.FromSeconds(1000))];
+                m_microphoneBuffer = new Byte[Microphone.Default.GetSampleSizeInBytes(TimeSpan.FromSeconds(3600))];
                 m_microphoneDevice.Start();
                 m_isMicrophoneRecording = true;
                 m_isMicrophoneRecordingPaused = false;
