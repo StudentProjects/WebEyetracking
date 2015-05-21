@@ -98,6 +98,7 @@ namespace tieto.education.eyetrackingwebserver
         public string[] fixationTimePoints { get; set; }
         public string[] fixationTime {get;set;}
         public int timeStampFixation { get; set; }
+        public int page { get; set; }
     }
 
     public class MouseCoord

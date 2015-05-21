@@ -51,6 +51,7 @@ namespace tieto.education.eyetrackingwebserver
         private int m_activeDisplayHeight;
         private int m_activeTestType;
         private int m_currentFixationIndex;
+        private int m_currentTestPage;
         private uint m_pageWidthInTestApplication;
         private uint m_pageHeightInTestApplication;
         private ulong m_firstGazeTimestamp;
@@ -117,6 +118,7 @@ namespace tieto.education.eyetrackingwebserver
             //Initializing statistics manager
             m_statisticsHandler = new StatisticsHandler();
 
+            m_currentTestPage = -1;
 
             m_logType = -1;
             // 0 = EYE, 1=Mouse, 2= Both
@@ -205,7 +207,10 @@ namespace tieto.education.eyetrackingwebserver
        /// <param name="i_timestamp">timestamp to be added</param>
        public void addPageTimestamp(int i_timestamp)
        {
+           m_currentTestPage++;
            m_pageTimestamps.Add(i_timestamp);
+
+           log("Recorder: New page!", 1);
        }
 
        public void startAudio()
@@ -350,6 +355,7 @@ namespace tieto.education.eyetrackingwebserver
                                     m_currentFixationPoint.fixationTimePoints = new string[1];
                                     m_currentFixationPoint.fixationTimePoints[0] = DateTime.Now.ToString("HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
                                     m_currentFixationPoint.Y += m_currentScrollPositionY;
+                                    m_currentFixationPoint.page = m_currentTestPage;
                                     m_fixationPoints.Add(m_currentFixationPoint);
                                 }
                             }
@@ -384,69 +390,77 @@ namespace tieto.education.eyetrackingwebserver
                            {
                                if(iterator != i)
                                {
-                                   double squiredLength = Math.Pow(((double)m_fixationPoints[iterator].X - m_fixationPoints[i].X), 2.0) + Math.Pow(((double)m_fixationPoints[iterator].Y - m_fixationPoints[i].Y), 2.0);
-                                   double lengthBetweenPoints = Math.Sqrt(squiredLength);
-                                   int maxMerged = Math.Max(m_fixationPoints[i].timesMerged, m_fixationPoints[iterator].timesMerged);
-
-                                   if (lengthBetweenPoints <= (24 + (5*(maxMerged + 1))))
+                                   //check so that the both fixation points are on the same page before merging
+                                   if(m_fixationPoints[iterator].page ==  m_fixationPoints[i].page)
                                    {
-                                       int newX = Convert.ToInt32((double)(m_fixationPoints[i].X + m_fixationPoints[iterator].X) / 2.0);
-                                       int newY = Convert.ToInt32((double)(m_fixationPoints[i].Y + m_fixationPoints[iterator].Y) / 2.0);
+                                       double squiredLength = Math.Pow(((double)m_fixationPoints[iterator].X - m_fixationPoints[i].X), 2.0) + Math.Pow(((double)m_fixationPoints[iterator].Y - m_fixationPoints[i].Y), 2.0);
+                                       double lengthBetweenPoints = Math.Sqrt(squiredLength);
+                                       int maxMerged = Math.Max(m_fixationPoints[i].timesMerged, m_fixationPoints[iterator].timesMerged);
 
-                                       tempFixationPoint = new FixationPoint();
-                                       tempFixationPoint.X = newX;
-                                       tempFixationPoint.Y = newY;
-
-                                       int totalFixationOrderAmount = m_fixationPoints[i].fixationOrder.Length + m_fixationPoints[iterator].fixationOrder.Length;
-                                       int[] allFixationOrderNumber = new int[totalFixationOrderAmount];
-
-                                       for (int j = 0; j < m_fixationPoints[i].fixationOrder.Length; j++)
+                                       if (lengthBetweenPoints <= (24 + (5 * (maxMerged + 1))))
                                        {
-                                           allFixationOrderNumber[j] = m_fixationPoints[i].fixationOrder[j];
+                                           int newX = Convert.ToInt32((double)(m_fixationPoints[i].X + m_fixationPoints[iterator].X) / 2.0);
+                                           int newY = Convert.ToInt32((double)(m_fixationPoints[i].Y + m_fixationPoints[iterator].Y) / 2.0);
+
+                                           tempFixationPoint = new FixationPoint();
+                                           tempFixationPoint.X = newX;
+                                           tempFixationPoint.Y = newY;
+
+                                           int totalFixationOrderAmount = m_fixationPoints[i].fixationOrder.Length + m_fixationPoints[iterator].fixationOrder.Length;
+                                           int[] allFixationOrderNumber = new int[totalFixationOrderAmount];
+
+                                           for (int j = 0; j < m_fixationPoints[i].fixationOrder.Length; j++)
+                                           {
+                                               allFixationOrderNumber[j] = m_fixationPoints[i].fixationOrder[j];
+                                           }
+                                           int counter = 0;
+                                           for (int j = m_fixationPoints[i].fixationOrder.Length; j < totalFixationOrderAmount; j++)
+                                           {
+                                               allFixationOrderNumber[j] = m_fixationPoints[iterator].fixationOrder[counter];
+                                               counter++;
+                                           }
+
+                                           tempFixationPoint.fixationOrder = allFixationOrderNumber;
+
+                                           int totalFixationTimesAmount = m_fixationPoints[i].fixationTime.Length + m_fixationPoints[iterator].fixationTime.Length;
+                                           string[] allFixationTimes = new string[totalFixationTimesAmount];
+                                           for (int j = 0; j < m_fixationPoints[i].fixationTime.Length; j++)
+                                           {
+                                               allFixationTimes[j] = m_fixationPoints[i].fixationTime[j];
+                                           }
+                                           counter = 0;
+                                           for (int j = m_fixationPoints[i].fixationTime.Length; j < totalFixationTimesAmount; j++)
+                                           {
+                                               allFixationTimes[j] = m_fixationPoints[iterator].fixationTime[counter];
+                                               counter++;
+                                           }
+
+                                           tempFixationPoint.fixationTime = allFixationTimes;
+                                           tempFixationPoint.timesMerged = maxMerged + 1;
+                                           tempFixationPoint.timeStampFixation = m_fixationPoints[i].timeStampFixation + m_fixationPoints[iterator].timeStampFixation;
+
+                                           string[] allTimePoints = new string[m_fixationPoints[i].fixationTimePoints.Length + m_fixationPoints[iterator].fixationTimePoints.Length];
+
+                                           for (int j = 0; j < m_fixationPoints[i].fixationTimePoints.Length; j++)
+                                           {
+                                               allTimePoints[j] = m_fixationPoints[i].fixationTimePoints[j];
+                                           }
+                                           counter = 0;
+                                           for (int j = m_fixationPoints[i].fixationTimePoints.Length; j < allTimePoints.Length; j++)
+                                           {
+                                               allTimePoints[j] = m_fixationPoints[iterator].fixationTimePoints[counter];
+                                               counter++;
+                                           }
+
+                                           tempFixationPoint.fixationTimePoints = allTimePoints;
+
+                                           m_fixationPoints[i] = tempFixationPoint;
+                                           m_fixationPoints.RemoveAt(iterator);
                                        }
-                                       int counter = 0;
-                                       for (int j = m_fixationPoints[i].fixationOrder.Length; j < totalFixationOrderAmount; j++)
+                                       else
                                        {
-                                           allFixationOrderNumber[j] = m_fixationPoints[iterator].fixationOrder[counter];
-                                           counter++;
+                                           iterator++;
                                        }
-
-                                       tempFixationPoint.fixationOrder = allFixationOrderNumber;
-
-                                       int totalFixationTimesAmount = m_fixationPoints[i].fixationTime.Length + m_fixationPoints[iterator].fixationTime.Length;
-                                       string[] allFixationTimes = new string[totalFixationTimesAmount];
-                                       for (int j = 0; j < m_fixationPoints[i].fixationTime.Length; j++)
-                                       {
-                                           allFixationTimes[j] = m_fixationPoints[i].fixationTime[j];
-                                       }
-                                       counter = 0;
-                                       for (int j = m_fixationPoints[i].fixationTime.Length; j < totalFixationTimesAmount; j++)
-                                       {
-                                           allFixationTimes[j] = m_fixationPoints[iterator].fixationTime[counter];
-                                           counter++;
-                                       }
-
-                                       tempFixationPoint.fixationTime = allFixationTimes;
-                                       tempFixationPoint.timesMerged = maxMerged + 1;
-                                       tempFixationPoint.timeStampFixation = m_fixationPoints[i].timeStampFixation + m_fixationPoints[iterator].timeStampFixation;
-
-                                       string[] allTimePoints = new string[m_fixationPoints[i].fixationTimePoints.Length + m_fixationPoints[iterator].fixationTimePoints.Length];
-
-                                       for (int j = 0; j < m_fixationPoints[i].fixationTimePoints.Length; j++)
-                                       {
-                                           allTimePoints[j] = m_fixationPoints[i].fixationTimePoints[j];
-                                       }
-                                       counter = 0;
-                                       for (int j = m_fixationPoints[i].fixationTimePoints.Length; j < allTimePoints.Length; j++)
-                                       {
-                                           allTimePoints[j] = m_fixationPoints[iterator].fixationTimePoints[counter];
-                                           counter++;
-                                       }
-
-                                       tempFixationPoint.fixationTimePoints = allTimePoints;
-
-                                       m_fixationPoints[i] = tempFixationPoint;
-                                       m_fixationPoints.RemoveAt(iterator);
                                    }
                                    else
                                    {
@@ -636,6 +650,8 @@ namespace tieto.education.eyetrackingwebserver
                    m_fixationPoints.Clear();
                    m_pageTimestamps.Clear();
                    m_isFirstPointCollected = false;
+
+                   m_currentTestPage = -1;
                }
                return true;
            }
@@ -739,6 +755,7 @@ namespace tieto.education.eyetrackingwebserver
            m_isKeySubmitted = false;
            m_isMouseSubmitted = false;
            m_pageTimestamps.Clear();
+           m_currentTestPage = -1;
 
            if(i_endType == 1)
            {
