@@ -92,7 +92,7 @@ function initializeCanvas(mouse,eye)
 		canvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
 		canvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
 		canvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
-		canvasDiv.style.zIndex = "9000";	
+		canvasDiv.style.zIndex = "9999";	
 		canvasDiv.id = "canvas-div";
 		canvasDiv.className = "canvas-class";
 	        
@@ -680,7 +680,7 @@ function animateMouse()
 					}*/
 					
 					mousePointer.style.zIndex = "9001";
-					canvasDiv.style.zIndex = "9000";
+					canvasDiv.style.zIndex = "9999";
 					
 					//If there are mouseclicks left to handle
 					if(timeMouseClicks[currentMouseClick])

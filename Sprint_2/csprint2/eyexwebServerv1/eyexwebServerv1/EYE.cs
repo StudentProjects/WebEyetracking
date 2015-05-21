@@ -376,7 +376,7 @@ namespace tieto.education.eyetrackingwebserver
                                    double lengthBetweenPoints = Math.Sqrt(squiredLength);
                                    int maxMerged = Math.Max(m_fixationPoints[i].timesMerged, m_fixationPoints[iterator].timesMerged);
 
-                                   if (lengthBetweenPoints <= (48 * (maxMerged + 1)))
+                                   if (lengthBetweenPoints <= (24 + (5*(maxMerged + 1))))
                                    {
                                        int newX = Convert.ToInt32((double)(m_fixationPoints[i].X + m_fixationPoints[iterator].X) / 2.0);
                                        int newY = Convert.ToInt32((double)(m_fixationPoints[i].Y + m_fixationPoints[iterator].Y) / 2.0);
