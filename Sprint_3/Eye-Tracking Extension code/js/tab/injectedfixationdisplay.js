@@ -259,6 +259,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if (request.msg == "injectedfixationdisplay::setFixationData")
 	{
+		clearPrevious();
 		setFixationData(request.data);
 		sendResponse({message: "Updating fixation data!"});
 	}
