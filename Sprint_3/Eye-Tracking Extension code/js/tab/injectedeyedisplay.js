@@ -105,6 +105,7 @@ function animateEye()
 		
 		if(heatmapEyeInstance)
 		{
+			
 			animationEye = setTimeout(function()
 			{	
 				if(indexEye >= sizeEye)
@@ -112,7 +113,7 @@ function animateEye()
 					stopEyeAnimation();
 					return false;
 				}
-				
+
 				heatmapEyeInstance.addData(
 				{
 					x: xEyeCoords[indexEye],
@@ -263,6 +264,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	else if(request.msg == "injectedeyedisplay::resumeRendering")
 	{
 		isEyeAnimationPaused = false;
+		animateEye();
 		sendResponse({message: "Resumed eye rendering!"});	
 	}
 	else if(request.msg == "injectedeyedisplay::removeDataFromPreviousTest")
