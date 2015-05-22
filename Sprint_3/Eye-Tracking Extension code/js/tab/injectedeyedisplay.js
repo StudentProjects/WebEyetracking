@@ -7,8 +7,6 @@ var timeStampEYE = null; //Array of eye time stamps.
 
 var animationEye = null; //Callback function for setInterval if animating.
 
-var renderEye = false;
-var isAnimatingEye = false; //True if animating.
 var isEyeAnimationPaused = false; // True if animation is paused
 
 
@@ -61,41 +59,33 @@ function setEyeData(i_eyeData)
 {	
 	var t_data = JSON.parse(i_eyeData);
 	
-	//If eye data exists
-	if(t_data['timeStampEYE'])
-	{		
-		var t_xEyeCoords = new Array();
-		var t_yEyeCoords = new Array();
-		var t_timeStampEye = new Array();
-		
-		//Check so that there are an equal amount of x and y coordinates.
-		if(t_data['eyeX'].length == t_data['eyeY'].length)
-		{
-			var t_size = t_data['timeStampEYE'].length;
-			for(var i = 0; i < t_size; i++)
-			{
-				t_xEyeCoords[i] = t_data['eyeX'][i];
-				t_yEyeCoords[i] = t_data['eyeY'][i];
-				t_timeStampEye[i] = t_data['timeStampEYE'][i];
-			}
-			
-			xEyeCoords = t_xEyeCoords;
-			yEyeCoords = t_yEyeCoords;
-			timeStampEYE = t_timeStampEye;
-			
-			console.log("Loaded " + t_size + " frames of eye data.");
-		}
-		else
-		{
-			console.log("X and Y eye coords do not match!");
-		}
-		
-		port.postMessage({message: "display::hasEyeData", data: true});
-	}
-	else 
+	
+	var t_xEyeCoords = new Array();
+	var t_yEyeCoords = new Array();
+	var t_timeStampEye = new Array();
+	
+	//Check so that there are an equal amount of x and y coordinates.
+	if(t_data['eyeX'].length == t_data['eyeY'].length)
 	{
-		port.postMessage({message: "display::hasEyeData", data: false});
+		var t_size = t_data['timeStampEYE'].length;
+		for(var i = 0; i < t_size; i++)
+		{
+			t_xEyeCoords[i] = t_data['eyeX'][i];
+			t_yEyeCoords[i] = t_data['eyeY'][i];
+			t_timeStampEye[i] = t_data['timeStampEYE'][i];
+		}
+		
+		xEyeCoords = t_xEyeCoords;
+		yEyeCoords = t_yEyeCoords;
+		timeStampEYE = t_timeStampEye;
+		
+		console.log("Loaded " + t_size + " frames of eye data.");
 	}
+	else
+	{
+		console.log("X and Y eye coords do not match!");
+	}
+		
 }
 
 
@@ -146,31 +136,22 @@ function animateEye()
 function startEyeAnimation(startTime)
 {
 	console.log("Start eye animation");	
-	if(!isAnimatingEye)
+
+	port.postMessage({message: "display::eyeAnimationStarted"});
+	console.log("Animating eye data");
+	
+	//Set eye related variables
+	sizeEye = xEyeCoords.length;
+	indexEye = 0;
+	while(startTime > timeStampEYE[indexEye])
 	{
-		if(timeStampEYE)
-		{
-			port.postMessage({message: "display::animationStarted"});
-			console.log("Animating eye data");
-			
-			//Set eye related variables
-			sizeEye = xEyeCoords.length;
-			indexEye = 0;
-			while(startTime > timeStampEYE[indexEye])
-			{
-				indexEye++;
-			}
-			
-			initializeEyeCanvas();
-			isAnimatingEye = true;
-			isDisplayingEyeHeatmap = true;
-			animateEye();
-		}
-		else
-		{
-			console.log("No eye data to animate!");
-		}
+		indexEye++;
 	}
+	
+	initializeEyeCanvas();
+	isDisplayingEyeHeatmap = true;
+	animateEye();
+
 }
 
 //Stop the animate function
@@ -184,7 +165,7 @@ function stopEyeAnimation()
 		clearTimeout(animationEye);
 		animationEye = null;
 		
-		port.postMessage({message: "display::animationFinished"});
+		port.postMessage({message: "display::eyeAnimationFinished"});
 	}
 }
 
@@ -193,8 +174,7 @@ function forceEyeAnimationStop()
 	indexEye = 0;	
 	clearTimeout(animationEye);
 	animationEye = null;
-	port.postMessage({message: "display::animationFinished"});
-	isAnimatingEye = false;
+	port.postMessage({message: "display::eyeAnimationFinished"});
 	isEyeAnimationPaused = false;
 	hideEye();
 }
@@ -202,36 +182,33 @@ function forceEyeAnimationStop()
 //Show the collected eye data as a heatmap in the tab
 function displayEyeHeatmap()
 {	
-	if(!isDisplayingEyeHeatmap)
+	if(xEyeCoords && yEyeCoords)
 	{
-		if(xEyeCoords && yEyeCoords)
-		{
-			initializeEyeCanvas();
-			console.log("Display eye heatmap!");
-			
-			var canvas = heatmapEyeInstance._renderer.canvas;
-			canvas.style.zIndex = "999996";
-			
-			var t_size = xEyeCoords.length;
-			for(var i = 0; i < t_size; i++)
-			{
-				heatmapEyeInstance.addData(
-				{
-					x: xEyeCoords[i],
-					y: yEyeCoords[i],
-					value: 1
-				});
-			}
-			isDisplayingEyeHeatmap = true;
-			port.postMessage({message: "display::displayingData"});
-		}
-		else
-		{
-			console.log("No data!");
-		}
+		initializeEyeCanvas();
+		console.log("Display eye heatmap!");
 		
-		document.getElementById('eye-canvas-div').style.position = 'absolute';	
+		var canvas = heatmapEyeInstance._renderer.canvas;
+		canvas.style.zIndex = "999996";
+		
+		var t_size = xEyeCoords.length;
+		for(var i = 0; i < t_size; i++)
+		{
+			heatmapEyeInstance.addData(
+			{
+				x: xEyeCoords[i],
+				y: yEyeCoords[i],
+				value: 1
+			});
+		}
+		isDisplayingEyeHeatmap = true;
+		port.postMessage({message: "display::displayingData"});
 	}
+	else
+	{
+		console.log("No data!");
+	}
+	
+	document.getElementById('eye-canvas-div').style.position = 'absolute';	
 }
 
 
@@ -265,38 +242,28 @@ function hideEye()
 //Listen for messages from displayheatmap.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
 {
-	if (request.msg == "injectedeyedisplay::animate")
+	if (request.msg == "injectedeyedisplay::startAnimation")
 	{
-		if(!isAnimatingEye)
+		if(timeStampEYE)
 		{
-			if(timeStampEYE)
-			{
-				hideEye(); //Hide before starting animation
-				startEyeAnimation(0);
-				sendResponse({message: "Animating heatmap!"});	
-			}		
-			else
-			{
-				sendResponse({message: "Failed"});	
-			}
-		}
-		else if(isAnimatingEye && !isEyeAnimationPaused)
+			hideEye(); //Hide before starting animation
+			startEyeAnimation(0);
+			sendResponse({message: "Animating eye heatmap!",data:true});	
+		}		
+		else
 		{
-			if(timeStampEYE)
-			{
-				animateEye();	
-			}
+			sendResponse({message: "Failed to start eye animation. No data existed.",data:false});	
 		}
 	}
 	else if(request.msg == "injectedeyedisplay::pauseRendering")
 	{
 		isEyeAnimationPaused = true;
-		sendResponse({message: "Paused!"});	
+		sendResponse({message: "Paused eye rendering!"});	
 	}
 	else if(request.msg == "injectedeyedisplay::resumeRendering")
 	{
 		isEyeAnimationPaused = false;
-		sendResponse({message: "Resumed!"});	
+		sendResponse({message: "Resumed eye rendering!"});	
 	}
 	else if(request.msg == "injectedeyedisplay::removeDataFromPreviousTest")
 	{
@@ -306,18 +273,32 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	//If script is reloaded and we were animating, continue animating from the last frame.
 	else if(request.msg == "injectedeyedisplay::resumeRenderingAfterLoad")
 	{
-		startEyeAnimation(request.data.lastFrameTime);
+		startEyeAnimation(request.data.previousFrameTimestamp);
 		sendResponse({message: "Resumed eye animation!"});	
 	}
 	else if (request.msg == "injectedeyedisplay::show")
 	{
-		displayEyeHeatmap();
-		sendResponse({message: "Showing heatmap!"});
+		if(!isDisplayingEyeHeatmap)
+		{
+			displayEyeHeatmap();
+			sendResponse({message: "Showing heatmap!",data:true});	
+		}
+		else
+		{
+			sendResponse({message: "Eye heatmap already shown!",data:false});
+		}
 	}
 	else if (request.msg == "injectedeyedisplay::hide")
 	{
-		forceEyeAnimationStop();
-		sendResponse({message: "Hiding heatmap!"});
+		if(isDisplayingEyeHeatmap)
+		{
+			forceEyeAnimationStop();
+			sendResponse({message: "Hiding eye heatmap!",data:true});	
+		}
+		else
+		{
+			sendResponse({message: "Eye heatmap is not displayed, skipping hide command!",data:false});
+		}
 	}
 	else if (request.msg == "injectedeyedisplay::clearCanvas")
 	{
@@ -332,7 +313,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		}
 		else
 		{
-			sendResponse({message: "Updating data!"});
+			sendResponse({message: "Updating eye data!"});
 			hideEye();
 		}
 	}

@@ -33,7 +33,7 @@ function handleMessage(i_message)
 		case 6:
 			chrome.runtime.sendMessage({msg: 'popup::updateDebugText', text: "Data received."});	
 			resetTestInfo();
-			setHeatmapData(currentMessage['MessageContent'], false);	
+			setData(currentMessage['MessageContent'], false);	
 			break;
 		//StartRecordingResponse
 		case 7:
@@ -125,7 +125,7 @@ function handleMessage(i_message)
 			{
 				chrome.runtime.sendMessage({msg: 'load::loadSucceeded', data: currentMessage['MessageContent'] });
 				resetTestInfo();
-				setHeatmapData(currentMessage['MessageContent']);
+				setData(currentMessage['MessageContent'],false);
 			}
 			break;
 		//SubTestResponse

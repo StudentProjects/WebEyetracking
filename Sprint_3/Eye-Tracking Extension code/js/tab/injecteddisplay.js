@@ -29,15 +29,6 @@ var timeStampKey = null;
 var keyEventTriggered = false;
 var currentKey = 0;
 
-var xFixationPointCoords = null;
-var yFixationPointCoords = null;
-var timeStampFixation = null;
-var timesMerged = null;
-var timePoints = null;
-var fixationOrders = null;
-var individualFixationPage = null;
-var individualFixationTimePerOrder = null;
-
 var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
 var animating = false; //True if animating.
@@ -52,7 +43,6 @@ var sizeMouse = 0; //Size of coordinate arrays.
 var mousePointer = null; //Div for mouse pointer
 var mouseImage = null; //Mouse pointer image
 
-var fixationDivs = new Array(); //Divs for fixation points
 var maxHeight = 9001; //The current max height
 
 var heatmapEyeInstance = null; //Heatmap instance for eye heatmap
@@ -132,162 +122,7 @@ function initializeCanvas(mouse,eye)
 	}
 }
 
-function showFixationPoints()
-{
-	try
-	{
-		if(!showingFixationPoints)
-		{			
-			width = Math.max($(document).width(), $(window).width());
-			height = Math.max($(document).height(), $(window).height());
-			if(xFixationPointCoords)
-			{
-				showingFixationPoints = true;	
-				popoverDiv = document.createElement('div');
-				popoverDiv.style.zIndex = "999998";
-				for(i = 0; i < xFixationPointCoords.length; i++)
-				{
-					if(currentPageOnPlayback == individualFixationPage[i])
-					{
-						var sizeDiameter;
-						if(timesMerged[i] == 0)
-						{
-							sizeDiameter = 48;
-						}
-						else
-						{
-							sizeDiameter = 48 + (5*(timesMerged[i]+1));
-						}
-						fixationDivs[i] = document.createElement('div');
-						fixationDivs[i].style.position = 'absolute';
-						fixationDivs[i].style.width = sizeDiameter +"px";
-						fixationDivs[i].style.height = sizeDiameter +"px";
-						fixationDivs[i].style.left = (xFixationPointCoords[i]-(sizeDiameter/2)) +'px';
-						fixationDivs[i].style.top = (yFixationPointCoords[i]-(sizeDiameter/2)) +'px';
-						fixationDivs[i].style.zIndex = "999997";
-						
-						var id= "myID_" + i;
-						
-						var popoverPosition = "right";
-						
-						if(((width - (xFixationPointCoords[i]-24)) <= 300) && ((height - (yFixationPointCoords[i]-24)) >= 200))
-						{
-							popoverPosition = "bottom";
-						}
-						else if(((width - (xFixationPointCoords[i]-24)) <= 300) && ((height - (yFixationPointCoords[i]-24)) < 200))
-						{
-							popoverPosition = "top";
-						}
-						
-			
-						var time = timeStampFixation[i]/1000.0;				
-						time *= 100;
-						time = Math.round(time);
-						
-						var test;
-						var header = '';		
-						var numberOfTimepoints = timePoints[i].length;				
-						var content = "";
-						
-						for(var j=0;j<numberOfTimepoints;j++)
-						{
-							var tempContent = "<br/><p>Fixation order: " + (fixationOrders[i][j]+1) + "</p> <p> Fixated at: " + timePoints[i][j] + "</p> <p>Duration: " + individualFixationTimePerOrder[i][j] + "ms </p>";
-							content += tempContent;
-						}
-						
-						if(mostFixatedIndex == i)
-						{
-							header = "Most Fixated Area";
-							test = "<p>Area fixation time: "+(time/100.0)+" second(s)</p><p>Area fixated in times: "+(timesMerged[i]+1)+ "</p> <p>Page: " + (individualFixationPage[i]+1) + "</p> <p>Other info: This area was most fixated</p>" + content;
-						}
-						else if(i==0)
-						{
-							header = "Area Contains First Fixated Point";
-							test = "<p>Area fixation time: "+(time/100.0)+" second(s)</p> <p>Area fixated in times: "+(timesMerged[i]+1)+ "</p><p>Page: " + (individualFixationPage[i]+1) + "</p><p>Other info: This area contains the first fixated point</p>" + content;
-						}
-						else
-						{
-							header = "Fixation Point";
-							test = "<p>Area fixation time: "+(time/100.0)+" second(s)</p><p>Area fixated in times: "+(timesMerged[i]+1)+ "</p> <p>Page: " + (individualFixationPage[i]+1) + "</p> <p>Other info: No other information</p>" + content;
-						}
-						
-						var fixationOrderText = "";
-						var numberOfFixations = fixationOrders[i].length;
-						
-						if(numberOfFixations > 1)
-						{
-							fixationOrderText = (fixationOrders[i][0]+1) + "(!)";
-						}		
-						else
-						{
-							fixationOrderText = (fixationOrders[i][0]+1);
-						}
-					
-						var text = document.createElement('a');
-						text.className += "fixationDivClass";
-						text.innerHTML = "<a href='#' title='"+header+"' data-toggle='"+ id +"' data-placement='"+popoverPosition+"' data-html='true' data-trigger='hover' data-content='"+test+"'>"+ fixationOrderText + "</a>";
-						text.style.position = 'absolute';
-						
-						var img = document.createElement('img');
-						img.src = chrome.runtime.getURL("../../img/circle.png");
-						img.style.width = "100%";
-						img.style.height = "100%";
-						
-						fixationDivs[i].appendChild(popoverDiv);			
-						fixationDivs[i].appendChild(img);
-						fixationDivs[i].appendChild(text);
-						
-						fixationDivs[i].childNodes[0].style.zIndex = 999997;
-						document.body.appendChild(fixationDivs[i]);	
-						$("[data-toggle='"+id+"']").popover({position: 'fixed',container: popoverDiv});		
-					}
-				}	
-				
-			}
-		}	
-	}
-	catch(err)
-	{
-		console.log(err.message);
-	}
-}
 
-
-function controlPreviousTests()
-{
-	if(showingFixationPoints)
-	{
-		hideFixationPoints();
-		xFixationPointCoords = null;
-		yFixationPointCoords = null;
-		port.postMessage({message: "display::hideFixationPoints"});
-	}
-}
-
-//Hide fixation points if they are shown
-function hideFixationPoints()
-{
-	if(showingFixationPoints)
-	{
-		if(xFixationPointCoords)
-		{
-			showingFixationPoints = false;	
-			var size = fixationDivs.length;
-			for(i = 0; i < size; i++)
-			{
-				document.body.removeChild(fixationDivs[i]);
-			}
-			
-			fixationDivs = [];	
-		}
-		
-		var canvas = document.getElementById("line-canvas");
-		if(canvas)
-		{
-			document.body.removeChild(canvas);
-		}
-	}
-}
 
 //Update the xCoords and yCoords with the latest collected data.
 function setData(i_data)
