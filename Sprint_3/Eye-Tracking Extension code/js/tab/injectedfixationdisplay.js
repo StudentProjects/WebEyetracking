@@ -49,7 +49,7 @@ function setFixationData(i_data)
 			individualFixationTimePerOrder[i] = t_data['testStatistics']['allFixations'][i]['fixationTime'];
 			individualFixationPage[i] = t_data['testStatistics']['allFixations'][i]['page'];
 		}
-		console.log("Loaded " + t_size + " frames of fixation points!");
+		console.log("Loaded " + t_size + " fixation points!");
 	}
 	
 	// Find most fixated points index in the array
@@ -81,20 +81,22 @@ function setFixationData(i_data)
 //Removing fixation points if they are drawn on the screen
 function hideFixationPoints()
 {
-	try
+	var size = fixationDivsArray.length;
+	
+	for(i = 0; i < size; i++)
 	{
-		var size = fixationDivsArray.length;
-		for(i = 0; i < size; i++)
-		{
+		try
+		{			
 			document.body.removeChild(fixationDivsArray[i]);
 		}
-		fixationDivsArray = null;
-		port.postMessage({message: "display::hideFixationPoints"});	
+		catch(err)
+		{
+			console.log(err.message);
+		}
+		
 	}
-	catch(err)
-	{
-		console.log(err.message);
-	}
+	fixationDivsArray = null;
+	port.postMessage({message: "display::hideFixationPoints"});	
 }
 
 function drawFixationPoints()
@@ -210,7 +212,6 @@ function drawFixationPoints()
 					fixationDivsArray[i].childNodes[0].style.zIndex = 999997;
 					document.body.appendChild(fixationDivsArray[i]);	
 					$("[data-toggle='"+id+"']").popover({position: 'fixed',container: popoverDiv});	
-		
 				}
 			}	
 		}
