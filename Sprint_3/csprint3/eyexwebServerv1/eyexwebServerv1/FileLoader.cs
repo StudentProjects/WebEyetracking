@@ -253,6 +253,14 @@ namespace tieto.education.eyetrackingwebserver
             return t_completeTestResults;
         }
 
+        /// <summary>
+        /// Tries to load audio content from subfolder with specified application, date, testername and id
+        /// </summary>
+        /// <param name="i_application">String, application folder to load from</param>
+        /// <param name="i_date">String, date folder to load from in application folder</param>
+        /// <param name="i_testerName">String, tester name folder to load from in test date folder of selected application</param>
+        /// <param name="i_id"></param>
+        /// <returns>Byte array, of loaded data. Will either contain audio data or set to null if no audio data existed</returns>
         public Byte[] tryGetAudioWithParameters(string i_application,string i_date,string i_testerName,int i_id)
         {
             Byte[] loadedAudio = null;
@@ -273,7 +281,7 @@ namespace tieto.education.eyetrackingwebserver
 
             if (Directory.Exists(t_nameLocation))
             {
-                //Checking that file exists
+                //Checking that audio file exists
                 string t_dataFilePath = Path.Combine(t_nameLocation, @"audiodata.json");
 
                 if(File.Exists(t_dataFilePath))

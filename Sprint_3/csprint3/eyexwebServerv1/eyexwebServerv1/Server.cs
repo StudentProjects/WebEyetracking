@@ -363,6 +363,11 @@ namespace tieto.education.eyetrackingwebserver
             return t_stopRecordingSucceeded;
         }
 
+
+        /// <summary>
+        /// Gets a reference to the recording instance
+        /// </summary>
+        /// <returns>Recording instance reference</returns>
         public EYE getRecorderInstance()
         {
             return m_recorderInstance;

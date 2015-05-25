@@ -28,6 +28,11 @@ namespace tieto.education.eyetrackingwebserver
 
         private EYE m_eyeInstance;
 
+        /// <summary>
+        /// Initializes important variables and intervals when created
+        /// </summary>
+        /// <param name="i_eye">Eye reference, reference to RecorderInstance. Used when calling log method in Eye class since this class
+        /// does not contain a logproperty</param>
         public AudioHandler(EYE i_eye)
         {
             m_isMicrophoneRecording = false;
@@ -51,16 +56,22 @@ namespace tieto.education.eyetrackingwebserver
             m_updateFramework.Start();
         }
 
+        /// <summary>
+        /// updating the framework dispatcher
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void updateFramework(object sender, EventArgs e)
         {
             FrameworkDispatcher.Update();
         }
 
-        public Byte[] getBuffer()
-        {
-            return m_loadedBuffer;
-        }
-
+        /// <summary>
+        /// Event handler that handles new recorder audio data.
+        /// Saves data to the buffer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveAudio(object sender,EventArgs e)
         {
             try
@@ -76,6 +87,9 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        /// <summary>
+        /// Starts a new audio recording instance if no recording instance is active and if a microphone is connected
+        /// </summary>
         public void startAudioRecording()
         {
             if(!m_isMicrophoneRecording && m_microphoneDevice != null)
@@ -90,6 +104,11 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        /// <summary>
+        /// Stops an active audio recording.
+        /// Transfers all saved audio data to a new audio buffer
+        /// </summary>
+        /// <returns>Byte array, the newest recorded data</returns>
         public Byte[] stopAudioRecording()
         {
             Byte[] tempAudiobuffer = null;
@@ -120,6 +139,11 @@ namespace tieto.education.eyetrackingwebserver
             return tempAudiobuffer;
         }
 
+        /// <summary>
+        /// Starts playing audio if audiobuffer is not empty.
+        /// Also stops old playback if there is something playing right now
+        /// </summary>
+        /// <param name="i_audioBuffer">audio buffer with data to playback</param>
         public void playbackAudio(Byte[] i_audioBuffer)
         {
             if(m_loadedTestSoundInstance != null)
@@ -146,6 +170,9 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        /// <summary>
+        /// Pauses an active audio recording instance
+        /// </summary>
         public void pauseMicrophoneRecording()
         {
             if(m_isMicrophoneRecording && !m_isMicrophoneRecordingPaused)
@@ -154,6 +181,9 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        /// <summary>
+        /// Resumes an active audio recording instance
+        /// </summary>
         public void resumeMicrophoneRecording()
         {
             if(m_isMicrophoneRecording && m_isMicrophoneRecordingPaused)
@@ -162,6 +192,9 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        /// <summary>
+        /// resumes active playback if state of the SoundInstance is set to 'Paused'
+        /// </summary>
         public void resumePlayback()
         {
             if(m_loadedTestSoundInstance != null)
@@ -173,6 +206,9 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        /// <summary>
+        /// Pauses the active playback if the state of the SoundInstance is set to 'Playing'
+        /// </summary>
         public void pausePlayback()
         {
             if (m_loadedTestSoundInstance != null)
@@ -184,6 +220,9 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        /// <summary>
+        /// Stops the active playback if the state of the SoundInstance is set to either 'Playing' or 'Paused'
+        /// </summary>
         public void stopPlayback()
         {
             if (m_loadedTestSoundInstance != null)
