@@ -569,15 +569,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if (request.msg == "injectedmousedisplay::hide")
 	{
-		if(isDisplayingMouseHeatmap)
-		{
-			forceMouseAnimationStop();
-			sendResponse({message: "Hiding mouse heatmap!",data:true});
-		}
-		else
-		{
-			sendResponse({message: "No mouse heatmap displayed!",data:false});
-		}
+		forceMouseAnimationStop();
+		sendResponse({message: "Hiding mouse heatmap!",data:true});
 	}
 	else if (request.msg == "injectedmousedisplay::clearCanvas")
 	{
