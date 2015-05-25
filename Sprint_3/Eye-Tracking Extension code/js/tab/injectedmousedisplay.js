@@ -213,6 +213,7 @@ function animateMouse()
 					mousePointer.style.top = yMouseCoords[indexMouse]+'px';
 					port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
 					
+					//Move canvases backward
 					mousePointer.style.zIndex = "-1";
 					mouseCanvasDiv.style.zIndex = "-1";
 					if(eyeCanvasDiv)
@@ -252,6 +253,7 @@ function animateMouse()
 						lastTarget = null;
 					}
 
+					//Move canvases forward
 					mousePointer.style.zIndex = "999999";
 					mouseCanvasDiv.style.zIndex = "999996";
 					if(eyeCanvasDiv)
@@ -264,6 +266,7 @@ function animateMouse()
 					{
 						if(timeMouseClicks[currentMouseClick] <= timeStampMouse[indexMouse])
 						{
+							//Move canvases backward
 							mousePointer.style.zIndex = "-1";
 							mouseCanvasDiv.style.zIndex = "-1";
 							if(eyeCanvasDiv)
@@ -271,9 +274,8 @@ function animateMouse()
 								eyeCanvasDiv.style.zIndex = "-1";
 							}
 							
+							//Get mouse click target
 							target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
-							
-							console.log(target);
 							
 							var evt2 = document.createEvent("MouseEvents"); 
 							evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
@@ -283,7 +285,7 @@ function animateMouse()
 	
 							currentMouseClick++;
 							
-							
+							//Move canvases forward
 							mousePointer.style.zIndex = "999999";
 							mouseCanvasDiv.style.zIndex = "999996";
 							if(eyeCanvasDiv)
