@@ -109,7 +109,6 @@ function animateEye()
 		
 		while(timeStampEYE[indexEye+1] < currentEyeFrameTime)
 		{
-			console.log("Skipping frame " + indexEye + " because " +  timeStampEYE[indexEye+1] + " < " + currentEyeFrameTime);
 			indexEye++;
 		}
 		

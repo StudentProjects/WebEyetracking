@@ -189,8 +189,6 @@ function animateMouse()
 			indexMouse++;
 		}
 		
-		//console.log(timeStampMouse[indexMouse] + " - " + currentMouseFrameTime);
-		
 		var nextFrame = 0;		
 		
 		if(indexMouse > 0)
@@ -217,7 +215,10 @@ function animateMouse()
 					
 					mousePointer.style.zIndex = "-1";
 					mouseCanvasDiv.style.zIndex = "-1";
-					eyeCanvasDiv.style.zIndex = "-1";
+					if(eyeCanvasDiv)
+					{
+						eyeCanvasDiv.style.zIndex = "-1";
+					}
 					
 					//Simulate hover event
 					var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
@@ -252,14 +253,20 @@ function animateMouse()
 					}
 
 					mousePointer.style.zIndex = "999999";
-					eyeCanvasDiv.style.zIndex = "999996";
 					mouseCanvasDiv.style.zIndex = "999996";
+					if(eyeCanvasDiv)
+					{
+						eyeCanvasDiv.style.zIndex = "999996";
+					}
 					
 					//If there are mouseclicks left to handle
 					if(timeMouseClicks[currentMouseClick])
 					{
-						if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
+						if(timeMouseClicks[currentMouseClick] <= timeStampMouse[indexMouse])
 						{
+							target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
+							
+							console.log(target);
 							
 							var evt2 = document.createEvent("MouseEvents"); 
 							evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
