@@ -50,8 +50,7 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::eyeAnimationFinished")
 		{
-			previousFrameTimestamp = 0;
-			
+			previousFrameTimestamp = 0;			
 			isRenderingEye = false;
 			
 			if(!isRenderingMouse)
@@ -64,8 +63,7 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::mouseAnimationFinished")
 		{
-			previousFrameTimestamp = 0;
-			
+			previousFrameTimestamp = 0;			
 			isRenderingMouse = false;
 			
 			if(!isRenderingEye)
@@ -270,7 +268,7 @@ function resumeRendering()
 	{
 		chrome.tabs.getSelected(null, function(i_tab) 
 		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::resumeRendering"}, function(response) 
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::resumeRendering"}, function(response) 
 			{
 				try
 				{
@@ -300,6 +298,8 @@ function injectDisplay()
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedeyedisplay.js'});
 		
 		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedfixationdisplay.js'});
+		
+		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedmousedisplay.js'});
 	});
 }
 
@@ -385,7 +385,7 @@ function resumeRenderingAfterLoad(tab_id)
 	}
 	if(isRenderingMouse)
 	{
-		chrome.tabs.sendMessage(tab_id, {msg: "injecteddisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
+		chrome.tabs.sendMessage(tab_id, {msg: "injectedmousedisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
 		{
 			try
 			{
@@ -399,6 +399,20 @@ function resumeRenderingAfterLoad(tab_id)
 			}
 		});
 	}
+	
+	chrome.tabs.sendMessage(tab_id, {msg: "injectedfixationdisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
+	{
+		try
+		{
+			console.log(response.message);
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Successfully resumed animation after page load!", type: "Alert"});
+		}
+		catch(err)
+		{	
+			console.log("Error: " + err.message);
+			chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
+		}
+	});
 }
 
 //Tell injecteddisplay.js to set new data.
@@ -573,11 +587,11 @@ function animateHeatmap(requestAnimateEye, requestAnimateMouse)
 			{
 				chrome.tabs.getSelected(null, function(i_tab) 
 				{		
-					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::animate"}, function(response) 
+					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation"}, function(response) 
 					{
 						try
 						{
-							if(response.message != "Failed")
+							if(response.data)
 							{
 								console.log(response.message);
 								chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating mouse heatmap!", type: "Alert"});
@@ -641,8 +655,15 @@ function showHeatmap(requestShowEye, requestShowMouse)
 			{
 				try
 				{
-					console.log(response.message);
-					chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Showing mouse heatmap!", type: "Alert"});
+					if(response.data)
+					{
+						console.log(response.message);
+						chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Showing mouse heatmap!", type: "Alert"});	
+					}
+					else
+					{
+						chrome.runtime.sendMessage({msg: 'player::displayingData'});
+					}
 				}
 				catch(err)
 				{
@@ -679,10 +700,30 @@ function hideHeatmap()
 				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
 			}
 		});
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::hide"}, function(response) 
+		{
+			try
+			{
+				if(response.data)
+				{
+					console.log(response.message);
+					chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Hiding mouse heatmap!", type: "Alert"});	
+				}
+				else
+				{
+					console.log(response.message);
+				}
+			}
+			catch(err)
+			{
+				console.log("Error: " + err.message);
+				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
+			}
+		});
 	});
 }
 
-//Tell injecteddisplay.js to hide heatmap.
+//Tell injectedeyedisplay.js and injectedmousedisplay to hide heatmap.
 function clearCanvas()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
@@ -692,6 +733,17 @@ function clearCanvas()
 			try
 			{
 				console.log("Canvas cleared!");
+			}
+			catch(err)
+			{
+				console.log("Error: " + err.message);
+			}
+		});
+		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::clearCanvas"}, function(response) 
+		{
+			try
+			{
+				console.log("Canvas cleared for mouse!");
 			}
 			catch(err)
 			{

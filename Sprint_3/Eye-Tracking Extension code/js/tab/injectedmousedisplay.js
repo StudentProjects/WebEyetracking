@@ -1,0 +1,571 @@
+var xMouseCoords = null; //Array of mouse x coordinates.
+var yMouseCoords = null; //Array of mouse y coordinates.
+var timeStampMouse = null; //Array of mouse time stamps.
+
+var xMouseClicks = null; //Array of mouse click x coordinates.
+var yMouseClicks = null; //Array of mouse click y coordinates.
+var timeMouseClicks = null; //Array of mouse click time stamps.
+var currentMouseClick = 0;
+
+var key = null;
+var timeStampKey = null;
+var keyEventTriggered = false;
+var currentKey = 0;
+
+var animationMouse = null; //Callback function for setInterval if animating.
+var indexMouse = 0;
+var sizeMouse = 0; //Size of coordinate arrays.
+
+var mousePointer = null; //Div for mouse pointer
+var mouseImage = null; //Mouse pointer image
+
+var heatmapMouseInstance = null; //Heatmap instance for mouse heatmap
+
+var isMouseAnimationPaused = false;
+
+var port = chrome.runtime.connect({name:"display"}); //Port to display.js
+
+var lastTarget = null;
+
+var mouseCanvasDiv = null; //Canvas for rendering heatmap
+
+var isDisplayingMouseHeatmap = false;
+
+function initializeMouseCanvas()
+{
+	if(mouseCanvasDiv == null)
+	{
+		mouseCanvasDiv = document.createElement("div");
+		mouseCanvasDiv.style.position = "absolute";
+		mouseCanvasDiv.style.top = "0px";
+		mouseCanvasDiv.style.left = "0px";
+		mouseCanvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
+		mouseCanvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
+		mouseCanvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
+		mouseCanvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
+		mouseCanvasDiv.style.zIndex = "999996";	
+		mouseCanvasDiv.id = "mouse-canvas-div";
+		mouseCanvasDiv.className = "canvas-class";
+	        
+		document.body.appendChild(mouseCanvasDiv);
+	}
+	heatmapMouseInstance = h337.create( //Heatmap instance.
+	{
+		container: document.querySelector(".canvas-class"),
+		radius: 45,
+	 	maxOpacity: 1,
+	    minOpacity: .0,
+	    blur: .75,
+		gradient:
+		{
+			'.2': 'red',
+			'.5': 'blue',
+			'.85': 'white'
+		}
+	});
+}
+
+//Update the xCoords and yCoords with the latest collected data.
+function setMouseData(i_data)
+{
+	
+	var t_data = JSON.parse(i_data);
+
+	console.log("Update mouse data!");		
+	var t_xMouseCoords = new Array();
+	var t_yMouseCoords = new Array();
+	var t_timeStampMouse = new Array();
+	
+	//Check so that there are an equal amount of x and y coordinates.
+	if(t_data['mouseX'].length == t_data['mouseY'].length)
+	{
+		var t_size = t_data['timeStampMouse'].length;
+		for(var i = 0; i < t_size; i++)
+		{
+			t_xMouseCoords[i] = t_data['mouseX'][i];
+			t_yMouseCoords[i] = t_data['mouseY'][i];
+			t_timeStampMouse[i] = t_data['timeStampMouse'][i];
+		}
+		
+		xMouseCoords = t_xMouseCoords;
+		yMouseCoords = t_yMouseCoords;
+		timeStampMouse = t_timeStampMouse;
+		
+		console.log("Loaded " + t_size + " frames of mouse data.");
+	}
+	else
+	{
+		console.log("X and Y mouse coords do not match!");
+	}
+	
+	//If mouse clicks exist
+	if(t_data['mouseClickTimeStamp'])
+	{
+		console.log("Update mouse click data!");		
+		var t_xMouseClicks = new Array();
+		var t_yMouseClicks = new Array();
+		var t_timeMouseClicks = new Array();
+		
+		//Check so that there are an equal amount of x and y coordinates.
+		if(t_data['mouseClickX'].length == t_data['mouseClickY'].length)
+		{
+			var t_size = t_data['mouseClickTimeStamp'].length;
+			for(var i = 0; i < t_size; i++)
+			{
+				t_xMouseClicks[i] = t_data['mouseClickX'][i];
+				t_yMouseClicks[i] = t_data['mouseClickY'][i];
+				t_timeMouseClicks[i] = t_data['mouseClickTimeStamp'][i];
+			}
+			
+			xMouseClicks = t_xMouseClicks;
+			yMouseClicks = t_yMouseClicks;
+			timeMouseClicks = t_timeMouseClicks;
+			
+			console.log("Loaded " + t_size + " mouse clicks.");
+		}
+		else
+		{
+			console.log("X and Y mouse coords do not match!");
+		}
+	}
+	else
+	{
+		console.log("No mouse click data found!");
+	}
+	
+	//If key events exist
+	if(t_data['timeStampKey'])
+	{
+		console.log("Update key event data!");		
+		var t_keys = new Array();
+		var t_timeStampKey = new Array();
+		
+		//Check so that there are an equal amount of x and y coordinates.
+		var t_size = t_data['timeStampKey'].length;
+		for(var i = 0; i < t_size; i++)
+		{
+			t_keys[i] = t_data['keys'][i];
+			t_timeStampKey[i] = t_data['timeStampKey'][i];
+		}
+		
+		keys = t_keys;
+		timeStampKey = t_timeStampKey;
+		
+		console.log("Loaded " + t_size + " key events.");
+	}
+	else
+	{
+		console.log("No key event data found!");
+	}
+}
+
+
+function animateMouse()
+{	
+	try
+	{
+		document.getElementById('mouse-canvas-div').style.position = 'absolute';	
+	}
+	catch(err)
+	{
+		console.log("Mouse canvas is null!!");
+	}
+	
+	if(!isMouseAnimationPaused)
+	{
+		var nextFrame = 0;
+		if(indexMouse > 0)
+		{
+			var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
+		}
+		
+		try
+		{
+			if(mousePointer)
+			{
+				animationMouse = setTimeout(function()
+				{	
+					if(indexMouse >= sizeMouse)
+					{
+						stopMouseAnimation();
+						return false;
+					}
+				
+					mousePointer.style.left = xMouseCoords[indexMouse]+'px';
+					mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+					port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
+					
+					mousePointer.style.zIndex = "-1";
+					
+
+					mouseCanvasDiv.style.zIndex = "-1";
+					
+					var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
+					
+					if(lastTarget)
+					{
+						if(lastTarget != target)
+						{
+							var evt1 = document.createEvent("MouseEvents"); 
+							evt1.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+							
+							lastTarget.dispatchEvent(evt1);
+							
+							lastTarget = null;						
+						}
+					}
+					else
+					{					
+						var evt = document.createEvent("MouseEvents"); 
+						evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+						
+						lastTarget = target;
+						
+						if(target == null)
+						{
+							console.log("null at Mouse X: " + xMouseCoords[indexMouse]);
+							console.log("null at Mouse Y: " + yMouseCoords[indexMouse]);
+						}
+						target.dispatchEvent(evt);
+					}
+					
+					mousePointer.style.zIndex = "999999";
+					mouseCanvasDiv.style.zIndex = "999996";
+					
+					//If there are mouseclicks left to handle
+					if(timeMouseClicks[currentMouseClick])
+					{
+						if(timeMouseClicks[currentMouseClick] == timeStampMouse[indexMouse])
+						{
+							
+							var evt2 = document.createEvent("MouseEvents"); 
+							evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
+							
+							target.dispatchEvent(evt2);
+							target.focus();
+	
+							currentMouseClick++;
+						}
+					}
+					
+					//If there are key events left to handle
+					if(timeStampKey[currentKey])
+					{
+						if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
+						{
+							console.log("Key " + currentKey + ": " + keys[currentKey]);
+							
+							keyEventTriggered = true;
+							
+							var active = document.activeElement;
+							
+							//If the keycode is 8, a backspace event should be dispathes.
+							//Instead, this function gets the value of the current element,
+							//and then removes the last element in that string.
+							if(keys[currentKey] == 8)
+							{
+								var currentValue = active.value;
+								var newValue = currentValue.substring(0, currentValue.length - 1);
+								active.value = newValue;
+							}
+							
+							//If keycode is 13, an enter event should be dispatched. 
+							//The following code checks if the current element is
+							//a input element, and if so, it tries to find its
+							//parent form and submit it.
+							else if(keys[currentKey] == 13)
+							{				
+								try
+								{
+									var current = document.activeElement;
+									
+									if(current.nodeName == "INPUT")
+									{								
+										console.log(current);
+									
+										while(current.nodeName != "FORM")
+										{
+											current = current.parentNode;
+											console.log(current);
+										}
+										
+										current.submit();
+									}
+								}
+								catch(err)
+								{
+									console.log("Unable to generate ENTER event: " + err); 	
+								}
+							//In all other cases, add the char value of the key code to
+							//the current element.
+							}
+							else
+							{
+								var currentChar = String.fromCharCode(keys[currentKey]);
+								active.value += currentChar;
+							}
+						}
+						else if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && keyEventTriggered)
+						{
+							keyEventTriggered = false;
+							currentKey++;
+						}
+					}
+					 	
+					indexMouse++;
+					animateMouse();
+					
+				}, nextFrame);	
+			}
+			else
+			{
+				return false;
+			}
+		 }
+		 catch(err)
+		 {
+		 	console.log("Totalt haveri i animateMouse. Åtgärda!");
+		 }
+	}
+}
+
+//Start the animate function. Gets the length of timeStampEye.
+function startMouseAnimation(startTime)
+{
+	console.log("Start mouse animation");
+	
+	//Check which mouse click and key event index
+	currentMouseClick = 0;
+	currentKey = 0;
+	keyEventTriggered = false;
+	
+	if(timeMouseClicks[currentMouseClick])
+	{
+		while(startTime > timeMouseClicks[currentMouseClick])
+		{
+			currentMouseClick++;
+		}
+	}
+
+	if(timeStampKey[currentKey])
+	{
+		while(startTime > timeStampKey[currentKey])
+		{
+			currentKey++;
+		}
+	}	
+	
+	port.postMessage({message: "display::mouseAnimationStarted"});
+	console.log("Animating mouse data");
+	
+	//Set mouse related variables
+	sizeMouse = timeStampMouse.length;
+	indexMouse = 0;
+	while(startTime > timeStampMouse[indexMouse])
+	{
+		indexMouse++;
+	}
+	
+	console.log("Animating from frame " + indexMouse);
+	manageMouseDiv(true);
+	initializeMouseCanvas();
+	animateMouse();
+}
+
+//Show or hide mouse pointer
+function manageMouseDiv(create)
+{
+	if(create)
+	{
+		mousePointer = document.createElement('div');
+		mousePointer.id = "mouse";
+		mousePointer.style.position = 'absolute';
+		mousePointer.style.width = "24px";
+		mousePointer.style.height = "24px";
+		mousePointer.style.zIndex = "999999";
+	    mouseImage = document.createElement('img');
+		mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
+		mousePointer.appendChild(mouseImage);
+		document.body.appendChild(mousePointer);
+	}
+	else
+	{
+		if(mousePointer)
+		{
+			mousePointer.removeChild(mouseImage);
+			document.body.removeChild(mousePointer);
+			mousePointer = null;
+			mouseImage = null;	
+		}
+	}
+}
+
+//Show the collected data as a heatmap in the tab
+function displayMouseHeatmap()
+{	
+	if(xMouseCoords && yMouseCoords)
+	{
+		initializeMouseCanvas();
+		console.log("Show mouse heatmap!");
+		
+		var t_size = xMouseCoords.length;
+		for(var i = 0; i < t_size; i++)
+		{
+			heatmapMouseInstance.addData(
+			{
+				x: xMouseCoords[i],
+				y: yMouseCoords[i],
+				value: 1
+			});
+		}
+		isDisplayingMouseHeatmap = true;
+		port.postMessage({message: "display::displayingData"});
+	}
+	else
+	{
+		console.log("No data!");
+	}
+	
+	try
+	{
+		document.getElementById('mouse-canvas-div').style.position = 'absolute';	
+	}
+	catch(err)
+	{
+		console.log("Something went wrong in displaying mouse heatmap");
+	}
+}
+
+//Stop the animate function
+function stopMouseAnimation()
+{
+	if(animationMouse && indexMouse >= sizeMouse)
+	{
+		console.log("Stop mouse animation!");
+		indexMouse = 0;
+		
+		clearTimeout(animationMouse);
+		animationMouse = null;
+		manageMouseDiv(false);
+	}	
+}
+
+
+function forceMouseAnimationStop()
+{
+
+	//Mouse
+	indexMouse = 0;
+		
+	clearTimeout(animationMouse);
+	animationMouse = null;
+	manageMouseDiv(false);
+	
+	port.postMessage({message: "display::mouseAnimationFinished"});
+	isMouseAnimationPaused = false;
+	
+	hideMouseHeatmap();
+}
+
+//Hide the heatmap
+function hideMouseHeatmap()
+{
+	console.log("Hide mouse heatmap!");
+	if(heatmapMouseInstance != null)
+	{
+		var canvas = heatmapMouseInstance._renderer.canvas;
+		//remove the canvas from DOM
+		$(canvas).remove();	
+		heatmapMouseInstance = null;
+	}
+	
+	if(mouseCanvasDiv)
+	{
+		document.body.removeChild(document.getElementById("mouse-canvas-div"));
+		mouseCanvasDiv = null;
+	}
+	//Reset this to zero when ending test.
+	currentPageOnPlayback = 0;
+}
+
+//Listen for messages from displayheatmap.js in extension
+chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
+{
+	if (request.msg == "injectedmousedisplay::startAnimation")
+	{
+		if(timeStampMouse)
+		{
+			hideMouseHeatmap(); //Hide before starting animation
+			startMouseAnimation(0);
+			sendResponse({message: "Animating mouse heatmap!",data:true});	
+		}		
+		else
+		{
+			sendResponse({message: "Failed to start mouse animation. No data existed.",data:false});	
+		}
+	}
+	else if(request.msg == "injectedmousedisplay::pauseRendering")
+	{
+		isMouseAnimationPaused = true;
+		sendResponse({message: "Paused mouse rendering!"});	
+	}
+	else if(request.msg == "injectedmousedisplay::resumeRendering")
+	{
+		isMouseAnimationPaused = false;
+		animateMouse();
+		sendResponse({message: "Resumed mouse rendering!"});	
+	}
+	else if(request.msg == "injectedmousedisplay::removeDataFromPreviousTest")
+	{
+		forceMouseAnimationStop();	
+		sendResponse({message: "Cleared mouse!"});	
+	}
+	//If script is leloaded and we were animating, continue animating from the last frame.
+	else if(request.msg == "injectedmousedisplay::resumeRenderingAfterLoad")
+	{
+		console.log("Resuming rendering after load at frame " + request.data.previousFrameTimestamp);
+		startMouseAnimation(request.data.previousFrameTimestamp);
+		sendResponse({message: "Resumed mouse rendering!"});	
+	}
+	else if (request.msg == "injectedmousedisplay::show")
+	{
+		if(!isDisplayingMouseHeatmap)
+		{
+			displayMouseHeatmap();
+			sendResponse({message: "Showing mouse heatmap!",data:true});
+		}
+		else
+		{
+			sendResponse({message: "Heatmap already displayed!",data:false});
+		}
+	}
+	else if (request.msg == "injectedmousedisplay::hide")
+	{
+		if(isDisplayingMouseHeatmap)
+		{
+			forceMouseAnimationStop();
+			sendResponse({message: "Hiding mouse heatmap!",data:true});
+		}
+		else
+		{
+			sendResponse({message: "No mouse heatmap displayed!",data:false});
+		}
+	}
+	else if (request.msg == "injectedmousedisplay::clearCanvas")
+	{
+		hideMouseHeatmap();
+	}
+	else if (request.msg == "injectedmousedisplay::setMouseData")
+	{
+		setMouseData(request.data);
+		if(request.resume)
+		{
+			sendResponse({message: "resume"});
+		}
+		else
+		{
+			sendResponse({message: "Updating data!"});
+			hideMouseHeatmap();
+		}
+	}
+});

@@ -244,6 +244,8 @@ function clearPrevious()
 	
 	port.postMessage({message: "display::hideFixationPoints"});	
 	isDisplayingFixationPoints = false;
+	
+	currentPageOnPlayback = 0;
 }
 
 //Listen for messages from background script 'display.js'
@@ -281,5 +283,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			hideFixationPoints();		
 		}
 		sendResponse({message: "Hiding fixation points!"});
+	}
+	else if(request.msg == "injectedfixationdisplay::resumeRenderingAfterLoad")
+	{
+		currentPageOnPlayback++;
 	}
 });

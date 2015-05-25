@@ -11,9 +11,7 @@
 //Variables//
 /////////////
 
-var xEyeCoords = null; //Array of eye x coordinates.
-var yEyeCoords = null; //Array of eye y coordinates.
-var timeStampEYE = null; //Array of eye time stamps.
+
 
 var xMouseCoords = null; //Array of mouse x coordinates.
 var yMouseCoords = null; //Array of mouse y coordinates.
@@ -29,14 +27,10 @@ var timeStampKey = null;
 var keyEventTriggered = false;
 var currentKey = 0;
 
-var animationEye = null; //Callback function for setInterval if animating.
 var animationMouse = null; //Callback function for setInterval if animating.
 var animating = false; //True if animating.
 var indexEye = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
-var sizeEye = 0; //Size of coordinate arrays.
-
-var indexMouse = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
 var sizeMouse = 0; //Size of coordinate arrays.
 
@@ -45,10 +39,7 @@ var mouseImage = null; //Mouse pointer image
 
 var maxHeight = 9001; //The current max height
 
-var heatmapEyeInstance = null; //Heatmap instance for eye heatmap
 var heatmapMouseInstance = null; //Heatmap instance for mouse heatmap
-var mostFixatedOrder = -1;
-var mostFixatedIndex = -1; //Index of the most fixated point
 
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
 
