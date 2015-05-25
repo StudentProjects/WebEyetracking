@@ -217,6 +217,7 @@ function animateMouse()
 					
 					mousePointer.style.zIndex = "-1";
 					mouseCanvasDiv.style.zIndex = "-1";
+					eyeCanvasDiv.style.zIndex = "-1";
 					
 					//Simulate hover event
 					var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
@@ -251,6 +252,7 @@ function animateMouse()
 					}
 
 					mousePointer.style.zIndex = "999999";
+					eyeCanvasDiv.style.zIndex = "999996";
 					mouseCanvasDiv.style.zIndex = "999996";
 					
 					//If there are mouseclicks left to handle
@@ -548,7 +550,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		forceMouseAnimationStop();	
 		sendResponse({message: "Cleared mouse!"});	
 	}
-	//If script is leloaded and we were animating, continue animating from the last frame.
+	//If script is Reloaded and we were animating, continue animating from the last frame.
 	else if(request.msg == "injectedmousedisplay::resumeRenderingAfterLoad")
 	{
 		console.log("Resuming rendering after load at frame " + request.data.previousFrameTimestamp);
