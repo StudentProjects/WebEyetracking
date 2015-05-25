@@ -17,7 +17,7 @@ var indexMouse = 0;
 var sizeMouse = 0; //Size of coordinate arrays.
 
 var previousMouseFrameTime = 0;
-var currentMouseAnimationTime = 0;
+var currentMouseFrameTime = 0;
 
 var mousePointer = null; //Div for mouse pointer
 var mouseImage = null; //Mouse pointer image
@@ -176,22 +176,22 @@ function animateMouse()
 	
 	if(!isMouseAnimationPaused)
 	{
-		var nextFrame = 0;
-		
-		var time = new Date();
-		currentMouseAnimationTime += time.getTime() - previousMouseFrameTime;
-		
 		//Check so that the current frame is the one closest to 
 		//the actual timestep. If not, skip to next frame and check
 		//that one instead. This is made to keep the animation in
 		//real time.
-		while(timeStampMouse[indexMouse+1] < currentMouseAnimationTime)
+		var time = new Date();
+		currentMouseFrameTime += time.getTime() - previousMouseFrameTime;
+		previousMouseFrameTime = time.getTime();
+		
+		while(timeStampMouse[indexMouse+1] < currentMouseFrameTime)
 		{
-			console.log("Skipping frame " + indexMouse);
 			indexMouse++;
 		}
 		
-		console.log(timeStampMouse[indexMouse] + " - " + currentMouseAnimationTime);
+		//console.log(timeStampMouse[indexMouse] + " - " + currentMouseFrameTime);
+		
+		var nextFrame = 0;		
 		
 		if(indexMouse > 0)
 		{
@@ -389,7 +389,7 @@ function startMouseAnimation(startTime)
 	
 	var time = new Date();
 	previousMouseFrameTime = time.getTime();
-	currentMouseAnimationTime = startTime;
+	currentMouseFrameTime = startTime;
 	console.log("Animating from frame " + indexMouse);
 	manageMouseDiv(true);
 	initializeMouseCanvas();
@@ -537,6 +537,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if(request.msg == "injectedmousedisplay::resumeRendering")
 	{
+		var time = new Date();
+		previousMouseFrameTime = time.getTime();
 		isMouseAnimationPaused = false;
 		animateMouse();
 		sendResponse({message: "Resumed mouse rendering!"});	

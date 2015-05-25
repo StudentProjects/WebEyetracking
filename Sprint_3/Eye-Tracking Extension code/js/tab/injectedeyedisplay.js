@@ -9,6 +9,8 @@ var animationEye = null; //Callback function for setInterval if animating.
 
 var isEyeAnimationPaused = false; // True if animation is paused
 
+var previousEyeFrameTime = 0;
+var currentEyeFrameTime = 0;
 
 var indexEye = 0; //Integer representing the current animation frame, which
 			   //is the index of the current position in the xCoords and yCoords array.
@@ -97,6 +99,20 @@ function animateEye()
 	
 	if(!isEyeAnimationPaused)
 	{
+		//Check so that the current frame is the one closest to 
+		//the actual timestep. If not, skip to next frame and check
+		//that one instead. This is made to keep the animation in
+		//real time.
+		var time = new Date();
+		currentEyeFrameTime += time.getTime() - previousEyeFrameTime;
+		previousEyeFrameTime = time.getTime();
+		
+		while(timeStampEYE[indexEye+1] < currentEyeFrameTime)
+		{
+			console.log("Skipping frame " + indexEye + " because " +  timeStampEYE[indexEye+1] + " < " + currentEyeFrameTime);
+			indexEye++;
+		}
+		
 		var nextFrame = 0;
 		if(indexEye > 0)
 		{
@@ -149,6 +165,9 @@ function startEyeAnimation(startTime)
 		indexEye++;
 	}
 	
+	var time = new Date();
+	previousEyeFrameTime = time.getTime();
+	currentEyeFrameTime = startTime;
 	initializeEyeCanvas();
 	isDisplayingEyeHeatmap = true;
 	animateEye();
@@ -263,6 +282,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if(request.msg == "injectedeyedisplay::resumeRendering")
 	{
+		var time = new Date();
+		previousEyeFrameTime = time.getTime();
 		isEyeAnimationPaused = false;
 		animateEye();
 		sendResponse({message: "Resumed eye rendering!"});	
