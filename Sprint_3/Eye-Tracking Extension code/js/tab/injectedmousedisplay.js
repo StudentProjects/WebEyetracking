@@ -16,6 +16,9 @@ var animationMouse = null; //Callback function for setInterval if animating.
 var indexMouse = 0;
 var sizeMouse = 0; //Size of coordinate arrays.
 
+var previousMouseFrameTime = 0;
+var currentMouseAnimationTime = 0;
+
 var mousePointer = null; //Div for mouse pointer
 var mouseImage = null; //Mouse pointer image
 
@@ -159,7 +162,7 @@ function setMouseData(i_data)
 	}
 }
 
-
+//Animates mouse pointer for current frame, and calculates when to draw the next frame.
 function animateMouse()
 {	
 	try
@@ -174,8 +177,25 @@ function animateMouse()
 	if(!isMouseAnimationPaused)
 	{
 		var nextFrame = 0;
+		
+		var time = new Date();
+		currentMouseAnimationTime += time.getTime() - previousMouseFrameTime;
+		
+		//Check so that the current frame is the one closest to 
+		//the actual timestep. If not, skip to next frame and check
+		//that one instead. This is made to keep the animation in
+		//real time.
+		while(timeStampMouse[indexMouse+1] < currentMouseAnimationTime)
+		{
+			console.log("Skipping frame " + indexMouse);
+			indexMouse++;
+		}
+		
+		console.log(timeStampMouse[indexMouse] + " - " + currentMouseAnimationTime);
+		
 		if(indexMouse > 0)
 		{
+			
 			var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
 		}
 		
@@ -196,39 +216,40 @@ function animateMouse()
 					port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
 					
 					mousePointer.style.zIndex = "-1";
-					
-
 					mouseCanvasDiv.style.zIndex = "-1";
 					
+					//Simulate hover event
 					var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
 					
-					if(lastTarget)
-					{
-						if(lastTarget != target)
+					if(target)
+					{					
+						if(lastTarget)
 						{
-							var evt1 = document.createEvent("MouseEvents"); 
-							evt1.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-							
-							lastTarget.dispatchEvent(evt1);
-							
-							lastTarget = null;						
+							if(lastTarget != target)
+							{
+								var evt1 = document.createEvent("MouseEvents"); 
+								evt1.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+								
+								lastTarget.dispatchEvent(evt1);
+								
+								lastTarget = null;						
+							}
 						}
+						else
+						{					
+							var evt = document.createEvent("MouseEvents"); 
+							evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+							
+							lastTarget = target;
+							
+							target.dispatchEvent(evt);
+						}	
 					}
 					else
-					{					
-						var evt = document.createEvent("MouseEvents"); 
-						evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-						
-						lastTarget = target;
-						
-						if(target == null)
-						{
-							console.log("null at Mouse X: " + xMouseCoords[indexMouse]);
-							console.log("null at Mouse Y: " + yMouseCoords[indexMouse]);
-						}
-						target.dispatchEvent(evt);
+					{
+						lastTarget = null;
 					}
-					
+
 					mousePointer.style.zIndex = "999999";
 					mouseCanvasDiv.style.zIndex = "999996";
 					
@@ -366,6 +387,9 @@ function startMouseAnimation(startTime)
 		indexMouse++;
 	}
 	
+	var time = new Date();
+	previousMouseFrameTime = time.getTime();
+	currentMouseAnimationTime = startTime;
 	console.log("Animating from frame " + indexMouse);
 	manageMouseDiv(true);
 	initializeMouseCanvas();
