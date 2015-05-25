@@ -447,6 +447,8 @@ function stopMouseAnimation()
 		clearTimeout(animationMouse);
 		animationMouse = null;
 		manageMouseDiv(false);
+		
+		port.postMessage({message: "display::mouseAnimationFinished"});
 	}	
 }
 
