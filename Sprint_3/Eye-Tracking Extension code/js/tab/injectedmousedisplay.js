@@ -264,6 +264,13 @@ function animateMouse()
 					{
 						if(timeMouseClicks[currentMouseClick] <= timeStampMouse[indexMouse])
 						{
+							mousePointer.style.zIndex = "-1";
+							mouseCanvasDiv.style.zIndex = "-1";
+							if(eyeCanvasDiv)
+							{
+								eyeCanvasDiv.style.zIndex = "-1";
+							}
+							
 							target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
 							
 							console.log(target);
@@ -275,6 +282,14 @@ function animateMouse()
 							target.focus();
 	
 							currentMouseClick++;
+							
+							
+							mousePointer.style.zIndex = "999999";
+							mouseCanvasDiv.style.zIndex = "999996";
+							if(eyeCanvasDiv)
+							{
+								eyeCanvasDiv.style.zIndex = "999996";
+							}
 						}
 					}
 					
