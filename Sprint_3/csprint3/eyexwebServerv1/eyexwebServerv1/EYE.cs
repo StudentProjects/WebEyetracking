@@ -644,6 +644,7 @@ namespace tieto.education.eyetrackingwebserver
                    m_fixationPointStream.Dispose();
                    m_fixationPointStream = null;
                    m_audioHandler.stopAudioRecording();
+                   m_audioHandler.stopPlayback();
 
                    m_gazeXCoordinates.Clear();
                    m_gazeYCoordinates.Clear();

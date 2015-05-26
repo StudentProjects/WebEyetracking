@@ -211,8 +211,11 @@ namespace tieto.education.eyetrackingwebserver
             // Callback if method is called from other thread than this object was created in
             if (this.lvOutput.InvokeRequired)
             {
-                updateOutputLogBoxCallback t_callbackSelf = updateOutputOnEvent;
-                this.Invoke(t_callbackSelf, new object[] {e,arg});
+                if(!this.IsDisposed)
+                {
+                    updateOutputLogBoxCallback t_callbackSelf = updateOutputOnEvent;
+                    this.Invoke(t_callbackSelf, new object[] { e, arg });
+                }
             }
             else
             {
