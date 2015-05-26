@@ -299,11 +299,14 @@ function animateMouse()
 						//Get mouse click target
 						target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
 						
-						var evt2 = document.createEvent("MouseEvents"); 
-						evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
-						
-						target.dispatchEvent(evt2);
-						target.focus();
+						if(target)
+						{
+							var evt2 = document.createEvent("MouseEvents"); 
+							evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
+							
+							target.dispatchEvent(evt2);
+							target.focus();
+						}
 
 						currentMouseClick++;
 						
