@@ -329,7 +329,21 @@ function animateMouse()
 						
 						var active = document.activeElement;
 						
-						if(active)
+						//Check if we still have a active element.
+						//If not, try to get the previous selected
+						//element and dispatch events to that instead.
+						if(!active.value)
+						{
+							var newTarget = document.elementFromPoint(xMouseClicks[currentMouseClick-1], yMouseClicks[currentMouseClick-1]);
+							
+							if(newTarget)
+							{
+								newTarget.focus();
+								active = document.activeElement;
+							}
+						}
+						
+						if(active.value)
 						{
 							//If the keycode is 8, a backspace event should be dispathes.
 							//Instead, this function gets the value of the current element,
