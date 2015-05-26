@@ -328,42 +328,6 @@ function animateMouse()
 						keyEventTriggered = true;
 						
 						var active = document.activeElement;
-						
-			            //Check if we still have a active element.
-						//If not, try to get the previous selected
-						//element and dispatch events to that instead.
-						if(!active.value)
-						{
-							//Move canvases backward
-							if(animateBothMouseAndKeys)
-							{
-								mousePointer.style.zIndex = "-1";
-								mouseCanvasDiv.style.zIndex = "-1";	
-							}
-							if(eyeCanvasDiv)
-							{
-								eyeCanvasDiv.style.zIndex = "-1";
-							}
-
-							var newTarget = document.elementFromPoint(xMouseClicks[currentMouseClick-1], yMouseClicks[currentMouseClick-1]);
-							
-							if(newTarget)
-							{
-								newTarget.focus();
-								active = document.activeElement;
-							}
-							
-							//Move canvases forward
-							if(animateBothMouseAndKeys)
-							{
-								mousePointer.style.zIndex = "999999";
-								mouseCanvasDiv.style.zIndex = "999996";	
-							}
-							if(eyeCanvasDiv)
-							{
-								eyeCanvasDiv.style.zIndex = "999996";
-							}
-						}
 					
 						if(active.value)
 						{
@@ -412,7 +376,7 @@ function animateMouse()
 						}
 						else
 						{
-							console.log("Error: No active element!"); 	
+							console.log("Error: No active element, keyboard events will not be dispatched!"); 	
 						}
 					}
 					else if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && keyEventTriggered)
