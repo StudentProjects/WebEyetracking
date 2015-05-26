@@ -34,6 +34,8 @@ var mouseCanvasDiv = null; //Canvas for rendering heatmap
 
 var isDisplayingMouseHeatmap = false;
 
+var animateBothMouseAndKeys = false;
+
 function initializeMouseCanvas()
 {
 	if(mouseCanvasDiv == null)
@@ -165,13 +167,16 @@ function setMouseData(i_data)
 //Animates mouse pointer for current frame, and calculates when to draw the next frame.
 function animateMouse()
 {	
-	try
+	if(animateBothMouseAndKeys)
 	{
-		document.getElementById('mouse-canvas-div').style.position = 'absolute';	
-	}
-	catch(err)
-	{
-		console.log("Mouse canvas is null!!");
+		try
+		{
+			document.getElementById('mouse-canvas-div').style.position = 'absolute';	
+		}
+		catch(err)
+		{
+			console.log("Mouse canvas is null!!");
+		}	
 	}
 	
 	if(!isMouseAnimationPaused)
@@ -199,16 +204,22 @@ function animateMouse()
 		
 		try
 		{
-			if(mousePointer)
-			{
-				animationMouse = setTimeout(function()
-				{	
-					if(indexMouse >= sizeMouse)
-					{
-						stopMouseAnimation();
-						return false;
-					}
+			animationMouse = setTimeout(function()
+			{	
+				if(indexMouse >= sizeMouse)
+				{
+					stopMouseAnimation();
+					return false;
+				}
 				
+				//If both the mouse movement and all click events should be simulated
+				if(animateBothMouseAndKeys)
+				{
+					if(mousePointer == null)
+					{
+						return false;
+					}	
+					
 					mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 					mousePointer.style.top = yMouseCoords[indexMouse]+'px';
 					port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
@@ -216,162 +227,169 @@ function animateMouse()
 					//Move canvases backward
 					mousePointer.style.zIndex = "-1";
 					mouseCanvasDiv.style.zIndex = "-1";
-					if(eyeCanvasDiv)
+				}
+
+			
+				if(eyeCanvasDiv)
+				{
+					eyeCanvasDiv.style.zIndex = "-1";
+				}
+				
+				//Simulate hover event
+				var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
+				
+				if(target)
+				{					
+					if(lastTarget)
 					{
-						eyeCanvasDiv.style.zIndex = "-1";
-					}
-					
-					//Simulate hover event
-					var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
-					
-					if(target)
-					{					
-						if(lastTarget)
+						if(lastTarget != target)
 						{
-							if(lastTarget != target)
-							{
-								var evt1 = document.createEvent("MouseEvents"); 
-								evt1.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-								
-								lastTarget.dispatchEvent(evt1);
-								
-								lastTarget = null;						
-							}
+							var evt1 = document.createEvent("MouseEvents"); 
+							evt1.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+							
+							lastTarget.dispatchEvent(evt1);
+							
+							lastTarget = null;						
 						}
-						else
-						{					
-							var evt = document.createEvent("MouseEvents"); 
-							evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-							
-							lastTarget = target;
-							
-							target.dispatchEvent(evt);
-						}	
 					}
 					else
-					{
-						lastTarget = null;
-					}
+					{					
+						var evt = document.createEvent("MouseEvents"); 
+						evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+						
+						lastTarget = target;
+						
+						target.dispatchEvent(evt);
+					}	
+				}
+				else
+				{
+					lastTarget = null;
+				}
 
-					//Move canvases forward
+				if(animateBothMouseAndKeys)
+				{
 					mousePointer.style.zIndex = "999999";
 					mouseCanvasDiv.style.zIndex = "999996";
-					if(eyeCanvasDiv)
+				}
+				//Move canvases forward
+				if(eyeCanvasDiv)
+				{
+					eyeCanvasDiv.style.zIndex = "999996";
+				}
+				
+				//If there are mouseclicks left to handle
+				if(timeMouseClicks[currentMouseClick])
+				{
+					if(timeMouseClicks[currentMouseClick] <= timeStampMouse[indexMouse])
 					{
-						eyeCanvasDiv.style.zIndex = "999996";
-					}
-					
-					//If there are mouseclicks left to handle
-					if(timeMouseClicks[currentMouseClick])
-					{
-						if(timeMouseClicks[currentMouseClick] <= timeStampMouse[indexMouse])
+						//Move canvases backward
+						if(animateBothMouseAndKeys)
 						{
-							//Move canvases backward
 							mousePointer.style.zIndex = "-1";
-							mouseCanvasDiv.style.zIndex = "-1";
-							if(eyeCanvasDiv)
-							{
-								eyeCanvasDiv.style.zIndex = "-1";
-							}
-							
-							//Get mouse click target
-							target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
-							
-							var evt2 = document.createEvent("MouseEvents"); 
-							evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
-							
-							target.dispatchEvent(evt2);
-							target.focus();
-	
-							currentMouseClick++;
-							
-							//Move canvases forward
+							mouseCanvasDiv.style.zIndex = "-1";	
+						}
+						if(eyeCanvasDiv)
+						{
+							eyeCanvasDiv.style.zIndex = "-1";
+						}
+						
+						//Get mouse click target
+						target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
+						
+						var evt2 = document.createEvent("MouseEvents"); 
+						evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
+						
+						target.dispatchEvent(evt2);
+						target.focus();
+
+						currentMouseClick++;
+						
+						//Move canvases forward
+						if(animateBothMouseAndKeys)
+						{
 							mousePointer.style.zIndex = "999999";
-							mouseCanvasDiv.style.zIndex = "999996";
-							if(eyeCanvasDiv)
-							{
-								eyeCanvasDiv.style.zIndex = "999996";
-							}
+							mouseCanvasDiv.style.zIndex = "999996";	
+						}
+						if(eyeCanvasDiv)
+						{
+							eyeCanvasDiv.style.zIndex = "999996";
 						}
 					}
-					
-					//If there are key events left to handle
-					if(timeStampKey[currentKey])
+				}
+				
+				//If there are key events left to handle
+				if(timeStampKey[currentKey])
+				{
+					if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
 					{
-						if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
+						console.log("Key " + currentKey + ": " + keys[currentKey]);
+						
+						keyEventTriggered = true;
+						
+						var active = document.activeElement;
+						
+						//If the keycode is 8, a backspace event should be dispathes.
+						//Instead, this function gets the value of the current element,
+						//and then removes the last element in that string.
+						if(keys[currentKey] == 8)
 						{
-							console.log("Key " + currentKey + ": " + keys[currentKey]);
-							
-							keyEventTriggered = true;
-							
-							var active = document.activeElement;
-							
-							//If the keycode is 8, a backspace event should be dispathes.
-							//Instead, this function gets the value of the current element,
-							//and then removes the last element in that string.
-							if(keys[currentKey] == 8)
-							{
-								var currentValue = active.value;
-								var newValue = currentValue.substring(0, currentValue.length - 1);
-								active.value = newValue;
-							}
-							
-							//If keycode is 13, an enter event should be dispatched. 
-							//The following code checks if the current element is
-							//a input element, and if so, it tries to find its
-							//parent form and submit it.
-							else if(keys[currentKey] == 13)
-							{				
-								try
-								{
-									var current = document.activeElement;
-									
-									if(current.nodeName == "INPUT")
-									{								
-										console.log(current);
-									
-										while(current.nodeName != "FORM")
-										{
-											current = current.parentNode;
-											console.log(current);
-										}
-										
-										current.submit();
-									}
-								}
-								catch(err)
-								{
-									console.log("Unable to generate ENTER event: " + err); 	
-								}
-							//In all other cases, add the char value of the key code to
-							//the current element.
-							}
-							else
-							{
-								var currentChar = String.fromCharCode(keys[currentKey]);
-								active.value += currentChar;
-							}
+							var currentValue = active.value;
+							var newValue = currentValue.substring(0, currentValue.length - 1);
+							active.value = newValue;
 						}
-						else if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && keyEventTriggered)
+						
+						//If keycode is 13, an enter event should be dispatched. 
+						//The following code checks if the current element is
+						//a input element, and if so, it tries to find its
+						//parent form and submit it.
+						else if(keys[currentKey] == 13)
+						{				
+							try
+							{
+								var current = document.activeElement;
+								
+								if(current.nodeName == "INPUT")
+								{								
+									console.log(current);
+								
+									while(current.nodeName != "FORM")
+									{
+										current = current.parentNode;
+										console.log(current);
+									}
+									
+									current.submit();
+								}
+							}
+							catch(err)
+							{
+								console.log("Unable to generate ENTER event: " + err); 	
+							}
+						//In all other cases, add the char value of the key code to
+						//the current element.
+						}
+						else
 						{
-							keyEventTriggered = false;
-							currentKey++;
+							var currentChar = String.fromCharCode(keys[currentKey]);
+							active.value += currentChar;
 						}
 					}
-					 	
-					indexMouse++;
-					animateMouse();
-					
-				}, nextFrame);	
-			}
-			else
-			{
-				return false;
-			}
+					else if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && keyEventTriggered)
+					{
+						keyEventTriggered = false;
+						currentKey++;
+					}
+				}
+				 	
+				indexMouse++;
+				animateMouse();
+				
+			}, nextFrame);	
 		 }
 		 catch(err)
 		 {
-		 	console.log("Totalt haveri i animateMouse. Åtgärda!");
+		 	console.log("Error in animateMouse!");
 		 }
 	}
 }
@@ -496,10 +514,10 @@ function stopMouseAnimation()
 		
 		clearTimeout(animationMouse);
 		animationMouse = null;
-		manageMouseDiv(false);
-		
-		hideMouseHeatmap();
-		
+		manageMouseDiv(false);		
+		hideMouseHeatmap();		
+		animateBothMouseAndKeys = false;
+	
 		port.postMessage({message: "display::mouseAnimationFinished"});
 	}
 }

@@ -357,16 +357,13 @@ function executeBootstrap()
 	});
 }
 
-//Tell the content script injecteddisplay.js to
-//resume rendering from the specific timestamp.
-function resumeRenderingAfterLoad(tab_id)
+function resumeEyeRenderingAfterLoad(tab_id)
 {
 	var tempData = new Object();
 	tempData.previousFrameTimestamp = previousFrameTimestamp;
 	
 	//Tell the server to 
 	manageMessage(33, "ResumeRendering");
-	
 	if(isRenderingEye)
 	{
 		chrome.tabs.sendMessage(tab_id, {msg: "injectedeyedisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
@@ -383,6 +380,15 @@ function resumeRenderingAfterLoad(tab_id)
 			}
 		});
 	}
+}
+
+function resumeMouseRenderingAfterLoad(tab_id)
+{
+	var tempData = new Object();
+	tempData.previousFrameTimestamp = previousFrameTimestamp;
+	
+	//Tell the server to 
+	manageMessage(33, "ResumeRendering");
 	if(isRenderingMouse)
 	{
 		chrome.tabs.sendMessage(tab_id, {msg: "injectedmousedisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
@@ -460,7 +466,7 @@ function setEyeGazeData(i_eyeData,i_resumeEyeRendering)
 			{
 				if(response.message == "resume")
 				{
-					resumeRenderingAfterLoad(i_tab.id);
+					resumeEyeRenderingAfterLoad(i_tab.id);
 				}
 				else
 				{
@@ -518,7 +524,7 @@ function setMouseData(i_mouseData,i_resumeMouseRendering)
 			{
 				if(response.message == "resume")
 				{
-					resumeRenderingAfterLoad(i_tab.id);
+					resumeMouseRenderingAfterLoad(i_tab.id);
 				}
 				else
 				{

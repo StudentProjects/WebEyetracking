@@ -91,7 +91,7 @@ function hideFixationPoints()
 		}
 		catch(err)
 		{
-			console.log(err.message);
+			//Not defined error. Prevents it from crashing.
 		}
 		
 	}
@@ -109,7 +109,6 @@ function drawFixationPoints()
 			isTestCleared = false;
 			if(fixationDivsArray == null)
 			{
-				console.log("Hej!");
 				fixationDivsArray = new Array();	
 			}
 			
@@ -122,6 +121,7 @@ function drawFixationPoints()
 			{
 				if(currentPageOnPlayback == individualFixationPage[i])
 				{
+					console.log("Page: " + currentPageOnPlayback);
 					var sizeDiameter;
 					if(timesMerged[i] == 0)
 					{
@@ -287,5 +287,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	else if(request.msg == "injectedfixationdisplay::resumeRenderingAfterLoad")
 	{
 		currentPageOnPlayback++;
+		console.log("Updating page to: " + currentPageOnPlayback);
 	}
 });
