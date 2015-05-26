@@ -324,57 +324,59 @@ function animateMouse()
 				if(timeStampKey[currentKey])
 				{
 					if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
-					{
-						console.log("Key " + currentKey + ": " + keys[currentKey]);
-						
+					{						
 						keyEventTriggered = true;
 						
 						var active = document.activeElement;
 						
-						//If the keycode is 8, a backspace event should be dispathes.
-						//Instead, this function gets the value of the current element,
-						//and then removes the last element in that string.
-						if(keys[currentKey] == 8)
+						if(active)
 						{
-							var currentValue = active.value;
-							var newValue = currentValue.substring(0, currentValue.length - 1);
-							active.value = newValue;
-						}
-						
-						//If keycode is 13, an enter event should be dispatched. 
-						//The following code checks if the current element is
-						//a input element, and if so, it tries to find its
-						//parent form and submit it.
-						else if(keys[currentKey] == 13)
-						{				
-							try
+							//If the keycode is 8, a backspace event should be dispathes.
+							//Instead, this function gets the value of the current element,
+							//and then removes the last element in that string.
+							if(keys[currentKey] == 8)
 							{
-								var current = document.activeElement;
-								
-								if(current.nodeName == "INPUT")
-								{								
-									console.log(current);
-								
-									while(current.nodeName != "FORM")
-									{
-										current = current.parentNode;
-										console.log(current);
-									}
+								var currentValue = active.value;
+								var newValue = currentValue.substring(0, currentValue.length - 1);
+								active.value = newValue;
+							}
+							
+							//If keycode is 13, an enter event should be dispatched. 
+							//The following code checks if the current element is
+							//a input element, and if so, it tries to find its
+							//parent form and submit it.
+							else if(keys[currentKey] == 13)
+							{				
+								try
+								{
+									var current = document.activeElement;
 									
-									current.submit();
+									if(current.nodeName == "INPUT")
+									{								
+										while(current.nodeName != "FORM")
+										{
+											current = current.parentNode;
+										}
+										
+										current.submit();
+									}
 								}
+								catch(err)
+								{
+									console.log("Unable to generate ENTER event: " + err); 	
+								}
+							//In all other cases, add the char value of the key code to
+							//the current element.
 							}
-							catch(err)
+							else
 							{
-								console.log("Unable to generate ENTER event: " + err); 	
+								var currentChar = String.fromCharCode(keys[currentKey]);
+								active.value += currentChar;
 							}
-						//In all other cases, add the char value of the key code to
-						//the current element.
 						}
 						else
 						{
-							var currentChar = String.fromCharCode(keys[currentKey]);
-							active.value += currentChar;
+							console.log("Error: No active element!"); 	
 						}
 					}
 					else if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && keyEventTriggered)
