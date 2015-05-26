@@ -513,7 +513,6 @@ function setEyeFixationData(i_fixationData)
 	});
 }
 
-
 function setMouseData(i_mouseData,i_resumeMouseRendering)
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
