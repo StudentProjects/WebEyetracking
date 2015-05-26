@@ -40,19 +40,22 @@ function initializeMouseCanvas()
 {
 	if(mouseCanvasDiv == null)
 	{
-		mouseCanvasDiv = document.createElement("div");
-		mouseCanvasDiv.style.position = "absolute";
-		mouseCanvasDiv.style.top = "0px";
-		mouseCanvasDiv.style.left = "0px";
-		mouseCanvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
-		mouseCanvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
-		mouseCanvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
-		mouseCanvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
-		mouseCanvasDiv.style.zIndex = "999996";	
-		mouseCanvasDiv.id = "mouse-canvas-div";
-		mouseCanvasDiv.className = "canvas-class";
-	        
-		document.body.appendChild(mouseCanvasDiv);
+		if(animateBothMouseAndKeys)
+		{
+			mouseCanvasDiv = document.createElement("div");
+			mouseCanvasDiv.style.position = "absolute";
+			mouseCanvasDiv.style.top = "0px";
+			mouseCanvasDiv.style.left = "0px";
+			mouseCanvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
+			mouseCanvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
+			mouseCanvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
+			mouseCanvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
+			mouseCanvasDiv.style.zIndex = "999996";	
+			mouseCanvasDiv.id = "mouse-canvas-div";
+			mouseCanvasDiv.className = "canvas-class";
+		        
+			document.body.appendChild(mouseCanvasDiv);	
+		}
 	}
 	heatmapMouseInstance = h337.create( //Heatmap instance.
 	{
@@ -222,13 +225,12 @@ function animateMouse()
 					
 					mousePointer.style.left = xMouseCoords[indexMouse]+'px';
 					mousePointer.style.top = yMouseCoords[indexMouse]+'px';
-					port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
 					
 					//Move canvases backward
 					mousePointer.style.zIndex = "-1";
 					mouseCanvasDiv.style.zIndex = "-1";
 				}
-
+				port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
 			
 				if(eyeCanvasDiv)
 				{
@@ -445,16 +447,19 @@ function manageMouseDiv(create)
 {
 	if(create)
 	{
-		mousePointer = document.createElement('div');
-		mousePointer.id = "mouse";
-		mousePointer.style.position = 'absolute';
-		mousePointer.style.width = "24px";
-		mousePointer.style.height = "24px";
-		mousePointer.style.zIndex = "999999";
-	    mouseImage = document.createElement('img');
-		mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
-		mousePointer.appendChild(mouseImage);
-		document.body.appendChild(mousePointer);
+		if(animateBothMouseAndKeys)
+		{
+			mousePointer = document.createElement('div');
+			mousePointer.id = "mouse";
+			mousePointer.style.position = 'absolute';
+			mousePointer.style.width = "24px";
+			mousePointer.style.height = "24px";
+			mousePointer.style.zIndex = "999999";
+		    mouseImage = document.createElement('img');
+			mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
+			mousePointer.appendChild(mouseImage);
+			document.body.appendChild(mousePointer);	
+		}
 	}
 	else
 	{
@@ -536,6 +541,8 @@ function forceMouseAnimationStop()
 	port.postMessage({message: "display::mouseAnimationFinished"});
 	isMouseAnimationPaused = false;
 	
+	animateBothMouseAndKeys = false;
+	
 	hideMouseHeatmap();
 }
 
@@ -599,6 +606,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	else if(request.msg == "injectedmousedisplay::resumeRenderingAfterLoad")
 	{
 		console.log("Resuming rendering after load at frame " + request.data.previousFrameTimestamp);
+		animateBothMouseAndKeys = request.data.isSimulatingBothMouseAndClicksKeys;
 		startMouseAnimation(request.data.previousFrameTimestamp);
 		sendResponse({message: "Resumed mouse rendering!"});	
 	}

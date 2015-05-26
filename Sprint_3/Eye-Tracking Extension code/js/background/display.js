@@ -25,6 +25,8 @@ var hasPermission = false; //Does the script have permission to inject scripts i
 var isRenderingEye = false;
 var isRenderingMouse = false;
 
+var isSimulatingBothMouseAndClicksKeys = false;
+
 ///////////
 //METHODS//
 ///////////
@@ -65,6 +67,7 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			previousFrameTimestamp = 0;			
 			isRenderingMouse = false;
+			isSimulatingBothMouseAndClicksKeys = false;
 			
 			if(!isRenderingEye)
 			{
@@ -386,6 +389,9 @@ function resumeMouseRenderingAfterLoad(tab_id)
 {
 	var tempData = new Object();
 	tempData.previousFrameTimestamp = previousFrameTimestamp;
+	tempData.isSimulatingBothMouseAndClicksKeys = isSimulatingBothMouseAndClicksKeys;
+	
+	console.log("Time when resuming mouse rendering after load: " + previousFrameTimestamp);
 	
 	//Tell the server to 
 	manageMessage(33, "ResumeRendering");
@@ -587,39 +593,37 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 				});	
 			}
 		}
-		if(requestAnimateMouse)
+		if(!isRenderingMouse)
 		{
-			if(!isRenderingMouse)
-			{
-				chrome.tabs.getSelected(null, function(i_tab) 
-				{		
-					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse}, function(response) 
+			chrome.tabs.getSelected(null, function(i_tab) 
+			{		
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse}, function(response) 
+				{
+					try
 					{
-						try
+						if(response.data)
 						{
-							if(response.data)
-							{
+							isSimulatingBothMouseAndClicksKeys = requestAnimateMouse;
+							console.log(response.message);
+							chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating mouse heatmap!", type: "Alert"});
+						}
+						else
+						{
+							if(currentData != null)
+							{	
 								console.log(response.message);
-								chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Animating mouse heatmap!", type: "Alert"});
-							}
-							else
-							{
-								if(currentData != null)
-								{	
-									console.log(response.message);
-									setData(currentData, false);	
-									animateData(requestAnimateEye, requestAnimateMouse);
-								}
+								setData(currentData, false);	
+								animateData(requestAnimateEye, requestAnimateMouse);
 							}
 						}
-						catch(err)
-						{
-							console.log("Error: " + err.message);
-							chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
-						}
-					});
-				});	
-			}
+					}
+					catch(err)
+					{
+						console.log("Error: " + err.message);
+						chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
+					}
+				});
+			});	
 		}
 	}
 }
