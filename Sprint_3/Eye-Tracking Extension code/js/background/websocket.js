@@ -17,6 +17,17 @@ var messageSendInterval = null;
 //Check if the isConnected variable in persistantpopupvariables is 
 var checkConnection = setInterval(function()
 {
+	console.log("isConnected: " + isConnected);
+	try
+	{
+		console.log("websocket.readystate: " + websocket.readyState);
+	}
+	catch(err)
+	{
+		console.log("No websocket connection");
+	}
+	
+	
 	if(!isConnected)
 	{
 		connectWebSocket();
