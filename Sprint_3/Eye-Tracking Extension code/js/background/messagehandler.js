@@ -350,7 +350,7 @@ chrome.extension.onRequest.addListener
 			{
 				var data = request.data;
 				manageMessage(31, "StartRendering");
-				animateHeatmap(data.Eye, data.Mouse);	
+				animateData(data.Eye, data.Mouse);	
 			}
 			else if(isRendering && !isRenderingPaused)
 			{
@@ -367,7 +367,7 @@ chrome.extension.onRequest.addListener
 				resumeRendering();
 				var data = request.data;
 				console.log(data);
-				animateHeatmap(data.Eye, data.Mouse);	
+				animateData(data.Eye, data.Mouse);	
 			}
 		}
         else if(request.msg == "display::show") 

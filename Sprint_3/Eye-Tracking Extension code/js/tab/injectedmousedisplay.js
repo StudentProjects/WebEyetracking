@@ -498,8 +498,10 @@ function stopMouseAnimation()
 		animationMouse = null;
 		manageMouseDiv(false);
 		
+		hideMouseHeatmap();
+		
 		port.postMessage({message: "display::mouseAnimationFinished"});
-	}	
+	}
 }
 
 
@@ -548,8 +550,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		if(timeStampMouse)
 		{
 			hideMouseHeatmap(); //Hide before starting animation
+			animateBothMouseAndKeys = request.data;
 			startMouseAnimation(0);
-			sendResponse({message: "Animating mouse heatmap!",data:true});	
+			sendResponse({message: "Animating mouse heatmap!", data:true});	
 		}		
 		else
 		{
@@ -596,7 +599,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	else if (request.msg == "injectedmousedisplay::hide")
 	{
 		forceMouseAnimationStop();
-		sendResponse({message: "Hiding mouse heatmap!",data:true});
+		sendResponse({message: "Hiding mouse heatmap!", data:true});
 	}
 	else if (request.msg == "injectedmousedisplay::clearCanvas")
 	{

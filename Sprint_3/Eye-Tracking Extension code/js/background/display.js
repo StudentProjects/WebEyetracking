@@ -541,7 +541,7 @@ function setMouseData(i_mouseData,i_resumeMouseRendering)
 }
 
 //Tell injecteddisplay.js to animate heatmap of data.
-function animateHeatmap(requestAnimateEye, requestAnimateMouse)
+function animateData(requestAnimateEye, requestAnimateMouse)
 {	
 	console.log("jQuery: " + isJQueryLoaded);
 	if(isJQueryLoaded)
@@ -568,7 +568,7 @@ function animateHeatmap(requestAnimateEye, requestAnimateMouse)
 								{	
 									console.log(response.message);
 									setData(currentData, false);	
-									animateHeatmap(requestAnimateEye, requestAnimateMouse);
+									animateData(requestAnimateEye, requestAnimateMouse);
 								}
 							}
 						}
@@ -587,7 +587,7 @@ function animateHeatmap(requestAnimateEye, requestAnimateMouse)
 			{
 				chrome.tabs.getSelected(null, function(i_tab) 
 				{		
-					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation"}, function(response) 
+					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse}, function(response) 
 					{
 						try
 						{
@@ -602,7 +602,7 @@ function animateHeatmap(requestAnimateEye, requestAnimateMouse)
 								{	
 									console.log(response.message);
 									setData(currentData, false);	
-									animateHeatmap(requestAnimateEye, requestAnimateMouse);
+									animateData(requestAnimateEye, requestAnimateMouse);
 								}
 							}
 						}

@@ -28,7 +28,7 @@ chrome.commands.onCommand.addListener(function(command)
 		{
 			if(currentData)
 			{
-				animateHeatmap(playerEyeBox, playerMouseBox);
+				animateData(playerEyeBox, playerMouseBox);
 			}
 		}
     } 
