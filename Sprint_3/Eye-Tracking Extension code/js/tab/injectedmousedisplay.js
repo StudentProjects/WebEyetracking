@@ -209,156 +209,160 @@ function animateMouse()
 						return false;
 					}
 				
-					mousePointer.style.left = xMouseCoords[indexMouse]+'px';
-					mousePointer.style.top = yMouseCoords[indexMouse]+'px';
-					port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
-					
-					mousePointer.style.zIndex = "-1";
-					mouseCanvasDiv.style.zIndex = "-1";
-					if(eyeCanvasDiv)
+					if(mousePointer)
 					{
-						eyeCanvasDiv.style.zIndex = "-1";
-					}
-					
-					//Simulate hover event
-					var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
-					
-					if(target)
-					{					
-						if(lastTarget)
+						mousePointer.style.left = xMouseCoords[indexMouse]+'px';
+						mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+						port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
+						
+						mousePointer.style.zIndex = "-1";
+						mouseCanvasDiv.style.zIndex = "-1";
+						if(eyeCanvasDiv)
 						{
-							if(lastTarget != target)
-							{
-								var evt1 = document.createEvent("MouseEvents"); 
-								evt1.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-								
-								lastTarget.dispatchEvent(evt1);
-								
-								lastTarget = null;						
-							}
+							eyeCanvasDiv.style.zIndex = "-1";
 						}
-						else
+						
+						//Simulate hover event
+						var target = document.elementFromPoint(xMouseCoords[indexMouse], yMouseCoords[indexMouse]);
+						
+						if(target)
 						{					
-							var evt = document.createEvent("MouseEvents"); 
-							evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-							
-							lastTarget = target;
-							
-							target.dispatchEvent(evt);
-						}	
-					}
-					else
-					{
-						lastTarget = null;
-					}
-
-					mousePointer.style.zIndex = "999999";
-					mouseCanvasDiv.style.zIndex = "999996";
-					if(eyeCanvasDiv)
-					{
-						eyeCanvasDiv.style.zIndex = "999996";
-					}
-					
-					//If there are mouseclicks left to handle
-					if(timeMouseClicks[currentMouseClick])
-					{
-						if(timeMouseClicks[currentMouseClick] <= timeStampMouse[indexMouse])
-						{
-							mousePointer.style.zIndex = "-1";
-							mouseCanvasDiv.style.zIndex = "-1";
-							if(eyeCanvasDiv)
+							if(lastTarget)
 							{
-								eyeCanvasDiv.style.zIndex = "-1";
-							}
-							
-							target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
-							
-							console.log(target);
-							
-							var evt2 = document.createEvent("MouseEvents"); 
-							evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
-							
-							target.dispatchEvent(evt2);
-							target.focus();
-	
-							currentMouseClick++;
-							
-							
-							mousePointer.style.zIndex = "999999";
-							mouseCanvasDiv.style.zIndex = "999996";
-							if(eyeCanvasDiv)
-							{
-								eyeCanvasDiv.style.zIndex = "999996";
-							}
-						}
-					}
-					
-					//If there are key events left to handle
-					if(timeStampKey[currentKey])
-					{
-						if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
-						{
-							console.log("Key " + currentKey + ": " + keys[currentKey]);
-							
-							keyEventTriggered = true;
-							
-							var active = document.activeElement;
-							
-							//If the keycode is 8, a backspace event should be dispathes.
-							//Instead, this function gets the value of the current element,
-							//and then removes the last element in that string.
-							if(keys[currentKey] == 8)
-							{
-								var currentValue = active.value;
-								var newValue = currentValue.substring(0, currentValue.length - 1);
-								active.value = newValue;
-							}
-							
-							//If keycode is 13, an enter event should be dispatched. 
-							//The following code checks if the current element is
-							//a input element, and if so, it tries to find its
-							//parent form and submit it.
-							else if(keys[currentKey] == 13)
-							{				
-								try
+								if(lastTarget != target)
 								{
-									var current = document.activeElement;
+									var evt1 = document.createEvent("MouseEvents"); 
+									evt1.initMouseEvent("mouseout", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 									
-									if(current.nodeName == "INPUT")
-									{								
-										console.log(current);
+									lastTarget.dispatchEvent(evt1);
 									
-										while(current.nodeName != "FORM")
-										{
-											current = current.parentNode;
-											console.log(current);
-										}
-										
-										current.submit();
-									}
+									lastTarget = null;						
 								}
-								catch(err)
-								{
-									console.log("Unable to generate ENTER event: " + err); 	
-								}
-							//In all other cases, add the char value of the key code to
-							//the current element.
 							}
 							else
+							{					
+								var evt = document.createEvent("MouseEvents"); 
+								evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+								
+								lastTarget = target;
+								
+								target.dispatchEvent(evt);
+							}	
+						}
+						else
+						{
+							lastTarget = null;
+						}
+	
+						mousePointer.style.zIndex = "999999";
+						mouseCanvasDiv.style.zIndex = "999996";
+						if(eyeCanvasDiv)
+						{
+							eyeCanvasDiv.style.zIndex = "999996";
+						}
+						
+						//If there are mouseclicks left to handle
+						if(timeMouseClicks[currentMouseClick])
+						{
+							if(timeMouseClicks[currentMouseClick] <= timeStampMouse[indexMouse])
 							{
-								var currentChar = String.fromCharCode(keys[currentKey]);
-								active.value += currentChar;
+								mousePointer.style.zIndex = "-1";
+								mouseCanvasDiv.style.zIndex = "-1";
+								if(eyeCanvasDiv)
+								{
+									eyeCanvasDiv.style.zIndex = "-1";
+								}
+								
+								target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
+								
+								console.log(target);
+								
+								var evt2 = document.createEvent("MouseEvents"); 
+								evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null); 
+								
+								target.dispatchEvent(evt2);
+								target.focus();
+		
+								currentMouseClick++;
+								
+								
+								mousePointer.style.zIndex = "999999";
+								mouseCanvasDiv.style.zIndex = "999996";
+								if(eyeCanvasDiv)
+								{
+									eyeCanvasDiv.style.zIndex = "999996";
+								}
 							}
 						}
-						else if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && keyEventTriggered)
+						
+						//If there are key events left to handle
+						if(timeStampKey[currentKey])
 						{
-							keyEventTriggered = false;
-							currentKey++;
+							if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
+							{
+								console.log("Key " + currentKey + ": " + keys[currentKey]);
+								
+								keyEventTriggered = true;
+								
+								var active = document.activeElement;
+								
+								//If the keycode is 8, a backspace event should be dispathes.
+								//Instead, this function gets the value of the current element,
+								//and then removes the last element in that string.
+								if(keys[currentKey] == 8)
+								{
+									var currentValue = active.value;
+									var newValue = currentValue.substring(0, currentValue.length - 1);
+									active.value = newValue;
+								}
+								
+								//If keycode is 13, an enter event should be dispatched. 
+								//The following code checks if the current element is
+								//a input element, and if so, it tries to find its
+								//parent form and submit it.
+								else if(keys[currentKey] == 13)
+								{				
+									try
+									{
+										var current = document.activeElement;
+										
+										if(current.nodeName == "INPUT")
+										{								
+											console.log(current);
+										
+											while(current.nodeName != "FORM")
+											{
+												current = current.parentNode;
+												console.log(current);
+											}
+											
+											current.submit();
+										}
+									}
+									catch(err)
+									{
+										console.log("Unable to generate ENTER event: " + err); 	
+									}
+								//In all other cases, add the char value of the key code to
+								//the current element.
+								}
+								else
+								{
+									var currentChar = String.fromCharCode(keys[currentKey]);
+									active.value += currentChar;
+								}
+							}
+							else if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && keyEventTriggered)
+							{
+								keyEventTriggered = false;
+								currentKey++;
+							}
 						}
+						 	
+						indexMouse++;
+						animateMouse();
 					}
-					 	
-					indexMouse++;
-					animateMouse();
+					
 					
 				}, nextFrame);	
 			}
@@ -534,8 +538,6 @@ function hideMouseHeatmap()
 		document.body.removeChild(document.getElementById("mouse-canvas-div"));
 		mouseCanvasDiv = null;
 	}
-	//Reset this to zero when ending test.
-	currentPageOnPlayback = 0;
 }
 
 //Listen for messages from displayheatmap.js in extension
