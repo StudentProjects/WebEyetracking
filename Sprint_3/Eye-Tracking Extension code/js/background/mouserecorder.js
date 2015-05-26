@@ -124,5 +124,6 @@ function stopMouseRecording()
 	clearInterval(mouseTimer);
 	isPaused = false;
 	
+	console.log(currentMouseRecording);
 	manageMessage(23, JSON.stringify(currentMouseRecording));
 }
