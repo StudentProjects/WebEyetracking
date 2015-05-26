@@ -36,6 +36,38 @@ var isDisplayingMouseHeatmap = false;
 
 var animateBothMouseAndKeys = false;
 
+
+function makeMouseClickDiv(in_x, in_y)
+{
+	console.log("Time to paint a cross at " + in_x + " - " + in_y);
+	
+	var canvasDiv = document.createElement("canvas");
+	canvasDiv.style.position = "absolute";
+	canvasDiv.style.top = in_y + "px";
+	canvasDiv.style.left = in_x + "px";
+	canvasDiv.height = "24px";
+	canvasDiv.width = "24px";	
+	canvasDiv.style.height = "24px";
+	canvasDiv.style.width = "24px";	
+	canvasDiv.style.zIndex = "999999";	
+	canvasDiv.className = "test-class";
+	canvasDiv.id = "test-canvas-div";
+	
+	var ctx = canvasDiv.getContext("2d");
+	ctx.beginPath();
+	ctx.moveTo(0,0);
+	ctx.lineTo(24,24);
+	ctx.stroke();
+
+	ctx.moveTo(24,0);
+	ctx.lineTo(0,24);
+	ctx.stroke();
+	
+	console.log(canvasDiv);
+	
+	document.body.appendChild(canvasDiv);
+}
+
 function initializeMouseCanvas()
 {
 	if(mouseCanvasDiv == null)
@@ -182,6 +214,15 @@ function animateMouse()
 		}	
 	}
 	
+	try
+	{
+		document.getElementById('test-canvas-div').style.position = 'absolute';
+	}
+	catch(err)
+	{
+		
+	}
+	
 	if(!isMouseAnimationPaused)
 	{
 		//Check so that the current frame is the one closest to 
@@ -308,8 +349,10 @@ function animateMouse()
 							target.focus();
 						}
 
-						currentMouseClick++;
+						makeMouseClickDiv(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
 						
+						currentMouseClick++;
+
 						//Move canvases forward
 						if(animateBothMouseAndKeys)
 						{

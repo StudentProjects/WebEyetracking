@@ -184,3 +184,10 @@ fieldset.group legend
 	top: 0px;
 	left: 0px;
 }
+
+.test-class
+{
+	position: absolute;
+	height: 24px;
+	width: 24px;
+}
