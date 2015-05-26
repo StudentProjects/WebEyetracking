@@ -15,3 +15,6 @@ C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyex
 C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.exe
 C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.pdb
 C:\Users\xxjohapd\Documents\EyeTrackingGit\WebEyetracking\Sprint_2\csprint2\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.csprojResolveAssemblyReference.cache
+C:\Users\xxlindgd\Desktop\GitHub Eye-Tracking\WebEyetracking\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\eyexwebServerv1.exe.config
+C:\Users\xxlindgd\Desktop\GitHub Eye-Tracking\WebEyetracking\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.exe
+C:\Users\xxlindgd\Desktop\GitHub Eye-Tracking\WebEyetracking\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.pdb
