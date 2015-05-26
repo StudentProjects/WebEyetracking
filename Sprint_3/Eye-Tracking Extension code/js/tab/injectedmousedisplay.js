@@ -329,7 +329,7 @@ function animateMouse()
 						
 						var active = document.activeElement;
 						
-						if(active)
+						if(active.value)
 						{
 							//If the keycode is 8, a backspace event should be dispathes.
 							//Instead, this function gets the value of the current element,
