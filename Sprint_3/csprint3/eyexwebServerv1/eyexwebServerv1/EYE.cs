@@ -676,7 +676,7 @@ namespace tieto.education.eyetrackingwebserver
                    m_fixationPointStream.Dispose();
                    m_fixationPointStream = null;
                    m_audioHandler.stopAudioRecording();
-                   m_audioHandler.stopPlayback();
+                   
 
                    m_gazeXCoordinates.Clear();
                    m_gazeYCoordinates.Clear();
@@ -690,6 +690,15 @@ namespace tieto.education.eyetrackingwebserver
                    m_currentTestPage = -1;
                }
                return true;
+           }
+           else
+           {
+               if(m_audioHandler != null)
+               {
+                   m_audioHandler.stopPlayback();
+                   m_loadedAudio = null;
+                   return true;
+               } 
            }
            return false;
        }
