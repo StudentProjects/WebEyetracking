@@ -213,7 +213,7 @@ function handleStartReceived()
 	
 	manageMessage(35, 0);
 	
-	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
+	chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});
 	
 	clearCanvas();
 	startMouseRecording();
@@ -232,7 +232,7 @@ function handlePauseReceived()
 {
 	pauseMouseRecording();
 	chrome.runtime.sendMessage({ msg: "recorder::pauseReceived" });
-	chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});
+	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
 	isRecordingPaused = true;
 }
 
@@ -247,7 +247,7 @@ function handleResumeReceived()
 {
 	resumeMouseRecording();
 	chrome.runtime.sendMessage({ msg: "recorder::resumeReceived" });
-	chrome.browserAction.setIcon({path: "../../img/rec-icon16.png"});
+	chrome.browserAction.setIcon({path: "../../img/pause-icon16.png"});
 	isRecordingPaused = false;
 }
 

@@ -289,7 +289,7 @@ function resumeRendering()
 }
 
 //Inject scripts into the current tab
-function injectDisplay()
+function injectScripts()
 {
 	console.log("Injecting content scripts!");
 	chrome.tabs.getSelected(null, function(i_tab)
@@ -394,7 +394,7 @@ function resumeMouseRenderingAfterLoad(tab_id)
 	console.log("Time when resuming mouse rendering after load: " + previousFrameTimestamp);
 	
 	//Tell the server to 
-	manageMessage(33, "ResumeRendering");
+	//manageMessage(33, "ResumeRendering");
 	if(isRenderingMouse)
 	{
 		chrome.tabs.sendMessage(tab_id, {msg: "injectedmousedisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
@@ -861,47 +861,52 @@ function PerformJQueryVersionCheck()
 		});
 	});
 }
+
 //Check if the injected scripts are alive, if not
 //try to inject them. Also handles errors like 
 //permission denied or browser window not selected.
-//This check is done every two seconds.
-displayTimer = setInterval(function()
+//This check is done once every second.
+function startAliveCheck()
 {
-	if(noResponseCounter > 0)
-	{		
-		if(!injecting)
-		{
-			checkPermission();
-			if(hasPermission)
+	displayTimer = setInterval(function()
+	{
+		if(noResponseCounter > 0)
+		{		
+			if(!injecting)
 			{
-				injecting = true;
-				injectDisplay();
-				var resetInterval = setTimeout(function()
+				checkPermission();
+				if(hasPermission)
 				{
-					if(injecting)
+					injecting = true;
+					injectScripts();
+					console.log("INJECTING AT THE OLD PALCE!!!");
+					var resetInterval = setTimeout(function()
 					{
-						injecting = false;	
-					}
-				}, 5000);
+						if(injecting)
+						{
+							injecting = false;	
+						}
+					}, 5000);
+				}
 			}
 		}
-	}
-	else
-	{		
-		chrome.tabs.getSelected(null, function(i_tab) 
+		else
 		{		
-			//Send message to tab.
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
-			{
-				try
+			chrome.tabs.getSelected(null, function(i_tab) 
+			{		
+				//Send message to tab.
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
 				{
-					response.message;
-				}
-				catch(err)
-				{
-					noResponseCounter++;
-				}
+					try
+					{
+						response.message;
+					}
+					catch(err)
+					{
+						noResponseCounter++;
+					}
+				});
 			});
-		});
-	}
-}, 1000);
+		}
+	}, 1000);
+}
