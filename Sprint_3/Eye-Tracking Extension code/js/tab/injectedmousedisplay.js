@@ -232,8 +232,8 @@ function animateMouse()
 						return false;
 					}	
 					
-					mousePointer.style.left = xMouseCoords[indexMouse]+'px';
-					mousePointer.style.top = yMouseCoords[indexMouse]+'px';
+					mousePointer.style.left = (xMouseCoords[indexMouse]-8)+'px';
+					mousePointer.style.top = (yMouseCoords[indexMouse]-5)+'px';
 					
 					//Move canvases backward
 					mousePointer.style.zIndex = "-1";

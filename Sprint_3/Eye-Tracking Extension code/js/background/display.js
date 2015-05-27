@@ -57,6 +57,8 @@ chrome.runtime.onConnect.addListener(function(port)
 			
 			if(!isRenderingMouse)
 			{
+				//Tell the server to 
+				manageMessage(34, "StopRendering");
 				setIsRendering(false);
 				setIsRenderingPaused(false);
 				chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
@@ -71,6 +73,7 @@ chrome.runtime.onConnect.addListener(function(port)
 			
 			if(!isRenderingEye)
 			{
+				manageMessage(34, "StopRendering");
 				setIsRendering(false);
 				setIsRenderingPaused(false);
 				chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
@@ -366,7 +369,6 @@ function resumeEyeRenderingAfterLoad(tab_id)
 	tempData.previousFrameTimestamp = previousFrameTimestamp;
 	
 	//Tell the server to 
-	manageMessage(33, "ResumeRendering");
 	if(isRenderingEye)
 	{
 		chrome.tabs.sendMessage(tab_id, {msg: "injectedeyedisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
@@ -392,8 +394,6 @@ function resumeMouseRenderingAfterLoad(tab_id)
 	tempData.isSimulatingBothMouseAndClicksKeys = isSimulatingBothMouseAndClicksKeys;
 	
 	console.log("Time when resuming mouse rendering after load: " + previousFrameTimestamp);
-	
-	//Tell the server to 
 	manageMessage(33, "ResumeRendering");
 	if(isRenderingMouse)
 	{
@@ -529,6 +529,7 @@ function setMouseData(i_mouseData,i_resumeMouseRendering)
 			{
 				if(response.message == "resume")
 				{
+					//Tell the server to 
 					resumeMouseRenderingAfterLoad(i_tab.id);
 				}
 				else
