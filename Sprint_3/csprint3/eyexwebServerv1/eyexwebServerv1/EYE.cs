@@ -134,6 +134,10 @@ namespace tieto.education.eyetrackingwebserver
             m_audioHandler = new AudioHandler(this);
         }
 
+       /// <summary>
+       /// Checks if the eye tracking device is enabled for tracking
+       /// </summary>
+       /// <returns>Bool, the status of the eye tracking active state</returns>
        public bool isEyeTrackerOnline()
        {
            if(m_eyeHost != null)
@@ -150,6 +154,10 @@ namespace tieto.education.eyetrackingwebserver
            return false;
        }
 
+       /// <summary>
+       /// Controls if a microphone device is connected to the computer
+       /// </summary>
+       /// <returns>Bool, is a microphone connected</returns>
        public bool isMicrophoneConnected()
        {
            Microphone mic = Microphone.Default;
@@ -196,6 +204,11 @@ namespace tieto.education.eyetrackingwebserver
            m_activeDisplayWidth = i_displayWidth;
        }
 
+
+       /// <summary>
+       /// Assigning new audio buffer to audio handler
+       /// </summary>
+       /// <param name="i_audioData">Byte array, the audio buffer to use</param>
        public void setLoadedAudio(Byte[] i_audioData)
        {
            m_loadedAudio = i_audioData;
@@ -213,6 +226,10 @@ namespace tieto.education.eyetrackingwebserver
            log("Recorder: New page!", 1);
        }
 
+
+       /// <summary>
+       /// Tells audio handler to start new playback of audio using the currently loaded audio buffer
+       /// </summary>
        public void startAudio()
        {
            if(m_audioHandler != null)
@@ -222,6 +239,10 @@ namespace tieto.education.eyetrackingwebserver
            }
        }
 
+
+       /// <summary>
+       /// Tells the audio handler to pause an active audio playback
+       /// </summary>
        public void pauseAudio()
        {
            if (m_audioHandler != null)
@@ -231,6 +252,9 @@ namespace tieto.education.eyetrackingwebserver
            }
        }
 
+       /// <summary>
+       /// Tells audio handler to resume an active audio playback
+       /// </summary>
        public void resumeAudio()
        {
            if (m_audioHandler != null)
@@ -240,6 +264,9 @@ namespace tieto.education.eyetrackingwebserver
            }
        }
 
+       /// <summary>
+       /// Tells audio handler to stop an active audio playback
+       /// </summary>
        public void stopAudio()
        {
            if(m_audioHandler != null)
@@ -631,6 +658,11 @@ namespace tieto.education.eyetrackingwebserver
            return false;
        }
 
+       /// <summary>
+       /// Resets variables that are related to a test if a recording instance is active
+       /// Called when a user disconnects
+       /// </summary>
+       /// <returns>Bool, indicates whether a recording was active and if it was stopped</returns>
        public bool stopCriticalRecording()
        {
            if(m_isRecording)
@@ -652,6 +684,8 @@ namespace tieto.education.eyetrackingwebserver
                    m_fixationPoints.Clear();
                    m_pageTimestamps.Clear();
                    m_isFirstPointCollected = false;
+
+                   m_loadedAudio = null;
 
                    m_currentTestPage = -1;
                }

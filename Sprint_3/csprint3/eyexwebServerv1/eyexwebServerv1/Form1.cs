@@ -170,6 +170,12 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
+        /// <summary>
+        /// Enables and disables the disconnect button on request
+        /// Used when client connects and disconnects
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         private void updateDisconnectButton(object sender,EventArgs eventArgs)
         {
             if(this.btn_condis.InvokeRequired)
@@ -196,7 +202,9 @@ namespace tieto.education.eyetrackingwebserver
                 }
                 catch(Exception)
                 {
-
+                    lvOutput.Items.Add("GUI: Error when changing status of Disconnect Button");
+                    lvOutput.Items[lvOutput.Items.Count - 1].BackColor = Color.White;
+                    lvOutput.Items[lvOutput.Items.Count - 1].ForeColor = Color.Black;
                 }
             }
         }
