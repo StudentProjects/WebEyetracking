@@ -1,3 +1,14 @@
+//////////////////////
+//Daniel Johansson////
+//injectedeyedisplay.js//////////
+//////////////////////
+//
+//Responsible for displaying fixation points
+//
+
+/////////////
+//Variables//
+/////////////
 
 // Array variables
 // Will contains necessary data
@@ -19,6 +30,9 @@ var mostFixatedIndex = 0;
 
 var isTestCleared = true;
 
+///////////
+//METHODS//
+///////////
 
 //Update the xCoords and yCoords with the latest collected data.
 function setFixationData(i_data)

@@ -450,7 +450,7 @@ function setData(i_data, i_resume)
 	//Setting eye data if eye data exists
 	if(t_data['timeStampEYE'])
 	{
-		setEyeGazeData(i_data,i_resume);
+		setEyeGazeData(i_data, i_resume);
 		chrome.runtime.sendMessage({msg: 'player::hasEyeData', data: true});
 	}
 	else
@@ -460,7 +460,7 @@ function setData(i_data, i_resume)
 	
 	if(t_data['timeStampMouse'])
 	{
-		setMouseData(i_data,i_resume);
+		setMouseData(i_data, i_resume);
 		chrome.runtime.sendMessage({msg: 'player::hasMouseData', data: true});
 	}
 	else
