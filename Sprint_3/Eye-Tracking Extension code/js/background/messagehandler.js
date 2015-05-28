@@ -473,6 +473,11 @@ chrome.extension.onRequest.addListener
 		{
 			sendUserInfo();
 		}
+		// set heatmap opacity
+		else if(request.msg == "persistentpopupvariables::setHeatmapOpacity")
+		{
+			setHeatmapOpacity(request.data);
+		}
 		//Handled in tabinfo.js
 		//getScrollHeight
         else if(request.msg == "tabinfo::getScrollHeight") 

@@ -33,6 +33,8 @@ var eyeCanvasDiv = null; //Canvas for rendering heatmap
 
 var isDisplayingEyeHeatmap = false;
 
+var eyeHeatmapOpacity = 0.76;
+
 ///////////
 //METHODS//
 ///////////
@@ -62,7 +64,7 @@ function initializeEyeCanvas()
 		{
 			container: document.querySelector(".canvas-class"),
 			radius: 45,
-			maxOpacity: 1,
+			maxOpacity: eyeHeatmapOpacity,
 		    minOpacity: .0,
 		    blur: .75
 		});
@@ -279,6 +281,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		if(timeStampEYE)
 		{
 			hideEye(); //Hide before starting animation
+			eyeHeatmapOpacity = request.data;
 			startEyeAnimation(0);
 			sendResponse({message: "Animating eye heatmap!",data:true});	
 		}		
@@ -308,6 +311,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	//If script is reloaded and we were animating, continue animating from the last frame.
 	else if(request.msg == "injectedeyedisplay::resumeRenderingAfterLoad")
 	{
+		eyeHeatmapOpacity = request.data.heatmapOpacity;
 		startEyeAnimation(request.data.previousFrameTimestamp);
 		sendResponse({message: "Resumed eye animation!"});	
 	}
@@ -315,6 +319,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	{
 		if(!isDisplayingEyeHeatmap)
 		{
+			eyeHeatmapOpacity = request.data;
 			displayEyeHeatmap();
 			sendResponse({message: "Showing heatmap!",data:true});	
 		}

@@ -33,6 +33,7 @@ var isReadyInterval = null;
 
 var eyeTrackerActive = false;
 var microphoneConnected = false;
+var heatmapOpacity = 0.75;
 
 ///////////
 //METHODS//
@@ -60,6 +61,7 @@ function sendPopupVariables()
 	variables.isJQueryLoaded = isJQueryLoaded;
 	variables.eyeTrackerActive = eyeTrackerActive;
 	variables.microphoneConnected = microphoneConnected;
+	variables.heatmapOpacity = heatmapOpacity;
 	
 	chrome.runtime.sendMessage({msg: 'popup::variables', content: variables});
 }
@@ -81,7 +83,10 @@ function sendTestInfo()
 {
 	chrome.runtime.sendMessage({msg: 'player::setTestInfo', info: testInfo});
 }
-
+function setHeatmapOpacity(value)
+{
+	heatmapOpacity = value;
+}
 function setIsRecording(status)
 {
 	isRecording = status;

@@ -354,6 +354,7 @@ function addPopupMessageListener()
 			document.getElementById("eye_playerbox").disabled = i_message.content['playerEyeBoxDisabled'];
 			document.getElementById("mouse_playerbox").checked = i_message.content['playerMouseBox'];
 			document.getElementById("mouse_playerbox").disabled = i_message.content['playerMouseBoxDisabled'];
+			document.getElementById("opacity").value = i_message.content['heatmapOpacity'];
 			
 			//Set statistics
 			if(i_message.content['statistics'])

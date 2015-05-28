@@ -377,6 +377,7 @@ function resumeEyeRenderingAfterLoad(tab_id)
 {
 	var tempData = new Object();
 	tempData.previousFrameTimestamp = previousFrameTimestamp;
+	tempData.heatmapOpacity = heatmapOpacity;
 	
 	//Tell the server to 
 	if(isRenderingEye)
@@ -583,7 +584,7 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 			{
 				chrome.tabs.getSelected(null, function(i_tab) 
 				{		
-					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::startAnimation"}, function(response) 
+					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::startAnimation",data:heatmapOpacity}, function(response) 
 					{
 						try
 						{
@@ -667,7 +668,7 @@ function showHeatmap(requestShowEye, requestShowMouse)
 	{
 		chrome.tabs.getSelected(null, function(i_tab) 
 		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::show"}, function(response) 
+			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::show",data:heatmapOpacity}, function(response) 
 			{
 				try
 				{

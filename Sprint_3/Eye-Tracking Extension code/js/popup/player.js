@@ -78,6 +78,11 @@ function initPlayer()
 		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBox", data: document.getElementById("mouse_playerbox").checked });
 	});
 	
+	document.getElementById("opacity").addEventListener("change",function()
+	{
+		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setHeatmapOpacity", data: document.getElementById("opacity").value });
+	});
+	
 	addPlayerMessageListener();
 	
 	console.log("player.js initialized!");
