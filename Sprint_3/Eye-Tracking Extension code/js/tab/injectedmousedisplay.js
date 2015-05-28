@@ -300,9 +300,14 @@ function animateMouse()
 				}
 				port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
 			
+				//Move eye canvases backward if they exist
 				if(eyeCanvasDiv)
 				{
 					eyeCanvasDiv.style.zIndex = "-1";
+				}
+				if(eyeImageDiv)
+				{
+					eyeImageDiv.style.zIndex = "-1";
 				}
 				
 				//Simulate hover event
@@ -347,6 +352,10 @@ function animateMouse()
 				{
 					eyeCanvasDiv.style.zIndex = "999996";
 				}
+				if(eyeImageDiv)
+				{
+					eyeImageDiv.style.zIndex = "999999";
+				}
 				
 				//If there are mouseclicks left to handle
 				if(timeMouseClicks[currentMouseClick])
@@ -359,9 +368,14 @@ function animateMouse()
 							mousePointer.style.zIndex = "-1";
 							mouseCanvasDiv.style.zIndex = "-1";	
 						}
+						//Move eye canvases backward if they exist
 						if(eyeCanvasDiv)
 						{
 							eyeCanvasDiv.style.zIndex = "-1";
+						}
+						if(eyeImageDiv)
+						{
+							eyeImageDiv.style.zIndex = "-1";
 						}
 						
 						//Get mouse click target
@@ -388,9 +402,12 @@ function animateMouse()
 						{
 							eyeCanvasDiv.style.zIndex = "999996";
 						}
+						if(eyeImageDiv)
+						{
+							eyeImageDiv.style.zIndex = "999999";
+						}
 					}
 				}
-				
 				//If there are key events left to handle
 				if(timeStampKey[currentKey])
 				{		

@@ -35,6 +35,9 @@ var isDisplayingEyeHeatmap = false;
 
 var eyeHeatmapOpacity = 0.76;
 
+var eyeImage = null; //Used to show were the eye is at this frame.
+var eyeImageDiv = null; //Div for eyeImage
+
 ///////////
 //METHODS//
 ///////////
@@ -151,6 +154,12 @@ function animateEye()
 					value: 1
 				});
 				
+				if(eyeImageDiv)
+				{
+					eyeImageDiv.style.left = (xEyeCoords[indexEye]-24) + 'px';
+					eyeImageDiv.style.top = (yEyeCoords[indexEye]-24) + 'px';
+				}
+				
 				indexEye++;
 				animateEye();
 				
@@ -159,6 +168,34 @@ function animateEye()
 		else
 		{
 			return false;
+		}
+	}
+}
+
+//Show or hide eye icon
+function manageEyeDiv(create)
+{
+	if(create)
+	{	
+		eyeImageDiv = document.createElement('div');
+		eyeImageDiv.id = "eye_div";
+		eyeImageDiv.style.position = 'absolute';
+		eyeImageDiv.style.width = "48px";
+		eyeImageDiv.style.height = "48px";
+		eyeImageDiv.style.zIndex = "999999";
+	    eyeImage = document.createElement('img');
+		eyeImage.src = chrome.runtime.getURL("../../img/eye-icon48.png");
+		eyeImageDiv.appendChild(eyeImage);
+		document.body.appendChild(eyeImageDiv);	
+	}
+	else
+	{
+		if(eyeImageDiv)
+		{
+			eyeImageDiv.removeChild(eyeImage);
+			document.body.removeChild(eyeImageDiv);
+			eyeImageDiv = null;
+			eyeImage = null;	
 		}
 	}
 }
@@ -184,8 +221,11 @@ function startEyeAnimation(startTime)
 	currentEyeFrameTime = startTime;
 	initializeEyeCanvas();
 	isDisplayingEyeHeatmap = true;
+	
+	manageEyeDiv(true);
+	
 	animateEye();
-
+	
 }
 
 //Stop the animate function
@@ -198,6 +238,8 @@ function stopEyeAnimation()
 		
 		clearTimeout(animationEye);
 		animationEye = null;
+		
+		manageEyeDiv(false);
 		
 		port.postMessage({message: "display::eyeAnimationFinished"});
 	}
