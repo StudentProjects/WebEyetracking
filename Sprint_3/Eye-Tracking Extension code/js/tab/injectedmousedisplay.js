@@ -54,24 +54,65 @@ var animateBothMouseAndKeys = false;
 
 function initializeMouseCanvas()
 {
+	try
+	{
+		if(mouseCanvasDiv == null)
+		{
+			if(animateBothMouseAndKeys)
+			{
+				mouseCanvasDiv = document.createElement("div");
+				mouseCanvasDiv.style.position = "absolute";
+				mouseCanvasDiv.style.top = "0px";
+				mouseCanvasDiv.style.left = "0px";
+				mouseCanvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
+				mouseCanvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
+				mouseCanvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
+				mouseCanvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
+				mouseCanvasDiv.style.zIndex = "999996";	
+				mouseCanvasDiv.id = "mouse-canvas-div";
+				mouseCanvasDiv.className = "canvas-class";
+			        
+				document.body.appendChild(mouseCanvasDiv);	
+			}
+		}
+		heatmapMouseInstance = h337.create( //Heatmap instance.
+		{
+			container: document.querySelector(".canvas-class"),
+			radius: 45,
+		 	maxOpacity: 1,
+		    minOpacity: .0,
+		    blur: .75,
+			gradient:
+			{
+				'.2': 'red',
+				'.5': 'blue',
+				'.85': 'white'
+			}
+		});	
+	}
+	catch(err)
+	{
+		console.log("Error in initializeCanvas!!!");
+	}
+}
+
+function initializeCanvasForShow()
+{
 	if(mouseCanvasDiv == null)
 	{
-		if(animateBothMouseAndKeys)
-		{
-			mouseCanvasDiv = document.createElement("div");
-			mouseCanvasDiv.style.position = "absolute";
-			mouseCanvasDiv.style.top = "0px";
-			mouseCanvasDiv.style.left = "0px";
-			mouseCanvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
-			mouseCanvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
-			mouseCanvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
-			mouseCanvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
-			mouseCanvasDiv.style.zIndex = "999996";	
-			mouseCanvasDiv.id = "mouse-canvas-div";
-			mouseCanvasDiv.className = "canvas-class";
-		        
-			document.body.appendChild(mouseCanvasDiv);	
-		}
+		mouseCanvasDiv = document.createElement("div");
+		mouseCanvasDiv.style.position = "absolute";
+		mouseCanvasDiv.style.top = "0px";
+		mouseCanvasDiv.style.left = "0px";
+		mouseCanvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
+		mouseCanvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
+		mouseCanvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
+		mouseCanvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
+		mouseCanvasDiv.style.zIndex = "999996";	
+		mouseCanvasDiv.id = "mouse-canvas-div";
+		mouseCanvasDiv.className = "canvas-class";
+	        
+		document.body.appendChild(mouseCanvasDiv);	
 	}
 	heatmapMouseInstance = h337.create( //Heatmap instance.
 	{
@@ -86,7 +127,7 @@ function initializeMouseCanvas()
 			'.5': 'blue',
 			'.85': 'white'
 		}
-	});
+	});	
 }
 
 //Update the xCoords and yCoords with the latest collected data.
@@ -517,25 +558,34 @@ function displayMouseHeatmap()
 {	
 	if(xMouseCoords && yMouseCoords)
 	{
-		initializeMouseCanvas();
-		console.log("Show mouse heatmap!");
-		
-		var t_size = xMouseCoords.length;
-		for(var i = 0; i < t_size; i++)
+		initializeCanvasForShow();
+		try
 		{
-			heatmapMouseInstance.addData(
+			console.log("Show mouse heatmap!");
+		
+			var t_size = xMouseCoords.length;
+			for(var i = 0; i < t_size; i++)
 			{
-				x: xMouseCoords[i],
-				y: yMouseCoords[i],
-				value: 1
-			});
+				heatmapMouseInstance.addData(
+				{
+					x: xMouseCoords[i],
+					y: yMouseCoords[i],
+					value: 1
+				});
+			}
+			isDisplayingMouseHeatmap = true;
+			port.postMessage({message: "display::displayingData",data:true});
 		}
-		isDisplayingMouseHeatmap = true;
-		port.postMessage({message: "display::displayingData"});
+		catch(err)
+		{
+			console.log("Error in displayMouseHeatmap");
+			port.postMessage({message: "display::displayingData",data:false});
+		}
 	}
 	else
 	{
 		console.log("No data!");
+		port.postMessage({message: "display::displayingData",data:false});
 	}
 	
 	try
@@ -588,6 +638,7 @@ function forceMouseAnimationStop()
 //Hide the heatmap
 function hideMouseHeatmap()
 {
+	isDisplayingMouseHeatmap = false;
 	console.log("Hide mouse!");
 	if(heatmapMouseInstance != null)
 	{

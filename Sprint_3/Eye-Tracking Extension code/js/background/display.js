@@ -84,7 +84,14 @@ chrome.runtime.onConnect.addListener(function(port)
 		}
 		else if(msg.message == "display::displayingData")
 		{
-			chrome.runtime.sendMessage({msg: 'player::displayingData'});
+			if(msg.data)
+			{
+				chrome.runtime.sendMessage({msg: 'player::displayingData'});
+			}
+			else
+			{
+				chrome.runtime.sendMessage({msg: 'player::notestdata'});
+			}
 		}
 		else if(msg.message == "display::setLastFrameTime")
 		{
@@ -679,7 +686,7 @@ function showHeatmap(requestShowEye, requestShowMouse)
 					}
 					else
 					{
-						chrome.runtime.sendMessage({msg: 'player::displayingData'});
+						chrome.runtime.sendMessage({msg: 'player::displayingData',data:false});
 					}
 				}
 				catch(err)
@@ -705,7 +712,7 @@ function showHeatmap(requestShowEye, requestShowMouse)
 					}
 					else
 					{
-						chrome.runtime.sendMessage({msg: 'player::displayingData'});
+						chrome.runtime.sendMessage({msg: 'player::displayingData',data:false});
 					}
 				}
 				catch(err)

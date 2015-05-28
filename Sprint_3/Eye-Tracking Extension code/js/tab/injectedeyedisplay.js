@@ -235,10 +235,11 @@ function displayEyeHeatmap()
 			});
 		}
 		isDisplayingEyeHeatmap = true;
-		port.postMessage({message: "display::displayingData"});
+		port.postMessage({message: "display::displayingData",data:true});
 	}
 	else
 	{
+		port.postMessage({message: "display::displayingData",data:false});
 		console.log("No data!");
 	}
 	
@@ -321,7 +322,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		{
 			eyeHeatmapOpacity = request.data;
 			displayEyeHeatmap();
-			sendResponse({message: "Showing heatmap!",data:true});	
+			sendResponse({message: "Showing eye heatmap!",data:true});	
 		}
 		else
 		{

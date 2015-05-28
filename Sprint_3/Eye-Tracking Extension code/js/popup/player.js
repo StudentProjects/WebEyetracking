@@ -80,6 +80,14 @@ function initPlayer()
 	
 	document.getElementById("opacity").addEventListener("change",function()
 	{
+		if(document.getElementById("opacity").value < 0.5)
+		{
+			document.getElementById("opacity").value = 0.5;
+		}
+		else if(document.getElementById("opacity").value > 1.0)
+		{
+			document.getElementById("opacity").value = 1.0;
+		}
 		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setHeatmapOpacity", data: document.getElementById("opacity").value });
 	});
 	
@@ -214,6 +222,11 @@ function addPlayerMessageListener()
 		else if(i_message.msg == "player::setHeaderToDefault")
 		{
 			//document.getElementById("player_testheader").innerHTML = "Current test";
+		}
+		else if(i_message.msg == "player::notestdata")
+		{
+			document.getElementById("main_body").style.cursor = "default";
+			document.getElementById("player_testheader").innerHTML = "Current test";
 		}
 		else if(i_message.msg == "player::hasEyeData")
 		{
