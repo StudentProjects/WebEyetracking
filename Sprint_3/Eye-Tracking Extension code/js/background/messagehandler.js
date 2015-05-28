@@ -350,7 +350,7 @@ chrome.extension.onRequest.addListener
 			{
 				var data = request.data;
 				manageMessage(31, "StartRendering");
-				animateData(data.Eye, data.Mouse);	
+				animateData(data.Eye, data.Mouse. data.startTime);	
 			}
 			else if(isRendering && !isRenderingPaused)
 			{
@@ -367,7 +367,7 @@ chrome.extension.onRequest.addListener
 				resumeRendering();
 				var data = request.data;
 				console.log(data);
-				animateData(data.Eye, data.Mouse);	
+				animateData(data.Eye, data.Mouse, data.startTime);	
 			}
 		}
         else if(request.msg == "display::show") 

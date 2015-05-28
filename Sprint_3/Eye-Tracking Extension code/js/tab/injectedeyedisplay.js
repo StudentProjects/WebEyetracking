@@ -245,6 +245,7 @@ function stopEyeAnimation()
 	}
 }
 
+//Force the eye animation to stop and hide the canvas
 function forceEyeAnimationStop()
 {
 	indexEye = 0;	
@@ -327,12 +328,12 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		{
 			hideEye(); //Hide before starting animation
 			eyeHeatmapOpacity = request.data;
-			startEyeAnimation(0);
-			sendResponse({message: "Animating eye heatmap!",data:true});	
+			startEyeAnimation(request.startTime);
+			sendResponse({message: "Animating eye heatmap!", data:true});	
 		}		
 		else
 		{
-			sendResponse({message: "Failed to start eye animation. No data existed.",data:false});	
+			sendResponse({message: "Failed to start eye animation. No data existed.", data:false});	
 		}
 	}
 	else if(request.msg == "injectedeyedisplay::pauseRendering")
@@ -366,11 +367,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		{
 			eyeHeatmapOpacity = request.data;
 			displayEyeHeatmap();
-			sendResponse({message: "Showing eye heatmap!",data:true});	
+			sendResponse({message: "Showing eye heatmap!", data:true});	
 		}
 		else
 		{
-			sendResponse({message: "Eye heatmap already shown!",data:false});
+			sendResponse({message: "Eye heatmap already shown!", data:false});
 		}
 	}
 	else if (request.msg == "injectedeyedisplay::hide")
@@ -378,11 +379,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		if(isDisplayingEyeHeatmap)
 		{
 			forceEyeAnimationStop();
-			sendResponse({message: "Hiding eye heatmap!",data:true});	
+			sendResponse({message: "Hiding eye heatmap!", data:true});	
 		}
 		else
 		{
-			sendResponse({message: "Eye heatmap is not displayed, skipping hide command!",data:false});
+			sendResponse({message: "Eye heatmap is not displayed, skipping hide command!", data:false});
 		}
 	}
 	else if (request.msg == "injectedeyedisplay::clearCanvas")

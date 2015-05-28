@@ -694,7 +694,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		{
 			hideMouseHeatmap(); //Hide before starting animation
 			animateBothMouseAndKeys = request.data;
-			startMouseAnimation(0);
+			startMouseAnimation(request.startTime);
 			sendResponse({message: "Animating mouse!", data:true});	
 		}		
 		else

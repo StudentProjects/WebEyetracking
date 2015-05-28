@@ -458,6 +458,7 @@ function setData(i_data, i_resume)
 	currentData = i_data;
 	var t_data = JSON.parse(currentData);
 	
+	chrome.runtime.sendMessage({msg: 'player::setSelectStartTime', data: i_data['timeStampMouse']});
 	
 	//Setting eye data if eye data exists
 	if(t_data['timeStampEYE'])
@@ -579,7 +580,7 @@ function setMouseData(i_mouseData,i_resumeMouseRendering)
 }
 
 //Tell injecteddisplay.js to animate heatmap of data.
-function animateData(requestAnimateEye, requestAnimateMouse)
+function animateData(requestAnimateEye, requestAnimateMouse, requestStartTime)
 {	
 	console.log("jQuery: " + isJQueryLoaded);
 	if(isJQueryLoaded)
@@ -591,7 +592,7 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 			{
 				chrome.tabs.getSelected(null, function(i_tab) 
 				{		
-					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::startAnimation",data:heatmapOpacity}, function(response) 
+					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::startAnimation", data:heatmapOpacity, time: startTime}, function(response) 
 					{
 						try
 						{
@@ -606,7 +607,8 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 								{	
 									console.log(response.message);
 									setData(currentData, false);	
-									animateData(requestAnimateEye, requestAnimateMouse);
+									animateData(requestAnimateEye, requestAnimateMouse, requestStartTime);
+									return false;
 								}
 							}
 						}
@@ -624,7 +626,7 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 			currentPage = 0;
 			chrome.tabs.getSelected(null, function(i_tab) 
 			{		
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse}, function(response) 
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse, time: startTime}, function(response) 
 				{
 					try
 					{
@@ -640,7 +642,7 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 							{	
 								console.log(response.message);
 								setData(currentData, false);	
-								animateData(requestAnimateEye, requestAnimateMouse);
+								animateData(requestAnimateEye, requestAnimateMouse, requestStartTime);
 							}
 						}
 					}
