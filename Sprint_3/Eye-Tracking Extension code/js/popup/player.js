@@ -164,10 +164,15 @@ function resetCurrentTestInfo()
 
 function setSelectStartTime(startTimes)
 {
+	var select = document.getElementById("starttime");
+	select.innerHTML = "";
+
 	var size = startTimes.length;
 	for(i = 0; i < size; i++)
 	{
-		console.log("Start Time " + i + ": " + startTimes[i]);
+		var option = document.createElement("option");
+		option.text = startTimes[i];
+		select.add(option);
 	}
 }
 
@@ -196,7 +201,7 @@ function addPlayerMessageListener()
 		}
 		else if(i_message.msg == "player::setSelectStartTime")
 		{
-			setSelectStartTime(i_message.startTimes);
+			setSelectStartTime(i_message.data);
 		}
 		else if(i_message.msg == "player::animationStarted")
 		{

@@ -458,7 +458,7 @@ function setData(i_data, i_resume)
 	currentData = i_data;
 	var t_data = JSON.parse(currentData);
 	
-	chrome.runtime.sendMessage({msg: 'player::setSelectStartTime', data: i_data['timeStampMouse']});
+	chrome.runtime.sendMessage({msg: 'player::setSelectStartTime', data: t_data['pageTimestamp']});
 	
 	//Setting eye data if eye data exists
 	if(t_data['timeStampEYE'])
