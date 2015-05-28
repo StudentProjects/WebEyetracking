@@ -651,11 +651,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		if(!isDisplayingMouseHeatmap)
 		{
 			displayMouseHeatmap();
-			sendResponse({message: "Showing mouse heatmap!",data:true});
+			sendResponse({message: "Showing mouse heatmap!", data:true});
 		}
 		else
 		{
-			sendResponse({message: "Heatmap already displayed!",data:false});
+			sendResponse({message: "Heatmap already displayed!", data:false});
 		}
 	}
 	else if (request.msg == "injectedmousedisplay::hide")
