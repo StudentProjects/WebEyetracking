@@ -310,6 +310,8 @@ function hideEye()
 			document.body.removeChild(document.getElementById("eye-canvas-div"));
 			eyeCanvasDiv = null;
 		}
+		
+		manageEyeDiv(false);
 	
 		isDisplayingEyeHeatmap = false;	
 	}
