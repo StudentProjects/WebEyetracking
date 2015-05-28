@@ -556,16 +556,19 @@ function manageMouseDiv(create)
 	{
 		if(animateBothMouseAndKeys)
 		{
-			mousePointer = document.createElement('div');
-			mousePointer.id = "mouse";
-			mousePointer.style.position = 'absolute';
-			mousePointer.style.width = "24px";
-			mousePointer.style.height = "24px";
-			mousePointer.style.zIndex = "999999";
-		    mouseImage = document.createElement('img');
-			mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
-			mousePointer.appendChild(mouseImage);
-			document.body.appendChild(mousePointer);	
+			if(mousePointer == null)
+			{
+				mousePointer = document.createElement('div');
+				mousePointer.id = "mouse";
+				mousePointer.style.position = 'absolute';
+				mousePointer.style.width = "24px";
+				mousePointer.style.height = "24px";
+				mousePointer.style.zIndex = "999999";
+			    mouseImage = document.createElement('img');
+				mouseImage.src = chrome.runtime.getURL("../../img/mouse-icon16.png");
+				mousePointer.appendChild(mouseImage);
+				document.body.appendChild(mousePointer);	
+			}	
 		}
 	}
 	else

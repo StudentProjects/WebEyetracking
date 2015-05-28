@@ -33,7 +33,7 @@ var eyeCanvasDiv = null; //Canvas for rendering heatmap
 
 var isDisplayingEyeHeatmap = false;
 
-var eyeHeatmapOpacity = 0.76;
+var eyeHeatmapOpacity = 0.75;
 
 var eyeImage = null; //Used to show were the eye is at this frame.
 var eyeImageDiv = null; //Div for eyeImage
