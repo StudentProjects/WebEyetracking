@@ -162,6 +162,15 @@ function resetCurrentTestInfo()
 	document.getElementById("player_time").innerHTML = "";
 }
 
+function setSelectStartTime(startTimes)
+{
+	var size = startTimes.length;
+	for(i = 0; i < size; i++)
+	{
+		console.log("Start Time " + i + ": " + startTimes[i]);
+	}
+}
+
 //Add a listener that listens for messages.
 function addPlayerMessageListener()
 {
@@ -184,6 +193,10 @@ function addPlayerMessageListener()
 		else if(i_message.msg == "player::hideHeatmap")
 		{
 			renderInfo("Hiding data...", "Alert");
+		}
+		else if(i_message.msg == "player::setSelectStartTime")
+		{
+			setSelectStartTime(i_message.startTimes);
 		}
 		else if(i_message.msg == "player::animationStarted")
 		{

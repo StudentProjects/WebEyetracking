@@ -28,7 +28,7 @@ chrome.commands.onCommand.addListener(function(command)
 		{
 			if(currentData)
 			{
-				animateData(playerEyeBox, playerMouseBox);
+				animateData(playerEyeBox, playerMouseBox, startTime);
 			}
 		}
     } 
