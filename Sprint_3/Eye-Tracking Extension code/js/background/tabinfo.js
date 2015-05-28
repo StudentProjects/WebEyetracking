@@ -36,6 +36,8 @@ chrome.tabs.onUpdated.addListener(function(tabId , info)
     {
     	console.log("Page finished loading!");
     	
+    	//If the extension was recording on the previous page, tell the server to
+		//resume recording.
 		if(isRecording)
 		{
 	    	manageMessage(3, "ResumeRecordingRequest");
@@ -46,6 +48,19 @@ chrome.tabs.onUpdated.addListener(function(tabId , info)
 	    	manageMessage(35, resumeTimestamp);
 	    	console.log("Resumed recording at " + resumeTimestamp);
 		}
+		
+		//If the content scripts were rendering on the previous page, tell the server to
+		//resume rendering.
+		if(isRenderingMouse)
+		{	
+			manageMessage(33, "ResumeRendering");	
+		}
+		
+		//Inject scripts in display.js with a 1000 millisecond delay
+		var injectionDelay = setTimeout(function(){
+			injectScripts();
+		}, 1000);
+		
     }
 });
 

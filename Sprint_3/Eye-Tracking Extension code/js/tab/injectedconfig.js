@@ -1,9 +1,21 @@
+//////////////////////
+//Daniel Johansson////
+//injectedconfig.js//////////
+//////////////////////
+//
+//Handles setup of jquery and tells the extension
+//when content scripts have finished loading.
+//
 
-
-
-
+/////////////
+//Variables//
+/////////////
 
 var port = chrome.runtime.connect({name:"display"}); //Port to tabinfo.js
+
+///////////
+//METHODS//
+///////////
 
 //Listen for messages from displayheatmap.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 

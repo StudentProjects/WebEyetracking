@@ -1,3 +1,15 @@
+//////////////////////
+//Daniel Lindgren////
+//injectedmousedisplay.js//////////
+//////////////////////
+//
+//Responsible for displaying mouse data
+//
+
+/////////////
+//Variables//
+/////////////
+
 var xMouseCoords = null; //Array of mouse x coordinates.
 var yMouseCoords = null; //Array of mouse y coordinates.
 var timeStampMouse = null; //Array of mouse time stamps.
@@ -35,6 +47,10 @@ var mouseCanvasDiv = null; //Canvas for rendering heatmap
 var isDisplayingMouseHeatmap = false;
 
 var animateBothMouseAndKeys = false;
+
+///////////
+//METHODS//
+///////////
 
 function initializeMouseCanvas()
 {
@@ -340,9 +356,8 @@ function animateMouse()
 						keyEventTriggered = true;
 						
 						var active = document.activeElement;
-						
-						console.log("Active: " + active);
 					
+						//Check if we have an active element
 						if(active)
 						{
 							//If the keycode is 8, a backspace event should be dispathes.

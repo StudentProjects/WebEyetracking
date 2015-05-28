@@ -1,4 +1,14 @@
+//////////////////////
+//Daniel Johansson////
+//injectedeyedisplay.js//////////
+//////////////////////
+//
+//Responsible for displaying eye data
+//
 
+/////////////
+//Variables//
+/////////////
 
 var xEyeCoords = null; //Array of eye x coordinates.
 var yEyeCoords = null; //Array of eye y coordinates.
@@ -23,6 +33,9 @@ var eyeCanvasDiv = null; //Canvas for rendering heatmap
 
 var isDisplayingEyeHeatmap = false;
 
+///////////
+//METHODS//
+///////////
 
 // Initializes the canvas for animating eye data
 function initializeEyeCanvas()

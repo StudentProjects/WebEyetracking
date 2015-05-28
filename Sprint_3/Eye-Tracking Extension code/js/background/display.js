@@ -110,6 +110,7 @@ chrome.runtime.onConnect.addListener(function(port)
 	});
 });
 
+//Reset all test info and stop rendering
 function resetTestInfo()
 {
 	currentPage = 0;
@@ -170,6 +171,7 @@ function resetTestInfo()
 	});
 }
 
+//Send messages to content scripts to show/hide fixation points
 function handleFixationPoints()
 {
 	if(isFixationPointsDisplayed)
@@ -295,7 +297,7 @@ function resumeRendering()
 }
 
 //Inject scripts into the current tab
-function injectDisplay()
+function injectScripts()
 {
 	console.log("Injecting content scripts!");
 	chrome.tabs.getSelected(null, function(i_tab)
@@ -324,6 +326,7 @@ function checkResumeRendering()
 	}
 }
 
+//Injects jquery into the target tab
 function executeJQuery()
 {
 	chrome.tabs.getSelected(null, function(i_tab)
@@ -333,6 +336,7 @@ function executeJQuery()
 	executeBootstrap();
 }
 
+//Injects bootstrap into the target tab
 function executeBootstrap()
 {
 	chrome.tabs.getSelected(null, function(i_tab)
@@ -366,6 +370,9 @@ function executeBootstrap()
 	});
 }
 
+//Tells the content script to resume eye rendering if
+//the extension was rendering eye data before the
+//previous page was unloaded.
 function resumeEyeRenderingAfterLoad(tab_id)
 {
 	var tempData = new Object();
@@ -390,6 +397,9 @@ function resumeEyeRenderingAfterLoad(tab_id)
 	}
 }
 
+//Tells the content script to resume mouse rendering if
+//the extension was rendering mouse data before the
+//previous page was unloaded.
 function resumeMouseRenderingAfterLoad(tab_id)
 {
 	var tempData = new Object();
@@ -398,6 +408,7 @@ function resumeMouseRenderingAfterLoad(tab_id)
 	
 	console.log("Time when resuming mouse rendering after load: " + previousFrameTimestamp);
 	manageMessage(33, "ResumeRendering");
+	
 	if(isRenderingMouse)
 	{
 		chrome.tabs.sendMessage(tab_id, {msg: "injectedmousedisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
@@ -443,7 +454,7 @@ function setData(i_data, i_resume)
 	//Setting eye data if eye data exists
 	if(t_data['timeStampEYE'])
 	{
-		setEyeGazeData(i_data,i_resume);
+		setEyeGazeData(i_data, i_resume);
 		chrome.runtime.sendMessage({msg: 'player::hasEyeData', data: true});
 	}
 	else
@@ -453,7 +464,7 @@ function setData(i_data, i_resume)
 	
 	if(t_data['timeStampMouse'])
 	{
-		setMouseData(i_data,i_resume);
+		setMouseData(i_data, i_resume);
 		chrome.runtime.sendMessage({msg: 'player::hasMouseData', data: true});
 	}
 	else
@@ -466,7 +477,8 @@ function setData(i_data, i_resume)
 	}
 }
 
-function setEyeGazeData(i_eyeData,i_resumeEyeRendering)
+//Load eye data to content scripts
+function setEyeGazeData(i_eyeData, i_resumeEyeRendering)
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
@@ -498,6 +510,7 @@ function setEyeGazeData(i_eyeData,i_resumeEyeRendering)
 	});
 }
 
+//Load fixation point data to content scripts
 function setEyeFixationData(i_fixationData)
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
@@ -523,6 +536,7 @@ function setEyeFixationData(i_fixationData)
 	});
 }
 
+//Load mouse data to content scripts
 function setMouseData(i_mouseData,i_resumeMouseRendering)
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
@@ -801,6 +815,7 @@ function checkPermission()
 	});
 }
 
+//Compares two jquery versions
 function compareJQueryVersions(version1,version2)
 {
 	if(version1 == version2)
@@ -831,6 +846,7 @@ function compareJQueryVersions(version1,version2)
     return numVersion1Parts < numVersion2Parts ? -1 : 1;
 }
 
+//Performs a jquery version check
 function PerformJQueryVersionCheck()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
@@ -867,47 +883,52 @@ function PerformJQueryVersionCheck()
 		});
 	});
 }
+
 //Check if the injected scripts are alive, if not
 //try to inject them. Also handles errors like 
 //permission denied or browser window not selected.
-//This check is done every two seconds.
-displayTimer = setInterval(function()
+//This check is done once every second.
+function startAliveCheck()
 {
-	if(noResponseCounter > 0)
-	{		
-		if(!injecting)
-		{
-			checkPermission();
-			if(hasPermission)
+	displayTimer = setInterval(function()
+	{
+		if(noResponseCounter > 0)
+		{		
+			if(!injecting)
 			{
-				injecting = true;
-				injectDisplay();
-				var resetInterval = setTimeout(function()
+				checkPermission();
+				if(hasPermission)
 				{
-					if(injecting)
+					injecting = true;
+					injectScripts();
+					console.log("INJECTING AT THE OLD PALCE!!!");
+					var resetInterval = setTimeout(function()
 					{
-						injecting = false;	
-					}
-				}, 5000);
+						if(injecting)
+						{
+							injecting = false;	
+						}
+					}, 5000);
+				}
 			}
 		}
-	}
-	else
-	{		
-		chrome.tabs.getSelected(null, function(i_tab) 
+		else
 		{		
-			//Send message to tab.
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
-			{
-				try
+			chrome.tabs.getSelected(null, function(i_tab) 
+			{		
+				//Send message to tab.
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
 				{
-					response.message;
-				}
-				catch(err)
-				{
-					noResponseCounter++;
-				}
+					try
+					{
+						response.message;
+					}
+					catch(err)
+					{
+						noResponseCounter++;
+					}
+				});
 			});
-		});
-	}
-}, 1000);
+		}
+	}, 1000);
+}
