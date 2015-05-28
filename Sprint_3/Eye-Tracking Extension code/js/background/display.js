@@ -57,6 +57,8 @@ chrome.runtime.onConnect.addListener(function(port)
 			
 			if(!isRenderingMouse)
 			{
+				//Tell the server to 
+				manageMessage(34, "StopRendering");
 				setIsRendering(false);
 				setIsRenderingPaused(false);
 				chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
@@ -71,6 +73,7 @@ chrome.runtime.onConnect.addListener(function(port)
 			
 			if(!isRenderingEye)
 			{
+				manageMessage(34, "StopRendering");
 				setIsRendering(false);
 				setIsRenderingPaused(false);
 				chrome.browserAction.setIcon({path: "../../img/eye-icon16.png"});
@@ -105,6 +108,7 @@ chrome.runtime.onConnect.addListener(function(port)
 	});
 });
 
+//Reset all test info and stop rendering
 function resetTestInfo()
 {
 	previousFrameTimestamp = 0;
@@ -164,6 +168,7 @@ function resetTestInfo()
 	});
 }
 
+//Send messages to content scripts to show/hide fixation points
 function handleFixationPoints()
 {
 	if(isFixationPointsDisplayed)
@@ -318,6 +323,7 @@ function checkResumeRendering()
 	}
 }
 
+//Injects jquery into the target tab
 function executeJQuery()
 {
 	chrome.tabs.getSelected(null, function(i_tab)
@@ -327,6 +333,7 @@ function executeJQuery()
 	executeBootstrap();
 }
 
+//Injects bootstrap into the target tab
 function executeBootstrap()
 {
 	chrome.tabs.getSelected(null, function(i_tab)
@@ -360,13 +367,15 @@ function executeBootstrap()
 	});
 }
 
+//Tells the content script to resume eye rendering if
+//the extension was rendering eye data before the
+//previous page was unloaded.
 function resumeEyeRenderingAfterLoad(tab_id)
 {
 	var tempData = new Object();
 	tempData.previousFrameTimestamp = previousFrameTimestamp;
 	
 	//Tell the server to 
-	manageMessage(33, "ResumeRendering");
 	if(isRenderingEye)
 	{
 		chrome.tabs.sendMessage(tab_id, {msg: "injectedeyedisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
@@ -385,6 +394,9 @@ function resumeEyeRenderingAfterLoad(tab_id)
 	}
 }
 
+//Tells the content script to resume mouse rendering if
+//the extension was rendering mouse data before the
+//previous page was unloaded.
 function resumeMouseRenderingAfterLoad(tab_id)
 {
 	var tempData = new Object();
@@ -392,9 +404,8 @@ function resumeMouseRenderingAfterLoad(tab_id)
 	tempData.isSimulatingBothMouseAndClicksKeys = isSimulatingBothMouseAndClicksKeys;
 	
 	console.log("Time when resuming mouse rendering after load: " + previousFrameTimestamp);
+	manageMessage(33, "ResumeRendering");
 	
-	//Tell the server to 
-	//manageMessage(33, "ResumeRendering");
 	if(isRenderingMouse)
 	{
 		chrome.tabs.sendMessage(tab_id, {msg: "injectedmousedisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
@@ -462,7 +473,8 @@ function setData(i_data, i_resume)
 	}
 }
 
-function setEyeGazeData(i_eyeData,i_resumeEyeRendering)
+//Load eye data to content scripts
+function setEyeGazeData(i_eyeData, i_resumeEyeRendering)
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
 	{
@@ -494,6 +506,7 @@ function setEyeGazeData(i_eyeData,i_resumeEyeRendering)
 	});
 }
 
+//Load fixation point data to content scripts
 function setEyeFixationData(i_fixationData)
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
@@ -519,6 +532,7 @@ function setEyeFixationData(i_fixationData)
 	});
 }
 
+//Load mouse data to content scripts
 function setMouseData(i_mouseData,i_resumeMouseRendering)
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
@@ -529,6 +543,7 @@ function setMouseData(i_mouseData,i_resumeMouseRendering)
 			{
 				if(response.message == "resume")
 				{
+					//Tell the server to 
 					resumeMouseRenderingAfterLoad(i_tab.id);
 				}
 				else
@@ -795,6 +810,7 @@ function checkPermission()
 	});
 }
 
+//Compares two jquery versions
 function compareJQueryVersions(version1,version2)
 {
 	if(version1 == version2)
@@ -825,6 +841,7 @@ function compareJQueryVersions(version1,version2)
     return numVersion1Parts < numVersion2Parts ? -1 : 1;
 }
 
+//Performs a jquery version check
 function PerformJQueryVersionCheck()
 {
 	chrome.tabs.getSelected(null, function(i_tab) 
