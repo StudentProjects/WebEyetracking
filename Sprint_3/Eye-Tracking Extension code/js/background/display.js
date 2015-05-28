@@ -326,7 +326,7 @@ function injectScripts()
 function checkResumeRendering()
 {
 	console.log("Is rendering after load: " + isRendering);
-	if(isRendering && !isRenderingPaused)
+	if(isRendering)
 	{
 		console.log("Trying to resume animation!");
 		setData(currentData, true);
