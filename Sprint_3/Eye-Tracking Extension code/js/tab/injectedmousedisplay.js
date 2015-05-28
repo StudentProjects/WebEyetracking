@@ -248,7 +248,8 @@ function animateMouse()
 						return false;
 					}	
 					
-					//Set mouse pointer position. Has a minor offset be
+					//Set mouse pointer position. Has a minor offset becuase of
+					//the image file.
 					mousePointer.style.left = (xMouseCoords[indexMouse]-8)+'px';
 					mousePointer.style.top = (yMouseCoords[indexMouse]-5)+'px';
 					
@@ -351,10 +352,10 @@ function animateMouse()
 				
 				//If there are key events left to handle
 				if(timeStampKey[currentKey])
-				{
+				{		
 					if(timeStampKey[currentKey] <= timeStampMouse[indexMouse] && !keyEventTriggered)
-					{						
-						keyEventTriggered = true;
+					{					
+						keyEventTriggered = true;	
 						
 						var active = document.activeElement;
 					
@@ -392,21 +393,30 @@ function animateMouse()
 									{								
 										while(current.nodeName != "FORM")
 										{
+											if(current.parentNode = null)
+											{
+												break;
+											}
+											
 											current = current.parentNode;
 										}
 										
-										current.submit();
+										if(current)
+										{
+											current.submit();
+										}
 									}
 								}
 								catch(err)
 								{
 									console.log("Unable to generate ENTER event: " + err); 	
-								}
+								}			
+							}
+							
 							//In all other cases, add the char value of the key code to
 							//the current element.
-							}
 							else
-							{
+							{							
 								var currentChar = String.fromCharCode(keys[currentKey]);
 								active.value += currentChar;
 							}

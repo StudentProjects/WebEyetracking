@@ -53,13 +53,15 @@ chrome.tabs.onUpdated.addListener(function(tabId , info)
 		//resume rendering.
 		if(isRenderingMouse)
 		{	
-			manageMessage(33, "ResumeRendering");	
+			manageMessage(33, "ResumeRendering");
 		}
 		
-		//Inject scripts in display.js with a 1000 millisecond delay
-		var injectionDelay = setTimeout(function(){
+		//Inject scripts in display.js with a 600 millisecond delay
+		//to compensate for delay in sound.
+		var injectionDelay = setTimeout(function()
+		{
 			injectScripts();
-		}, 1000);
+		}, 600);
 		
     }
 });
@@ -119,6 +121,7 @@ chrome.runtime.onConnect.addListener(function(port)
 			}
 			else if(isRendering)
 			{
+				pauseRendering();
 				manageMessage(32, "PauseRendering");
 			}
 			
