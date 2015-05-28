@@ -303,4 +303,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		currentPageOnPlayback = request.data;
 		sendResponse({message: "Updating page number!"});
 	}
+	else if(request.msg == "injectedfixationdisplay::resetPage")
+	{
+		sendResponse({message: "Resetting page number!"});
+		currentPageOnPlayback = 0;
+	}
 });

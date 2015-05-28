@@ -642,6 +642,19 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 						chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
 					}
 				});
+				
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedfixationdisplay::resetPage"}, function(response) 
+				{
+					try
+					{
+						console.log(response.message);
+					}
+					catch(err)
+					{
+						console.log("Error: " + err.message);
+						chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
+					}
+				});
 			});	
 		}
 	}
