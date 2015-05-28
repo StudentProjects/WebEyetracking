@@ -248,6 +248,7 @@ function animateMouse()
 						return false;
 					}	
 					
+					//Set mouse pointer position. Has a minor offset be
 					mousePointer.style.left = (xMouseCoords[indexMouse]-8)+'px';
 					mousePointer.style.top = (yMouseCoords[indexMouse]-5)+'px';
 					
@@ -552,7 +553,7 @@ function stopMouseAnimation()
 {
 	if(animationMouse && indexMouse >= sizeMouse)
 	{
-		console.log("Stop mouse animation!");
+		console.log("Stop mouse rendering!");
 		indexMouse = 0;
 		
 		clearTimeout(animationMouse);
@@ -587,7 +588,7 @@ function forceMouseAnimationStop()
 //Hide the heatmap
 function hideMouseHeatmap()
 {
-	console.log("Hide mouse heatmap!");
+	console.log("Hide mouse!");
 	if(heatmapMouseInstance != null)
 	{
 		var canvas = heatmapMouseInstance._renderer.canvas;
@@ -613,7 +614,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			hideMouseHeatmap(); //Hide before starting animation
 			animateBothMouseAndKeys = request.data;
 			startMouseAnimation(0);
-			sendResponse({message: "Animating mouse heatmap!", data:true});	
+			sendResponse({message: "Animating mouse!", data:true});	
 		}		
 		else
 		{
@@ -661,7 +662,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	else if (request.msg == "injectedmousedisplay::hide")
 	{
 		forceMouseAnimationStop();
-		sendResponse({message: "Hiding mouse heatmap!", data:true});
+		sendResponse({message: "Hiding mouse!", data:true});
 	}
 	else if (request.msg == "injectedmousedisplay::clearCanvas")
 	{
