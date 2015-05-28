@@ -286,7 +286,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if(request.msg == "injectedfixationdisplay::resumeRenderingAfterLoad")
 	{
-		currentPageOnPlayback++;
-		console.log("Updating page to: " + currentPageOnPlayback);
+		currentPageOnPlayback = request.data;
+		sendResponse({message: "Updating page number!"});
 	}
 });

@@ -351,8 +351,15 @@ function animateMouse()
 							if(keys[currentKey] == 8)
 							{
 								var currentValue = active.value;
-								var newValue = currentValue.substring(0, currentValue.length - 1);
-								active.value = newValue;
+								if(currentValue)
+								{
+									var newValue = currentValue.substring(0, currentValue.length - 1);
+									active.value = newValue;
+								}
+								else
+								{
+									active.value = "";
+								}
 							}
 							
 							//If keycode is 13, an enter event should be dispatched. 
@@ -579,8 +586,6 @@ function hideMouseHeatmap()
 		document.body.removeChild(document.getElementById("mouse-canvas-div"));
 		mouseCanvasDiv = null;
 	}
-	//Reset this to zero when ending test.
-	currentPageOnPlayback = 0;
 }
 
 //Listen for messages from displayheatmap.js in extension

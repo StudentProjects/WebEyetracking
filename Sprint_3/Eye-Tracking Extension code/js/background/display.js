@@ -27,6 +27,8 @@ var isRenderingMouse = false;
 
 var isSimulatingBothMouseAndClicksKeys = false;
 
+var currentPage = 0;
+
 ///////////
 //METHODS//
 ///////////
@@ -110,6 +112,7 @@ chrome.runtime.onConnect.addListener(function(port)
 
 function resetTestInfo()
 {
+	currentPage = 0;
 	previousFrameTimestamp = 0;
 	isRenderingEye = false;
 	isRenderingMouse = false;
@@ -412,7 +415,8 @@ function resumeMouseRenderingAfterLoad(tab_id)
 		});
 	}
 	
-	chrome.tabs.sendMessage(tab_id, {msg: "injectedfixationdisplay::resumeRenderingAfterLoad", data: tempData}, function(response) 
+	currentPage++;
+	chrome.tabs.sendMessage(tab_id, {msg: "injectedfixationdisplay::resumeRenderingAfterLoad", data: currentPage}, function(response) 
 	{
 		try
 		{
@@ -595,6 +599,7 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 		}
 		if(!isRenderingMouse)
 		{
+			currentPage = 0;
 			chrome.tabs.getSelected(null, function(i_tab) 
 			{		
 				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse}, function(response) 
