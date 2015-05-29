@@ -174,7 +174,7 @@ function setSelectStartTime(startTimes)
 		option.text = startTimes[i];
 		select.add(option);
 	}
-	setPageTimestamps(startTimes);
+	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPageTimestamps", data: startTimes });
 }
 
 //Add a listener that listens for messages.

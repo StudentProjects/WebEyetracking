@@ -473,6 +473,10 @@ chrome.extension.onRequest.addListener
 		{
 			sendUserInfo();
 		}
+		else if(request.msg == "persistentpopupvariables::setPageTimestamps") 
+		{
+			setPageTimestamps(request.msg.data);
+		}
 		// set heatmap opacity
 		else if(request.msg == "persistentpopupvariables::setHeatmapOpacity")
 		{
