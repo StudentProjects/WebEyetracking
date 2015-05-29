@@ -144,21 +144,25 @@ function addRecorderMessageListener()
 				}, 10);
 			}
 		}
+		//Set text showing that the eye tracker is online
 		else if(i_message.msg == "recorder::setEyeTrackerOnline")
 		{
 			document.getElementById('eyeRecorderStatus').innerHTML = "Online";
 			document.getElementById('eyeRecorderStatus').className = "h1-success";
 		}
+		//Set text showing that the eye tracker is offline
 		else if(i_message.msg == "recorder::setEyeTrackerOffline")
 		{
 			document.getElementById('eyeRecorderStatus').innerHTML = "Offline";
 			document.getElementById('eyeRecorderStatus').className = "h1-fail";
 		}
+		//Set text showing that the microphone is connected
 		else if(i_message.msg == "recorder::setMicrophoneConnected")
 		{
 			document.getElementById('microphoneStatus').innerHTML = "Connected";
 			document.getElementById('microphoneStatus').className = "h1-success";
 		}
+		//Set text showing that the microphone is disconnected
 		else if(i_message.msg == "recorder::setMicrophoneDisconnected")
 		{
 			document.getElementById('microphoneStatus').innerHTML = "Not connected";
