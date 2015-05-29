@@ -76,6 +76,8 @@ namespace tieto.education.eyetrackingwebserver
 
         Byte[] m_loadedAudio;
 
+       
+
        /// <summary>
        /// Initializing all necessary class objects and variables
        /// </summary>
@@ -119,6 +121,7 @@ namespace tieto.education.eyetrackingwebserver
             m_statisticsHandler = new StatisticsHandler();
 
             m_currentTestPage = -1;
+
 
             m_logType = -1;
             // 0 = EYE, 1=Mouse, 2= Both
@@ -336,6 +339,7 @@ namespace tieto.education.eyetrackingwebserver
                    m_gazeXCoordinates.Add(i_gazeX);
                    // offsetting y with scroll position
                    m_gazeYCoordinates.Add(i_gazeY + m_currentScrollPositionY);
+
                    m_gazePointTimeStamps.Add(calculateTimestampForGazePoint(i_gazeTimeStamp));
                }
            }
