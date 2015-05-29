@@ -373,7 +373,17 @@ function addPopupMessageListener()
 				for(i = 0; i < size; i++)
 				{
 					var option = document.createElement("option");
-					option.text = content[i];
+					var text = "";
+					if(content[i] == 0)
+					{
+						text = "Beginning";
+					}
+					else
+					{
+						text = (content[i]/1000) + " seconds";
+					}
+			
+					option.text = text;
 					select.add(option);
 				}
 				select.options.selectedIndex = selectedIndex;

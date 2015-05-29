@@ -175,7 +175,17 @@ function setSelectStartTime(startTimes)
 	for(i = 0; i < size; i++)
 	{
 		var option = document.createElement("option");
-		option.text = startTimes[i];
+		var text = "";
+		if(startTimes[i] == 0)
+		{
+			text = "Beginning";
+		}
+		else
+		{
+			text = (startTimes[i]/1000) + " seconds";
+		}
+
+		option.text = text;
 		select.add(option);
 	}
 	chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPageTimestamps", data: startTimes });
