@@ -174,6 +174,7 @@ function setSelectStartTime(startTimes)
 		option.text = startTimes[i];
 		select.add(option);
 	}
+	setPageTimestamps(startTimes);
 }
 
 //Add a listener that listens for messages.

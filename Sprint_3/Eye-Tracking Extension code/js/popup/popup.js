@@ -362,6 +362,23 @@ function addPopupMessageListener()
 				setStatistics(i_message.content['statistics']);
 			}
 			
+			if(i_message.content['pageTimestamps'])
+			{
+				var selectedIndex = i_message.content['selectedPageIndex'];
+				var content = i_message.content['pageTimestamps'];
+				var size = content.length;
+				
+				var select = document.getElementById("starttime");
+				select.innerHTML = "";
+				for(i = 0; i < size; i++)
+				{
+					var option = document.createElement("option");
+					option.text = startTimes[i];
+					select.add(option);
+				}
+				select.options.selectedIndex = selectedIndex;
+			}
+			
 			//Set active tab
 			setActiveTab(i_message.content['activeTab']);
 		

@@ -34,7 +34,9 @@ var isReadyInterval = null;
 var eyeTrackerActive = false;
 var microphoneConnected = false;
 var heatmapOpacity = 0.75;
-var startTime = 0;
+
+var pageTimestamps = new Array();
+var selectedPageTimeIndex = 0;
 
 ///////////
 //METHODS//
@@ -63,9 +65,19 @@ function sendPopupVariables()
 	variables.eyeTrackerActive = eyeTrackerActive;
 	variables.microphoneConnected = microphoneConnected;
 	variables.heatmapOpacity = heatmapOpacity;
-	variables.startTime = startTime;
+	variables.pageTimestamps = pageTimestamps;
+	variables.selectedPageIndex = selectedPageTimeIndex;
 	
 	chrome.runtime.sendMessage({msg: 'popup::variables', content: variables});
+}
+
+function setSelectedTimeIndex(index)
+{
+	selectedPageTimeIndex = index;
+}
+function setPageTimestamps(values)
+{
+	pageTimestamps = values;
 }
 
 function setMicrophone(status)
