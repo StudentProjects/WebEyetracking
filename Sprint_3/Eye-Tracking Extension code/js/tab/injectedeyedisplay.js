@@ -38,6 +38,8 @@ var eyeHeatmapOpacity = 0.75;
 var eyeImage = null; //Used to show were the eye is at this frame.
 var eyeImageDiv = null; //Div for eyeImage
 
+var printEyeFrameOnce = false;
+
 ///////////
 //METHODS//
 ///////////
@@ -133,7 +135,13 @@ function animateEye()
 		var nextFrame = 0;
 		if(indexEye > 0)
 		{
-			var nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
+			nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
+		}
+		
+		if(!printEyeFrameOnce)
+		{
+			printEyeFrameOnce = true;
+			console.log("Next frame eye: " + nextFrame);
 		}
 		
 		if(heatmapEyeInstance)
@@ -223,7 +231,7 @@ function startEyeAnimation(startTime)
 	isDisplayingEyeHeatmap = true;
 	
 	manageEyeDiv(true);
-	
+
 	animateEye();
 	
 }

@@ -176,13 +176,13 @@ function handleMessage(i_message)
 			console.log(msgData);
 			if(msgData == "True")
 			{
-				console.log("Mouse connected");
+				console.log("Microphone connected");
 				setMicrophone(true);
 				chrome.runtime.sendMessage({msg: 'recorder::setMicrophoneConnected'});
 			}
 			else
 			{
-				console.log("Mouse not connected");
+				console.log("Microphone not connected");
 				setMicrophone(false);
 				chrome.runtime.sendMessage({msg: 'recorder::setMicrophoneDisconnected'});
 			}

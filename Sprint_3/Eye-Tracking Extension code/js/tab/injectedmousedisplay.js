@@ -48,6 +48,8 @@ var isDisplayingMouseHeatmap = false;
 
 var renderMouseImage = false;
 
+var printMouseFrameOnce = false;
+
 ///////////
 //METHODS//
 ///////////
@@ -268,7 +270,13 @@ function animateMouse()
 		if(indexMouse > 0)
 		{
 			
-			var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
+			nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
+		}
+		
+		if(!printMouseFrameOnce)
+		{
+			printMouseFrameOnce = true;
+			console.log("Next frame mouse: " + nextFrame);
 		}
 		
 		try
@@ -546,6 +554,7 @@ function startMouseAnimation(startTime)
 	console.log("Animating from frame " + indexMouse);
 	manageMouseDiv(true);
 	initializeMouseCanvas();
+	
 	animateMouse();
 }
 
