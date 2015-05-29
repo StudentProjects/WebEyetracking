@@ -268,7 +268,7 @@ function animateMouse()
 		if(indexMouse > 0)
 		{
 			
-			var nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
+			nextFrame = timeStampMouse[indexMouse] - timeStampMouse[indexMouse-1];
 		}
 		
 		try

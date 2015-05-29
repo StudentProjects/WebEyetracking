@@ -105,7 +105,7 @@ function setEyeData(i_eyeData)
 	}
 		
 }
-
+   
 //Animate the result of the collected eye data. Recursive function that runs
 //as long as index is less than the size of the timeStampEYE array.
 function animateEye()
@@ -130,7 +130,16 @@ function animateEye()
 		var nextFrame = 0;
 		if(indexEye > 0)
 		{
-			var nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
+			nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
+			
+			//The server does not take pausing into consideration when
+			//recording, so if the timestamp is large, it's probably 
+			//because of the reason. To fix this, we just set the time
+			//to the next frame to 16.67 ms, to keep 60 fps.
+			if(nextFrame > 150)
+			{
+				nextFrame = 16.67;
+			}
 		}
 		
 		if(heatmapEyeInstance)

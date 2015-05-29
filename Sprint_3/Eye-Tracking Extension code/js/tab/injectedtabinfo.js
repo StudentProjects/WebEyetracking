@@ -71,6 +71,7 @@ var tempTimer = setTimeout(function()
 
 //Listen for messages from tabinfo.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
+
 {
 	if (request.msg == "injectedtabinfo::alive")
 	{
