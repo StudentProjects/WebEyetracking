@@ -10,7 +10,7 @@
 //Variables//
 /////////////
 
-var currentKeyRecording = new Object();
+var currentKeyRecording = new Object(); //Object holding key recording data
 
 ///////////
 //METHODS//

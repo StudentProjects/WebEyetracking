@@ -60,6 +60,8 @@ function pushMousePosition()
 		currentMouseRecording['mouseY'].push(mouseY);	
 		currentMouseRecording['timeStampMouse'].push(currentTime - pauseOffset);
 		
+		//If mouseClicks is higher than the length of any currentMouseRecordings
+		//
 		if(mouseClicks > currentMouseRecording['mouseClickTimeStamp'].length)
 		{
 			currentMouseRecording['mouseClickX'].push(mouseClickX);

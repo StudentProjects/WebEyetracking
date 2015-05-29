@@ -46,7 +46,7 @@ var mouseCanvasDiv = null; //Canvas for rendering heatmap
 
 var isDisplayingMouseHeatmap = false;
 
-var animateBothMouseAndKeys = false;
+var renderMouseImage = false;
 
 ///////////
 //METHODS//
@@ -58,7 +58,7 @@ function initializeMouseCanvas()
 	{
 		if(mouseCanvasDiv == null)
 		{
-			if(animateBothMouseAndKeys)
+			if(renderMouseImage)
 			{
 				mouseCanvasDiv = document.createElement("div");
 				mouseCanvasDiv.style.position = "absolute";
@@ -227,7 +227,7 @@ function setMouseData(i_data)
 //Animates mouse pointer for current frame, and calculates when to draw the next frame.
 function animateMouse()
 {	
-	if(animateBothMouseAndKeys)
+	if(renderMouseImage)
 	{
 		try
 		{
@@ -282,7 +282,7 @@ function animateMouse()
 				}
 				
 				//If both the mouse movement and all click events should be simulated
-				if(animateBothMouseAndKeys)
+				if(renderMouseImage)
 				{
 					if(mousePointer == null)
 					{
@@ -298,7 +298,7 @@ function animateMouse()
 					mousePointer.style.zIndex = "-1";
 					mouseCanvasDiv.style.zIndex = "-1";
 				}
-				port.postMessage({message: "display::setLastFrameTime", data: timeStampMouse[indexMouse]});
+				port.postMessage({message: "display::setPreviousFrameTime", data: timeStampMouse[indexMouse]});
 			
 				//Move eye canvases backward if they exist
 				if(eyeCanvasDiv)
@@ -342,7 +342,7 @@ function animateMouse()
 					lastTarget = null;
 				}
 
-				if(animateBothMouseAndKeys)
+				if(renderMouseImage)
 				{
 					mousePointer.style.zIndex = "999999";
 					mouseCanvasDiv.style.zIndex = "999996";
@@ -363,7 +363,7 @@ function animateMouse()
 					if(timeMouseClicks[currentMouseClick] <= timeStampMouse[indexMouse])
 					{
 						//Move canvases backward
-						if(animateBothMouseAndKeys)
+						if(renderMouseImage)
 						{
 							mousePointer.style.zIndex = "-1";
 							mouseCanvasDiv.style.zIndex = "-1";	
@@ -393,7 +393,7 @@ function animateMouse()
 						currentMouseClick++;
 
 						//Move canvases forward
-						if(animateBothMouseAndKeys)
+						if(renderMouseImage)
 						{
 							mousePointer.style.zIndex = "999999";
 							mouseCanvasDiv.style.zIndex = "999996";	
@@ -554,7 +554,7 @@ function manageMouseDiv(create)
 {
 	if(create)
 	{
-		if(animateBothMouseAndKeys)
+		if(renderMouseImage)
 		{
 			if(mousePointer == null)
 			{
@@ -640,7 +640,7 @@ function stopMouseAnimation()
 		animationMouse = null;
 		manageMouseDiv(false);		
 		hideMouseHeatmap();		
-		animateBothMouseAndKeys = false;
+		renderMouseImage = false;
 	
 		port.postMessage({message: "display::mouseAnimationFinished"});
 	}
@@ -660,7 +660,7 @@ function forceMouseAnimationStop()
 	port.postMessage({message: "display::mouseAnimationFinished"});
 	isMouseAnimationPaused = false;
 	
-	animateBothMouseAndKeys = false;
+	renderMouseImage = false;
 	
 	hideMouseHeatmap();
 }
@@ -693,7 +693,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		if(timeStampMouse)
 		{
 			hideMouseHeatmap(); //Hide before starting animation
-			animateBothMouseAndKeys = request.data;
+			renderMouseImage = request.data;
 			startMouseAnimation(request.time);
 			sendResponse({message: "Animating mouse!", data:true});	
 		}		
@@ -724,7 +724,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	else if(request.msg == "injectedmousedisplay::resumeRenderingAfterLoad")
 	{
 		console.log("Resuming rendering after load at frame " + request.data.previousFrameTimestamp);
-		animateBothMouseAndKeys = request.data.isSimulatingBothMouseAndClicksKeys;
+		renderMouseImage = request.data.renderMouseImage;
 		startMouseAnimation(request.data.previousFrameTimestamp);
 		sendResponse({message: "Resumed mouse rendering!"});	
 	}
