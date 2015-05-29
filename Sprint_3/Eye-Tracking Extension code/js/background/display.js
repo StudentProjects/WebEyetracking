@@ -585,9 +585,15 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 	console.log("jQuery: " + isJQueryLoaded);
 	if(isJQueryLoaded)
 	{
+		var startTime = 0;
+		if(pageTimestamps.length > 0)
+		{
+			startTime = pageTimestamps[selectedPageTimeIndex];
+		}
+		
 		//Sending message to injectedeyedisplay.js telling it to start eye animation
 		if(requestAnimateEye)
-		{
+		{	
 			if(!isRenderingEye)
 			{
 				chrome.tabs.getSelected(null, function(i_tab) 
@@ -625,8 +631,8 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 		{
 			currentPage = 0;
 			chrome.tabs.getSelected(null, function(i_tab) 
-			{		
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse, }, function(response) 
+			{						
+				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse, time: startTime}, function(response) 
 				{
 					try
 					{

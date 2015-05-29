@@ -694,12 +694,12 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		{
 			hideMouseHeatmap(); //Hide before starting animation
 			animateBothMouseAndKeys = request.data;
-			startMouseAnimation(request.startTime);
+			startMouseAnimation(request.time);
 			sendResponse({message: "Animating mouse!", data:true});	
 		}		
 		else
 		{
-			sendResponse({message: "Failed to start mouse animation. No data existed.",data:false});	
+			sendResponse({message: "Failed to start mouse animation. No data existed.", data:false});	
 		}
 	}
 	else if(request.msg == "injectedmousedisplay::pauseRendering")

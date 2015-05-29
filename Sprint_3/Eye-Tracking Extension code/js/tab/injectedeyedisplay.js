@@ -328,7 +328,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		{
 			hideEye(); //Hide before starting animation
 			eyeHeatmapOpacity = request.data;
-			startEyeAnimation(request.startTime);
+			startEyeAnimation(request.time);
 			sendResponse({message: "Animating eye heatmap!", data:true});	
 		}		
 		else
