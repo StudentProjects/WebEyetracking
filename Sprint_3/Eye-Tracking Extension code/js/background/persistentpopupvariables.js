@@ -74,6 +74,7 @@ function sendPopupVariables()
 function setSelectedTimeIndex(index)
 {
 	selectedPageTimeIndex = index;
+	consoel
 }
 function setPageTimestamps(values)
 {
