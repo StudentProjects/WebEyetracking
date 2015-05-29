@@ -364,6 +364,7 @@ function addPopupMessageListener()
 			
 			if(i_message.content['pageTimestamps'])
 			{
+				console.log("Här ska jag sättas");
 				var selectedIndex = i_message.content['selectedPageIndex'];
 				var content = i_message.content['pageTimestamps'];
 				var size = content.length;

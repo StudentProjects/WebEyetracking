@@ -77,6 +77,7 @@ function setSelectedTimeIndex(index)
 }
 function setPageTimestamps(values)
 {
+	console.log("SETTING TIME STAMP");
 	pageTimestamps = values;
 }
 
