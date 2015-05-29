@@ -10,8 +10,6 @@
 //Variables//
 /////////////
 
-var startTime = 0;
-
 ///////////
 //METHODS//
 ///////////
@@ -81,7 +79,6 @@ function initPlayer()
 	//If changed, send starttime value
 	document.getElementById("starttime").addEventListener("change", function()
 	{
-		console.log(document.getElementById("starttime").selectedIndex);
 		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setSelectedTimeIndex", data: document.getElementById("starttime").selectedIndex });		
 	});
 	
