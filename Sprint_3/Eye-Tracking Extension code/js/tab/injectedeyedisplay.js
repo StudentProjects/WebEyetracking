@@ -131,11 +131,12 @@ function animateEye()
 		if(indexEye > 0)
 		{
 			nextFrame = timeStampEYE[indexEye] - timeStampEYE[indexEye-1];
-			
+
 			//The server does not take pausing into consideration when
 			//recording, so if the timestamp is large, it's probably 
 			//because of the reason. To fix this, we just set the time
-			//to the next frame to 16.67 ms, to keep 60 fps.
+			//to the next frame to 16.67 ms, to keep 60 fps. 
+			//THIS SHOULD BE DONE ON THE SERVER INSTEAD!
 			if(nextFrame > 150)
 			{
 				nextFrame = 16.67;
@@ -229,7 +230,7 @@ function startEyeAnimation(startTime)
 	isDisplayingEyeHeatmap = true;
 	
 	manageEyeDiv(true);
-	
+
 	animateEye();
 	
 }

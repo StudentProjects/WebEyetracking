@@ -546,6 +546,7 @@ function startMouseAnimation(startTime)
 	console.log("Animating from frame " + indexMouse);
 	manageMouseDiv(true);
 	initializeMouseCanvas();
+	
 	animateMouse();
 }
 
