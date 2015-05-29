@@ -157,6 +157,7 @@ function setCurrentTestInfo(user, application, date, time)
 	document.getElementById("player_time").innerHTML = "Time: " + time;
 }
 
+//Reset currently loaded test info
 function resetCurrentTestInfo()
 {
 	document.getElementById("player_testheader").innerHTML = "No test loaded";
@@ -166,6 +167,7 @@ function resetCurrentTestInfo()
 	document.getElementById("player_time").innerHTML = "";
 }
 
+//Create start time select options
 function setSelectStartTime(startTimes)
 {
 	var select = document.getElementById("starttime");

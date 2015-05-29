@@ -14,10 +14,10 @@
 var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
 var userInfo = null; //Information about the user
-var testInfo = null;
-var statistics = null;
-var activeTab = 0;
-var playerEyeBox = true;
+var testInfo = null; //Information about a test
+var statistics = null; //Statistics data
+var activeTab = 0; //Current active tab
+var playerEyeBox = true; 
 var playerMouseBox = true;
 var playerEyeBoxDisabled = false;
 var playerMouseBoxDisabled = false;
@@ -74,11 +74,9 @@ function sendPopupVariables()
 function setSelectedTimeIndex(index)
 {
 	selectedPageTimeIndex = index;
-	consoel
 }
 function setPageTimestamps(values)
 {
-	console.log("SETTING TIME STAMP");
 	pageTimestamps = values;
 }
 

@@ -1,6 +1,6 @@
 //////////////////////
 //Daniel Johansson////
-//injectedeyedisplay.js//////////
+//injectedfixationdisplay.js//////////
 //////////////////////
 //
 //Responsible for displaying fixation points
@@ -265,6 +265,7 @@ function clearPrevious()
 //Listen for messages from background script 'display.js'
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
 {
+	//Clear
 	if(request.msg == "injectedfixationdisplay::clearPrevious")
 	{
 		if(!isTestCleared)
@@ -274,12 +275,14 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		}	
 		sendResponse({message: "Cleared fixation data!"});	
 	}
+	//Set fixation point data
 	else if (request.msg == "injectedfixationdisplay::setFixationData")
 	{
 		clearPrevious();
 		setFixationData(request.data);
 		sendResponse({message: "Updating fixation data!"});
 	}
+	//Show fixation points
 	else if(request.msg == "injectedfixationdisplay::showFixationPoints")
 	{
 		sendResponse({message: "Displaying fixation points!"});
@@ -289,6 +292,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			drawFixationPoints();	
 		}
 	}
+	//Hide fixation points
 	else if(request.msg == "injectedfixationdisplay::hideFixationPoints")
 	{
 		if(isDisplayingFixationPoints)
@@ -298,6 +302,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		}
 		sendResponse({message: "Hiding fixation points!"});
 	}
+	//When a page has been loaded, this message is received to make
+	//the script set the currentPageOnPlayback variable, used for
+	//determining which fixation points that are to be showed.
 	else if(request.msg == "injectedfixationdisplay::resumeRenderingAfterLoad")
 	{
 		currentPageOnPlayback = request.data;

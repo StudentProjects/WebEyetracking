@@ -32,6 +32,7 @@ function initStatistics()
 	console.log("statistics.js initialized!");
 }
 
+//Set statistics data
 function setStatistics(data)
 {
 	if(data)

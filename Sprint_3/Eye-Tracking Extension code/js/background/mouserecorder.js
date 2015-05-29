@@ -12,7 +12,7 @@
 //Variables//
 /////////////
 
-var currentMouseRecording = new Object();
+var currentMouseRecording = new Object(); //Object for saving recorded mouse data
 var mouseTimer = null; //Variable for interval timer.
 var isRecording = false;
 var isPaused = false;
@@ -45,7 +45,6 @@ function mouseClickEvent(atX, atY)
 	mouseClickY = atY;
 	mouseClicks += 1;
 }
-
 
 //Push mouse position and timestamp to currentMouseRecording array.
 function pushMousePosition()

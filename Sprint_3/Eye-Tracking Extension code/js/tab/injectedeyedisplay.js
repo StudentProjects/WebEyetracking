@@ -14,7 +14,6 @@ var xEyeCoords = null; //Array of eye x coordinates.
 var yEyeCoords = null; //Array of eye y coordinates.
 var timeStampEYE = null; //Array of eye time stamps.
 
-
 var animationEye = null; //Callback function for setInterval if animating.
 
 var isEyeAnimationPaused = false; // True if animation is paused
@@ -23,7 +22,7 @@ var previousEyeFrameTime = 0;
 var currentEyeFrameTime = 0;
 
 var indexEye = 0; //Integer representing the current animation frame, which
-			   //is the index of the current position in the xCoords and yCoords array.
+			   	  //is the index of the current position in the xCoords and yCoords array.
 var sizeEye = 0; //Size of coordinate arrays.
 
 var heatmapEyeInstance = null; //Heatmap instance for eye heatmap
@@ -75,7 +74,6 @@ function initializeEyeCanvas()
 		});
 }
 
-
 //Updates arrays of eye data with new eye data
 function setEyeData(i_eyeData)
 {	
@@ -109,7 +107,6 @@ function setEyeData(i_eyeData)
 	}
 		
 }
-
 
 //Animate the result of the collected eye data. Recursive function that runs
 //as long as index is less than the size of the timeStampEYE array.
@@ -297,7 +294,6 @@ function displayEyeHeatmap()
 	document.getElementById('eye-canvas-div').style.position = 'absolute';	
 }
 
-
 //Hide the heatmap
 function hideEye()
 {
@@ -325,7 +321,6 @@ function hideEye()
 		isDisplayingEyeHeatmap = false;	
 	}
 }
-
 
 //Listen for messages from displayheatmap.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
