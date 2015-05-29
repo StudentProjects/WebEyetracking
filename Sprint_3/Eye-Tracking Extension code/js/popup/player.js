@@ -10,7 +10,7 @@
 //Variables//
 /////////////
 
-//None
+var startTime = 0;
 
 ///////////
 //METHODS//
@@ -26,7 +26,7 @@ function initPlayer()
 	{	
 		var toSend = new Object();
 		toSend.Eye = document.getElementById("eye_playerbox").checked;
-		toSend.Mouse = document.getElementById("mouse_playerbox").checked;	
+		toSend.Mouse = document.getElementById("mouse_playerbox").checked;
 		if(toSend.Eye|| toSend.Mouse)
 		{
 			chrome.extension.sendRequest({ msg: "display::animate", data: toSend });
@@ -76,6 +76,12 @@ function initPlayer()
 	document.getElementById("mouse_playerbox").addEventListener("change", function()
 	{
 		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setPlayerMouseBox", data: document.getElementById("mouse_playerbox").checked });
+	});
+	
+	//If changed, send starttime value
+	document.getElementById("starttime").addEventListener("change", function()
+	{
+		chrome.extension.sendRequest({ msg: "persistentpopupvariables::setSelectedIndex", data: document.getElementById("starttime").selectedIndex });		
 	});
 	
 	document.getElementById("opacity").addEventListener("change",function()
