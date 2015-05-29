@@ -67,5 +67,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 });
 
+//Tell the background script that the injection of the content scripts has
+//been successful
 console.log("Injected content ready!");
 port.postMessage({message: "display::injectedContentReady"});

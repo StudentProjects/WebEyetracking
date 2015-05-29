@@ -366,7 +366,6 @@ chrome.extension.onRequest.addListener
 				setIsRenderingPaused(false);
 				resumeRendering();
 				var data = request.data;
-				console.log(data);
 				animateData(data.Eye, data.Mouse);	
 			}
 		}
