@@ -185,6 +185,11 @@ fieldset.group legend
 	left: 0px;
 }
 
+.shortcut
+{
+	font-size: 12px;
+}
+
 .test-class
 {
 	position: absolute;
