@@ -38,7 +38,7 @@ namespace tieto.education.eyetrackingwebserver
         /// </summary>
         public void initialize()
         {
-            bool t_isDefaultLocationCreated = isFolderExisting(m_defaultLocation);
+            bool t_isDefaultLocationCreated = Directory.Exists(m_defaultLocation);
             if (!t_isDefaultLocationCreated)
             {
                 createFolderWithNameAtPath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"EyeXTestData");
@@ -76,13 +76,13 @@ namespace tieto.education.eyetrackingwebserver
                 i_date = DateTime.Now.ToString("yyyy-MM-dd");
             }
             string t_applicationLocation = Path.Combine(m_defaultLocation,i_application.ToLower());
-            bool t_isApplicationLocationCreated = isFolderExisting(t_applicationLocation);
+            bool t_isApplicationLocationCreated = Directory.Exists(t_applicationLocation);
             if(!t_isApplicationLocationCreated)
             {
                 createFolderWithNameAtPath(m_defaultLocation, i_application.ToLower());
             }
             string t_dateLocation = Path.Combine(t_applicationLocation,i_date);
-            bool t_isDateLocationCreated = isFolderExisting(t_dateLocation);
+            bool t_isDateLocationCreated = Directory.Exists(t_dateLocation);
             if(!t_isDateLocationCreated)
             {
                 createFolderWithNameAtPath(t_applicationLocation, i_date);
@@ -110,6 +110,7 @@ namespace tieto.education.eyetrackingwebserver
             saveUserInfo(t_userInfoFileName, t_userInfo);
             saveTestData(t_testDataFileName, t_testData);
 
+            //Save audio data if data exists
             if(i_audioData != null)
             {
                 string t_audioDataFileName = Path.Combine(t_fullPathDirectory, @"audiodata.json");
@@ -262,33 +263,6 @@ namespace tieto.education.eyetrackingwebserver
             }
         }
 
-        /// <summary>
-        /// Controls if a directory exists or not
-        /// </summary>
-        /// <param name="i_path">String, the path to search at</param>
-        /// <returns>A bool, did the directory exist</returns>
-        private bool isFolderExisting(string i_path)
-        {
-            if(Directory.Exists(i_path))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Controls if a file exists or not
-        /// </summary>
-        /// <param name="i_path">String, the path to search at</param>
-        /// <returns>A bool, did the file exist</returns>
-        private bool isFileExisting(string i_path)
-        {
-            if(File.Exists(i_path))
-            {
-                return true;
-            }
-            return false;
-        }
 
         /// <summary>
         /// Returning which ID to use when creating new folder name with tester name + ID.
