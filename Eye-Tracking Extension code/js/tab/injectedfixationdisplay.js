@@ -253,6 +253,9 @@ function drawFixationPoints()
 		{
 			console.log(err.message);
 		}
+	} else {
+	    //posting back error message
+	    port.postMessage({ message: "display::alertMessage", info: "No Fixation points available", type: "Error" });
 	}
 }
 
