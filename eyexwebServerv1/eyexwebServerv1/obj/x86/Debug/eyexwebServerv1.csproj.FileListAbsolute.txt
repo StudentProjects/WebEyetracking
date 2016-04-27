@@ -1,0 +1,12 @@
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\eyexwebServerv1.exe.config
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\eyexwebServerv1.exe
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\eyexwebServerv1.pdb
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\Newtonsoft.Json.dll
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\bin\x86\Debug\Newtonsoft.Json.xml
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\tieto.education.eyetrackingwebserver.Form1.resources
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\tieto.education.eyetrackingwebserver.introform.resources
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\tieto.Properties.Resources.resources
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.csproj.GenerateResource.Cache
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.exe
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.pdb
+C:\Users\johaodan\Documents\eyetracker-git-backup\eyetracker-git-backup\WebEyetracking-Sprint3\Sprint_3\csprint3\eyexwebServerv1\eyexwebServerv1\obj\x86\Debug\eyexwebServerv1.csprojResolveAssemblyReference.cache
