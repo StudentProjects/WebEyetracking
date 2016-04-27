@@ -33,6 +33,8 @@ var currentPage = 0;
 //METHODS//
 ///////////
 
+startAliveCheck();
+
 //Add a listener on port: "tabinfo"
 chrome.runtime.onConnect.addListener(function(port) 
 {
