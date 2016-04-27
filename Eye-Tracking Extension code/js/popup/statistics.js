@@ -26,16 +26,12 @@ function initStatistics()
 	{	
 		chrome.extension.sendRequest({ msg:"display::handleFixationPoints"});	
 	});
-	/*Linus edits---------------------------------------------------------*/
-		/*--------------------------------------------------------------------*/
+
+
 	document.getElementById('connectors_button').addEventListener("click", function()
 	{	
-		console.log("Listener---------------------------------------------");
-		//chrome.extension.sendRequest({ msg:"display::handleFixationPoints"});
 		chrome.extension.sendRequest({ msg:"display::handleFPConnectors"});
 	});
-	/*Linus edits---------------------------------------------------------*/
-	/*--------------------------------------------------------------------*/
 	
 	addStatisticsMessageListener();
 	
@@ -122,8 +118,6 @@ function addStatisticsMessageListener()
 			var btn = document.getElementById('connectors_button'); 
 			btn.classList.add('disabled');
 		}
-		/*Linus edits---------------------------------------------------------*/
-		/*--------------------------------------------------------------------*/
 		if(i_message.msg == "statistics::showingFPConnectors")
 		{
 			document.getElementById("connectors_button").innerHTML = "Hide connectors";
@@ -132,8 +126,5 @@ function addStatisticsMessageListener()
 		{
 			document.getElementById("connectors_button").innerHTML = "Show connectors";
 		}
-
-		/*--------------------------------------------------------------------*/
-		/*Linus edits---------------------------------------------------------*/
 	});
 }

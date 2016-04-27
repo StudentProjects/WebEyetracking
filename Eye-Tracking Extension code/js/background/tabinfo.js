@@ -23,9 +23,12 @@ var responseAfterPageLoad = false;
 //Inject scripts into current tab.
 function injectTabInfo()
 {
-	chrome.tabs.getSelected(null, function(i_tab)
-	{ 
-		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedtabinfo.js'});
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.executeScript(activeTab.id, { file: 'js/tab/injectedtabinfo.js' });
 	});	
 }
 

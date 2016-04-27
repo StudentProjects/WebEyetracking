@@ -25,7 +25,7 @@ var isRenderingPaused = false;
 var isRecording = false; //Is the application recording or not?
 var isRecordingPaused = false; //Is the recording paused?
 var isFixationPointsDisplayed = false;
-var isFPConnectorsDisplayed = false; //Linus edits
+var isFPConnectorsDisplayed = false;
 var isNavigationDisplayed = false;
 var activeTab = null;
 
@@ -391,16 +391,13 @@ function addPopupMessageListener()
                 document.getElementById('fixation_button').innerHTML = "Show fixation points";
             }
 
-            /*Linus edits---------------------------------------------------------*/
-            /*--------------------------------------------------------------------*/
+           
             if (isFPConnectorsDisplayed) {
                 document.getElementById('connectors_button').innerHTML = "Hide connectors";
             }
             else {
                 document.getElementById('connectors_button').innerHTML = "Show connectors";
             }
-            /*Linus edits---------------------------------------------------------*/
-            /*--------------------------------------------------------------------*/
 
             if (!isConnected) {
                 chrome.extension.sendRequest({ msg: "websocket::connectWebSocket" });

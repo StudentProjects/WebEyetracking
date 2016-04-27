@@ -366,7 +366,6 @@ chrome.extension.onRequest.addListener
 				setIsRenderingPaused(false);
 				resumeRendering();
 				var data = request.data;
-				console.log(data);
 				animateData(data.Eye, data.Mouse);	
 			}
 		}
@@ -388,20 +387,17 @@ chrome.extension.onRequest.addListener
 		{
 			startMouseRecording();
 		}
-		/*Linus edits---------------------------------------------------------*/
-		/*--------------------------------------------------------------------*/
+
 		else if(request.msg == "display::handleFPConnectors")
 		{	
 			handleFPConnectors();
 		}
-		else if(request.msg == "display::getNrOfDisplayedTests")
+		/*else if(request.msg == "display::getNrOfDisplayedTests")
 		{	
 			var nr = getNrOfTestShowing();
 			chrome.runtime.sendMessage({ msg: 'display::getNrOfDisplayedTests', data: nr})
-		}
-		/*Linus edits---------------------------------------------------------*/
-		/*--------------------------------------------------------------------*/
-		//startRecording		
+		}*/
+
         else if(request.msg == "mouserecorder::pauseRecording") 
 		{
 			pauseMouseRecording();
@@ -490,9 +486,12 @@ chrome.extension.onRequest.addListener
 		//getScrollHeight
         else if(request.msg == "tabinfo::getScrollHeight") 
 		{
-			chrome.tabs.getSelected(null, function(i_tab) 
-			{
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getScrollHeight"}, function(response) 
+			chrome.tabs.query({
+			    active: true,
+                currentWindow:true
+			}, function(tabs) {
+			    var activeTab = tabs[0];
+			    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedtabinfo::getScrollHeight" }, function (response)
 				{
 					manageMessage(13, response.data);
 				});
@@ -501,9 +500,12 @@ chrome.extension.onRequest.addListener
 		//getDocumentSize
 	    else if(request.msg == "tabinfo::getDocumentSize") 
 		{
-			chrome.tabs.getSelected(null, function(i_tab) 
-			{
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getDocumentSize"}, function(response) 
+			chrome.tabs.query({
+			    active: true,
+                currentWindow:true
+			}, function(tabs) {
+			    var activeTab = tabs[0];
+			    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedtabinfo::getDocumentSize" }, function (response)
 				{
 					manageMessage(25, response.data);
 				});

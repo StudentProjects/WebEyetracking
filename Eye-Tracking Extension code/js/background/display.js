@@ -33,7 +33,7 @@ var currentPage = 0;
 //METHODS//
 ///////////
 
-startAliveCheck();
+//startAliveCheck();
 
 //Add a listener on port: "tabinfo"
 chrome.runtime.onConnect.addListener(function(port) 
@@ -110,8 +110,6 @@ chrome.runtime.onConnect.addListener(function(port)
 			setIsFixationPointsDisplayed(false);
 		}
 
-		/*Linus edits---------------------------------------------------------*/
-		/*--------------------------------------------------------------------*/
 		else if(msg.message == "display::showFPConnectors")
 		{
 			chrome.runtime.sendMessage({msg: 'statistics::showingFPConnectors'});
@@ -122,8 +120,9 @@ chrome.runtime.onConnect.addListener(function(port)
 			chrome.runtime.sendMessage({msg: 'statistics::hidingFPConnectors'});
 			setIsFPConnectorsDisplayed(false);
 		}
-		/*Linus edits---------------------------------------------------------*/
-		/*--------------------------------------------------------------------*/
+		else if (msg.message == "display::alertMessage") {
+		    chrome.runtime.sendMessage({ msg: 'popup::renderInfo', info: msg.info, type: msg.type });
+		}
 	});
 });
 
@@ -142,9 +141,12 @@ function resetTestInfo()
 	
 	manageMessage(34,"StopRendering");
 	
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::removeDataFromPreviousTest"}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow: true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedeyedisplay::removeDataFromPreviousTest" }, function (response)
 		{
 			try
 			{
@@ -157,9 +159,12 @@ function resetTestInfo()
 		});
 	});
 	
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::removeDataFromPreviousTest"}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow: true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedmousedisplay::removeDataFromPreviousTest" }, function (response)
 		{
 			try
 			{
@@ -172,9 +177,12 @@ function resetTestInfo()
 		});
 	});
 	
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedfixationdisplay::clearPrevious"}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedfixationdisplay::clearPrevious" }, function (response)
 		{
 			try
 			{
@@ -193,9 +201,12 @@ function handleFixationPoints()
 {
 	if(isFixationPointsDisplayed)
 	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedfixationdisplay::hideFixationPoints"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow: true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+		    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedfixationdisplay::hideFixationPoints" }, function (response)
 			{
 				try
 				{
@@ -210,9 +221,12 @@ function handleFixationPoints()
 	}
 	else
 	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedfixationdisplay::showFixationPoints"}, function(response) 
+	    chrome.tabs.query({
+            active:true,
+		    currentWindow:true
+		}, function(tabs) {
+	        var activeTab = tabs[0];
+			chrome.tabs.sendMessage(activeTab.id, {msg: "injectedfixationdisplay::showFixationPoints"}, function(response) 
 			{
 				try
 				{
@@ -227,16 +241,18 @@ function handleFixationPoints()
 	}
 }
 
-/*Linus edits---------------------------------------------------------*/
-/*--------------------------------------------------------------------*/
+
 //Send messages to content scripts to show/hide FPConnectors
 function handleFPConnectors()
 {
 	if(isFPConnectorsDisplayed)
 	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedfixationdisplay::hideFPConnectors"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+		    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedfixationdisplay::hideFPConnectors" }, function (response)
 			{
 				try
 				{
@@ -251,9 +267,12 @@ function handleFPConnectors()
 	}
 	else
 	{	
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedfixationdisplay::showFPConnectors"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+		    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedfixationdisplay::showFPConnectors" }, function (response)
 			{
 				try
 				{
@@ -268,18 +287,17 @@ function handleFPConnectors()
 	}
 }
 
-
-/*Linus edits---------------------------------------------------------*/
-/*--------------------------------------------------------------------*/
-
 //Tell the content script to pause rendering.
 function pauseRendering()
 {
 	if(isRenderingEye)
 	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::pauseRendering"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+			chrome.tabs.sendMessage(activeTab.id, {msg: "injectedeyedisplay::pauseRendering"}, function(response) 
 			{
 				try
 				{
@@ -296,9 +314,12 @@ function pauseRendering()
 	}
 	if(isRenderingMouse)
 	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::pauseRendering"}, function(response) 
+		chrome.tabs.query({
+		    active:true,
+		    currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+			chrome.tabs.sendMessage(activeTab.id, {msg: "injectedmousedisplay::pauseRendering"}, function(response) 
 			{
 				try
 				{
@@ -320,9 +341,12 @@ function resumeRendering()
 {
 	if(isRenderingEye)
 	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::resumeRendering"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+			chrome.tabs.sendMessage(activeTab.id, {msg: "injectedeyedisplay::resumeRendering"}, function(response) 
 			{
 				try
 				{
@@ -339,9 +363,12 @@ function resumeRendering()
 	}
 	if(isRenderingMouse)
 	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::resumeRendering"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+			chrome.tabs.sendMessage(activeTab.id, {msg: "injectedmousedisplay::resumeRendering"}, function(response) 
 			{
 				try
 				{
@@ -361,19 +388,23 @@ function resumeRendering()
 //Inject scripts into the current tab
 function injectScripts()
 {
-	console.log("Injecting content scripts!");
-	chrome.tabs.getSelected(null, function(i_tab)
-	{ 		
-		chrome.tabs.executeScript(i_tab.id, {file: 'ext/heatmap/build/heatmap.js'});
-		
-		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedconfig.js'});
-		
-		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedeyedisplay.js'});
-		
-		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedfixationdisplay.js'});
-		
-		chrome.tabs.executeScript(i_tab.id, {file: 'js/tab/injectedmousedisplay.js'});
-	});
+    console.log("Injecting content scripts!");
+
+    chrome.tabs.query({
+        active: true,
+        currentWindow:true
+    }, function (tabs) {
+        var activeTab = tabs[0];
+        chrome.tabs.executeScript(activeTab.id, { file: 'ext/heatmap/build/heatmap.js' });
+
+        chrome.tabs.executeScript(activeTab.id, { file: 'js/tab/injectedconfig.js' });
+
+        chrome.tabs.executeScript(activeTab.id, { file: 'js/tab/injectedeyedisplay.js' });
+
+        chrome.tabs.executeScript(activeTab.id, { file: 'js/tab/injectedfixationdisplay.js' });
+
+        chrome.tabs.executeScript(activeTab.id, { file: 'js/tab/injectedmousedisplay.js' });
+    });
 }
 
 //Check if the extension was rendering data when last page was unloaded.
@@ -390,9 +421,12 @@ function checkResumeRendering()
 
 //Injects jquery into the target tab
 function executeJQuery() {
-	chrome.tabs.getSelected(null, function(i_tab)
-	{ 
-		chrome.tabs.executeScript(i_tab.id, {file: 'ext/jquery/jquery.js'});
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.executeScript(activeTab.id, { file: 'ext/jquery/jquery.js' });
 	});
 	executeBootstrap();
 }
@@ -400,17 +434,20 @@ function executeJQuery() {
 //Injects bootstrap into the target tab
 function executeBootstrap()
 {
-	chrome.tabs.getSelected(null, function(i_tab)
-	{ 
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedconfig::jquery"}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+		chrome.tabs.sendMessage(activeTab.id, {msg: "injectedconfig::jquery"}, function(response) 
 		{
 			try
 			{
 				console.log("Response jquery: " + response.message);
 				if(response.message == "ready") {
 					injectTabInfo();
-					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.js'});
-					chrome.tabs.executeScript(i_tab.id, {file: 'ext/bootstrap/bootstrap.min.js'});
+					chrome.tabs.executeScript(activeTab.id, { file: 'ext/bootstrap/bootstrap.js' });
+					chrome.tabs.executeScript(activeTab.id, { file: 'ext/bootstrap/bootstrap.min.js' });
 					console.log("Injected bootstrap"); 	
 					setIsJQueryLoaded(true);
 					checkResumeRendering();
@@ -540,15 +577,18 @@ function setData(i_data, i_resume)
 //Load eye data to content scripts
 function setEyeGazeData(i_eyeData, i_resumeEyeRendering)
 {
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::setEyeData", data: i_eyeData, resume: i_resumeEyeRendering}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedeyedisplay::setEyeData", data: i_eyeData, resume: i_resumeEyeRendering }, function (response)
 		{
 			try
 			{
 				if(response.message == "resume")
 				{
-					resumeEyeRenderingAfterLoad(i_tab.id);
+				    resumeEyeRenderingAfterLoad(activeTab.id);
 				}
 				else
 				{
@@ -573,9 +613,12 @@ function setEyeGazeData(i_eyeData, i_resumeEyeRendering)
 //Load fixation point data to content scripts
 function setEyeFixationData(i_fixationData)
 {
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedfixationdisplay::setFixationData", data: i_fixationData}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedfixationdisplay::setFixationData", data: i_fixationData }, function (response)
 		{
 			try
 			{
@@ -599,16 +642,19 @@ function setEyeFixationData(i_fixationData)
 //Load mouse data to content scripts
 function setMouseData(i_mouseData,i_resumeMouseRendering)
 {
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::setMouseData", data: i_mouseData, resume: i_resumeMouseRendering}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedmousedisplay::setMouseData", data: i_mouseData, resume: i_resumeMouseRendering }, function (response)
 		{
 			try
 			{
 				if(response.message == "resume")
 				{
 					//Tell the server to 
-					resumeMouseRenderingAfterLoad(i_tab.id);
+				    resumeMouseRenderingAfterLoad(activeTab.id);
 				}
 				else
 				{
@@ -641,9 +687,12 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 		{
 			if(!isRenderingEye)
 			{
-				chrome.tabs.getSelected(null, function(i_tab) 
-				{		
-					chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::startAnimation"}, function(response) 
+				chrome.tabs.query({
+				    active: true,
+                    currentWindow:true
+				}, function(tabs) {
+				    var activeTab = tabs[0];
+				    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedeyedisplay::startAnimation" }, function (response)
 					{
 						try
 						{
@@ -674,9 +723,12 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 		if(!isRenderingMouse)
 		{
 			currentPage = 0;
-			chrome.tabs.getSelected(null, function(i_tab) 
-			{		
-			    chrome.tabs.sendMessage(i_tab.id, { msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse }, function (response) {
+			chrome.tabs.query({
+			    active: true,
+			    currentWindow: true
+			}, function(tabs) {
+			    var activeTab = tabs[0];
+			    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedmousedisplay::startAnimation", data: requestAnimateMouse }, function (response) {
 					try
 					{
 						if(response.data)
@@ -702,7 +754,7 @@ function animateData(requestAnimateEye, requestAnimateMouse)
 					}
 				});
 				
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedfixationdisplay::resetPage"}, function(response) 
+			    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedfixationdisplay::resetPage" }, function (response)
 				{
 					try
 					{
@@ -724,9 +776,12 @@ function showHeatmap(requestShowEye, requestShowMouse)
 {
 	if(requestShowEye)
 	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::show"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+		    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedeyedisplay::show" }, function (response)
 			{
 				try
 				{
@@ -748,11 +803,13 @@ function showHeatmap(requestShowEye, requestShowMouse)
 			});
 		});	
 	}
-	if(requestShowMouse)
-	{
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::show"}, function(response) 
+	if(requestShowMouse) {
+		chrome.tabs.query({
+		    active: true,
+            currentWindow: true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+		    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedmousedisplay::show" }, function (response)
 			{
 				try
 				{
@@ -779,9 +836,12 @@ function showHeatmap(requestShowEye, requestShowMouse)
 //Tell injecteddisplay.js to hide heatmap.
 function hideHeatmap()
 {
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::hide"}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedeyedisplay::hide" }, function (response)
 		{
 			try
 			{
@@ -801,7 +861,7 @@ function hideHeatmap()
 				chrome.runtime.sendMessage({msg: 'popup::renderInfo', info: "Unable to contact browser script!", type: "Error"});
 			}
 		});
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::hide"}, function(response) 
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedmousedisplay::hide" }, function (response)
 		{
 			try
 			{
@@ -827,9 +887,12 @@ function hideHeatmap()
 //Tell injectedeyedisplay.js and injectedmousedisplay to hide heatmap.
 function clearCanvas()
 {
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::clearCanvas"}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedeyedisplay::clearCanvas" }, function (response)
 		{
 			try
 			{
@@ -840,7 +903,7 @@ function clearCanvas()
 				console.log("Error: " + err.message);
 			}
 		});
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedmousedisplay::clearCanvas"}, function(response) 
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedmousedisplay::clearCanvas" }, function (response)
 		{
 			try
 			{
@@ -921,9 +984,12 @@ function compareJQueryVersions(version1,version2)
 //Performs a jquery version check
 function PerformJQueryVersionCheck()
 {
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedconfig::jqueryversion"}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedconfig::jqueryversion" }, function (response)
 		{
 			try
 			{
@@ -982,11 +1048,15 @@ function startAliveCheck()
 			}
 		}
 		else
-		{		
-			chrome.tabs.getSelected(null, function(i_tab) 
+		{
+			chrome.tabs.query({
+			    active: true,
+			    currentWindow: true
+			}, function(tabs) 
 			{		
-				//Send message to tab.
-				chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::alive"}, function(response) 
+			    //Send message to tab.
+			    var activeTab = tabs[0];
+			    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedtabinfo::alive" }, function (response)
 				{
 					try
 					{

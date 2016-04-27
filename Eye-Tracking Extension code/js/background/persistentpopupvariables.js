@@ -25,7 +25,7 @@ var isRendering = false;
 var isRenderingPaused = false;
 var isFixationPointsDisplayed = false;
 var isNavigationDisplayed = false;
-var isFPConnectorsDisplayed = false; //Linus edits
+var isFPConnectorsDisplayed = false;
 
 var isConnected = false;
 var isJQueryLoaded = false;
@@ -57,7 +57,7 @@ function sendPopupVariables()
 	variables.isRendering = isRendering;
 	variables.isRenderingPaused = isRenderingPaused;
 	variables.isFixationPointsDisplayed = isFixationPointsDisplayed;
-	variables.isFPConnectorsDisplayed = isFPConnectorsDisplayed; //Linus edits
+	variables.isFPConnectorsDisplayed = isFPConnectorsDisplayed;
 	variables.isNavigationDisplayed = isNavigationDisplayed;
 	variables.isJQueryLoaded = isJQueryLoaded;
 	variables.eyeTrackerActive = eyeTrackerActive;
@@ -114,7 +114,8 @@ function setIsFixationPointsDisplayed(status)
 {
 	isFixationPointsDisplayed = status;
 }
-function setIsFPConnectorsDisplayed(status) //Linus edits
+
+function setIsFPConnectorsDisplayed(status)
 {
 	isFPConnectorsDisplayed = status;
 }

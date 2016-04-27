@@ -25,7 +25,7 @@ var fixationDivsArray = null; //array of fixation point divs
 var port = chrome.runtime.connect({name:"display"}); //Port to background script 'display.js'
 
 var isDisplayingFixationPoints = false;
-var isDisplayingFPConnectors = false; //Linus edit
+var isDisplayingFPConnectors = false;
 var currentPageOnPlayback = 0;
 var mostFixatedIndex = 0;
 
@@ -223,7 +223,7 @@ function drawFixationPoints()
 					popoverIcon.style.height = "100%";*/
 
 					
-					//Author: Linus Lagerhjelm
+					
 					var popoverText = document.createElement('a');
 					popoverText.className += "fixationDivClass";
 					popoverText.innerHTML = "<a href='#' title='"+header+"' style='color: white' data-toggle='"+ id +"' data-placement='"+popoverPosition+"' data-html='true' data-trigger='hover' data-content='"+textContentInPopover+"'>"+ fixationOrderText + "</a>";
@@ -238,7 +238,6 @@ function drawFixationPoints()
 					popoverIcon.style.width = "100%";
 					popoverIcon.style.height = "100%";
 					popoverIcon.style.border = "1px solid #333";
-					//End: Linus edits. See line 259 for more edits
 
 					fixationDivsArray[i].appendChild(popoverDiv);			
 					fixationDivsArray[i].appendChild(popoverIcon);
@@ -258,8 +257,7 @@ function drawFixationPoints()
 }
 
 
-/*Linus edits-----------------------------------------------------------------*/
-/*----------------------------------------------------------------------------*/
+
 
 //Get the absolute position of a DOM object on a page
 //Help-function for func: drawFPConnectors() 
@@ -299,27 +297,31 @@ function drawLine(o1, o2){
 
 
 //Draw lines between all fixation-points
-function drawFPConnectors(){
-	for(i = 0; i < xFixationPointCoords.length-1; i++)
-	{
-		var p1 = findPos(fixationDivsArray[i]);
-		var p2 = findPos(fixationDivsArray[i+1]);
-		drawLine(p1,p2);
-	}
-	port.postMessage({message: "display::showFPConnectors"});
+function drawFPConnectors() {
+    if (xFixationPointCoords != null) {
+        for (i = 0; i < xFixationPointCoords.length - 1; i++) {
+            var p1 = findPos(fixationDivsArray[i]);
+            var p2 = findPos(fixationDivsArray[i + 1]);
+            drawLine(p1, p2);
+        }
+        port.postMessage({ message: "display::showFPConnectors" });
+    } else {
+        //posting back error message
+        port.postMessage({ message: "display::alertMessage", info: "No Fixation points available", type: "Error" });
+    }
 }
 
 //undraw the lines
-function hideFPConnectors(){
-	var line = document.getElementsByClassName('line');
-	for (var i = 0; i < xFixationPointCoords.length-1; i++) {
-		line[i].style.visibility = "hidden";
-	}
-	port.postMessage({message: "display::hideFPConnectors"});
+function hideFPConnectors() {
+    if (xFixationPointCoords != null) {
+        var line = document.getElementsByClassName('line');
+        for (var i = 0; i < xFixationPointCoords.length - 1; i++) {
+            line[i].style.visibility = "hidden";
+        }
+        port.postMessage({ message: "display::hideFPConnectors" });
+    }
 }
 
-/*Linus edits-----------------------------------------------------------------*/
-/*----------------------------------------------------------------------------*/
 
 function clearPrevious()
 {
@@ -375,7 +377,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		{
 			isDisplayingFixationPoints = true;
 			drawFixationPoints();
-			//drawFPConnectors();
 		}
 	}
 	else if(request.msg == "injectedfixationdisplay::hideFixationPoints")
@@ -392,16 +393,13 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		}
 		sendResponse({message: "Hiding fixation points!"});
 	}
-	/*Linus edits-------------------------------------------------------------*/
-	/*------------------------------------------------------------------------*/
 	else if(request.msg == "injectedfixationdisplay::showFPConnectors")
 	{	
 		sendResponse({message: "Displaying FP-connectors"});
 		
 		if(!isDisplayingFPConnectors){
 			isDisplayingFPConnectors = true;
-			drawFPConnectors();	//Linus edit
-			console.log(isDisplayingFPConnectors);
+			drawFPConnectors();	
 		}
 	}
 	else if(request.msg == "injectedfixationdisplay::hideFPConnectors")
@@ -414,8 +412,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		}
 
 	}
-	/*------------------------------------------------------------------------*/
-	/*Linus edits-------------------------------------------------------------*/
 	else if(request.msg == "injectedfixationdisplay::resumeRenderingAfterLoad")
 	{
 		currentPageOnPlayback = request.data;

@@ -151,9 +151,12 @@ function handleStartRecording()
 	if(!isRecording)
 	{
 		//Scroll height
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getScrollHeight"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+		    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedtabinfo::getScrollHeight" }, function (response)
 			{
 				manageMessage(13, response.data);
 				console.log("Scroll sent");
@@ -161,9 +164,12 @@ function handleStartRecording()
 		});
 		
 		//Document size
-		chrome.tabs.getSelected(null, function(i_tab) 
-		{
-			chrome.tabs.sendMessage(i_tab.id, {msg: "injectedtabinfo::getDocumentSize"}, function(response) 
+		chrome.tabs.query({
+		    active: true,
+            currentWindow:true
+		}, function(tabs) {
+		    var activeTab = tabs[0];
+		    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedtabinfo::getDocumentSize" }, function (response)
 			{
 				manageMessage(25, response.data);
 				console.log("Size sent");

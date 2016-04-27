@@ -112,9 +112,12 @@ function setCurrentTestInfo(user, application, date, time)
 			userName += userSplitArray[i];
 		}
 	}
-	chrome.tabs.getSelected(null, function(i_tab) 
-	{
-		chrome.tabs.sendMessage(i_tab.id, {msg: "injectedeyedisplay::setTester", data: userName}, function(response) 
+	chrome.tabs.query({
+	    active: true,
+        currentWindow:true
+	}, function(tabs) {
+	    var activeTab = tabs[0];
+	    chrome.tabs.sendMessage(activeTab.id, { msg: "injectedeyedisplay::setTester", data: userName }, function (response)
 		{
 			try
 			{

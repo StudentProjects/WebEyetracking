@@ -54,41 +54,41 @@ var animateBothMouseAndKeys = false;
 
 function initializeMouseCanvas()
 {
-	if(mouseCanvasDiv == null)
-	{
-		if(animateBothMouseAndKeys)
-		{
-			mouseCanvasDiv = document.createElement("div");
-			mouseCanvasDiv.style.position = "absolute";
-			mouseCanvasDiv.style.top = "0px";
-			mouseCanvasDiv.style.left = "0px";
-			mouseCanvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
-			mouseCanvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";	
-			mouseCanvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
-			mouseCanvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";	
-			mouseCanvasDiv.style.zIndex = "999996";	
-			mouseCanvasDiv.id = "mouse-canvas-div";
-			mouseCanvasDiv.className = "canvas-class";
-		    
-		    var superContainer = document.getElementById("superContainer");    
-			superContainer.appendChild(mouseCanvasDiv);
+	if(mouseCanvasDiv == null) {
+	    if (animateBothMouseAndKeys) {
+		    mouseCanvasDiv = document.createElement("div");
+		    mouseCanvasDiv.style.position = "absolute";
+		    mouseCanvasDiv.style.top = "0px";
+		    mouseCanvasDiv.style.left = "0px";
+		    mouseCanvasDiv.height = Math.max($(document).height(), $(window).height()) + "px";
+		    mouseCanvasDiv.width = Math.max($(document).width(), $(window).width()) + "px";
+		    mouseCanvasDiv.style.height = Math.max($(document).height(), $(window).height()) + "px";
+		    mouseCanvasDiv.style.width = Math.max($(document).width(), $(window).width()) + "px";
+		    mouseCanvasDiv.style.zIndex = "999996";
+		    mouseCanvasDiv.id = "mouse-canvas-div";
+		    mouseCanvasDiv.className = "canvas-class";
 
+		    document.body.appendChild(mouseCanvasDiv);
 		}
 	}
-	heatmapMouseInstance = h337.create( //Heatmap instance.
-	{
-		container: document.querySelector(".canvas-class"),
-		radius: 45,
-	 	maxOpacity: 1,
-	    minOpacity: .0,
-	    blur: .75,
-		gradient:
-		{
-			'.2': 'red',
-			'.5': 'blue',
-			'.85': 'white'
-		}
-	});
+    try {
+        heatmapMouseInstance = h337.create( //Heatmap instance.
+	    {
+	        container: document.querySelector(".canvas-class"),
+	        radius: 45,
+	        maxOpacity: 1,
+	        minOpacity: 0.0,
+	        blur: 0.75,
+	        gradient:
+		    {
+		        '.2': 'red',
+		        '.5': 'blue',
+		        '.85': 'white'
+		    }
+	    });
+    } catch (e) {
+        console.log(e);
+    } 
 }
 
 //Update the xCoords and yCoords with the latest collected data.
@@ -196,7 +196,7 @@ function animateMouse()
 		}
 		catch(err)
 		{
-			console.log("Mouse canvas is null!!");
+		    console.log("Mouse canvas is null!!");
 		}	
 	}
 	
@@ -445,40 +445,41 @@ function startMouseAnimation(startTime)
 	currentMouseClick = 0;
 	currentKey = 0;
 	keyEventTriggered = false;
+	
+	if(timeMouseClicks[currentMouseClick])
+	{
+		while(startTime > timeMouseClicks[currentMouseClick])
+		{
+			currentMouseClick++;
+		}
+	}
 
-    try {
-        if (timeMouseClicks[currentMouseClick]) {
-            while (startTime > timeMouseClicks[currentMouseClick]) {
-                currentMouseClick++;
-            }
-        }
-
-        if (timeStampKey[currentKey]) {
-            while (startTime > timeStampKey[currentKey]) {
-                currentKey++;
-            }
-        }
-
-        port.postMessage({ message: "display::mouseAnimationStarted" });
-        console.log("Animating mouse data");
-
-        //Set mouse related variables
-        sizeMouse = timeStampMouse.length;
-        indexMouse = 0;
-        while (startTime > timeStampMouse[indexMouse]) {
-            indexMouse++;
-        }
-
-        var time = new Date();
-        previousMouseFrameTime = time.getTime();
-        currentMouseFrameTime = startTime;
-        console.log("Animating from frame " + indexMouse);
-        manageMouseDiv(true);
-        initializeMouseCanvas();
-        animateMouse();
-    } catch (e) {
-        console.log("Något gick käpprätt åt helvete!");
-    } 
+	if(timeStampKey[currentKey])
+	{
+		while(startTime > timeStampKey[currentKey])
+		{
+			currentKey++;
+		}
+	}	
+	
+	port.postMessage({message: "display::mouseAnimationStarted"});
+	console.log("Animating mouse data");
+	
+	//Set mouse related variables
+	sizeMouse = timeStampMouse.length;
+	indexMouse = 0;
+	while(startTime > timeStampMouse[indexMouse])
+	{
+		indexMouse++;
+	}
+	
+	var time = new Date();
+	previousMouseFrameTime = time.getTime();
+	currentMouseFrameTime = startTime;
+	console.log("Animating from frame " + indexMouse);
+	manageMouseDiv(true);
+	initializeMouseCanvas();
+	animateMouse();
 }
 
 //Show or hide mouse pointer
@@ -515,8 +516,8 @@ function manageMouseDiv(create)
 //Show the collected data as a heatmap in the tab
 function displayMouseHeatmap()
 {	
-	if(xMouseCoords && yMouseCoords)
-	{
+	if(xMouseCoords && yMouseCoords) {
+	    animateBothMouseAndKeys = true;
 		initializeMouseCanvas();
 		console.log("Show mouse heatmap!");
 		
@@ -530,7 +531,7 @@ function displayMouseHeatmap()
 				value: 1
 			});
 		}
-		isDisplayingMouseHeatmap = true;
+	    isDisplayingMouseHeatmap = true;
 		port.postMessage({message: "display::displayingData"});
 	}
 	else
@@ -607,8 +608,7 @@ function hideMouseHeatmap()
 //Listen for messages from displayheatmap.js in extension
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) 
 {
-	if (request.msg == "injectedmousedisplay::startAnimation")
-	{
+	if (request.msg == "injectedmousedisplay::startAnimation") {
 		if(timeStampMouse)
 		{
 			hideMouseHeatmap(); //Hide before starting animation
@@ -647,8 +647,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		startMouseAnimation(request.data.previousFrameTimestamp);
 		sendResponse({message: "Resumed mouse rendering!"});	
 	}
-	else if (request.msg == "injectedmousedisplay::show")
-	{
+	else if (request.msg == "injectedmousedisplay::show") {
 		if(!isDisplayingMouseHeatmap)
 		{
 			displayMouseHeatmap();
@@ -668,8 +667,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	{
 		hideMouseHeatmap();
 	}
-	else if (request.msg == "injectedmousedisplay::setMouseData")
-	{
+	else if (request.msg == "injectedmousedisplay::setMouseData") {
 		setMouseData(request.data);
 		if(request.resume)
 		{
