@@ -40,6 +40,8 @@ var testerName = "";
 ///////////
 //METHODS//
 ///////////
+
+/*
 function createSuperContainer(){
 	var superContainer = document.createElement("div");
 	superContainer.style.position = "absolute";
@@ -66,10 +68,11 @@ function createSuperContainer(){
 	document.body.appendChild(superContainer);
 	superContainer.appendChild(userInfoContainer);
 }
+*/
 // Initializes the canvas for animating eye data
 function initializeEyeCanvas()
 {
-	if(!isSuperContainer){
+	/*if(!isSuperContainer){
 		createSuperContainer();
 		isSuperContainer = true;
 	}
@@ -86,8 +89,8 @@ function initializeEyeCanvas()
 	eyeCanvasDiv.className = "canvas-class";
         
 	var superContainer = document.getElementById("superContainer");
-	superContainer.appendChild(eyeCanvasDiv);
-	/*
+	superContainer.appendChild(eyeCanvasDiv);*/
+	
 	if(!eyeCanvasDiv)
 	{
 		eyeCanvasDiv = document.createElement("div");
@@ -104,20 +107,18 @@ function initializeEyeCanvas()
 	        
 		document.body.appendChild(eyeCanvasDiv);
 	}
-	*/
 	
 	// Setup heatmap for displaying eye data
 	heatmapEyeInstance = h337.create( //Heatmap instance.
 		{
-			container: document.getElementById("eye-canvas-div-"+nrOfDisplayedTests),
+			container: document.getElementById("eye-canvas-div"),
 			radius: 45,
 			maxOpacity: 1,
 		    minOpacity: .0,
 		    blur: .75
 		});
-
+    /*
 	heatmapEyeInstance.configure(generateRandomConfig());
-
 	var nameContainer = document.getElementById("userInfoContainer");
 	var nameListItem = document.createElement("li");
 	nameListItem.style.listStyle = "none";
@@ -128,7 +129,7 @@ function initializeEyeCanvas()
 	nameListItem.innerHTML = testerName + "<div style='height: 20px; width: 40px; background-color:rgb("+ colorArray[0] +","+ colorArray[1] +","+ colorArray[2] +") '>";
 	nameContainer.appendChild(nameListItem);
 
-	++nrOfDisplayedTests;
+	++nrOfDisplayedTests;*/
 }
 
 
@@ -308,7 +309,7 @@ function displayEyeHeatmap()
 //Hide the heatmap
 function hideEye()
 {
-	/*if(isDisplayingEyeHeatmap)
+	if(isDisplayingEyeHeatmap)
 	{
 		console.log("Hide eye heatmap!");
 		port.postMessage({message: "display::setHeaderToDefault"});
@@ -317,7 +318,7 @@ function hideEye()
 			//find corresponding canvas element
 			var canvas = heatmapEyeInstance._renderer.canvas;
 			//remove the canvas from DOM
-			//$(canvas).remove();
+			$(canvas).remove();
 			heatmapEyeInstance = null;
 		}
 		
@@ -328,7 +329,7 @@ function hideEye()
 		}
 	
 		isDisplayingEyeHeatmap = false;	
-	}*/
+	}
 }
 
 
@@ -378,7 +379,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 	else if (request.msg == "injectedeyedisplay::show")
 	{
-		/*if(!isDisplayingEyeHeatmap)
+		if(!isDisplayingEyeHeatmap)
 		{
 			displayEyeHeatmap();
 			sendResponse({message: "Showing heatmap!",data:true});	
@@ -386,9 +387,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		else
 		{
 			sendResponse({message: "Eye heatmap already shown!",data:false});
-		}*/
-		displayEyeHeatmap();
-		sendResponse({message: "Showing heatmap!",data:true});	
+		}
 	}
 	else if (request.msg == "injectedeyedisplay::hide")
 	{
@@ -421,15 +420,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 	}
 });
 
-
+/*
 function generateRandomConfig() {
     // let's keep at least the bgcolor the same...
     var backgroundColor = 'rgba(0,0,0,0)';
     var randVals = [Math.random(), Math.random()];
     //var maxOpacity = Math.max.apply(Math, randVals);
     //var minOpacity = (Math.random() > .5) ? Math.min.apply(Math, randVals) : 0;
-    var maxOpacity = .5*(1-(nrOfDisplayedTests*.1)); 
-    var minOpacity = .1*(1-(nrOfDisplayedTests*.1));
+    var maxOpacity = .9;//*(1-(nrOfDisplayedTests*.1)); 
+    var minOpacity = .7;//*(1-(nrOfDisplayedTests*.1));
     var gradientCfg = {};
     var len = 6;
 
@@ -456,3 +455,4 @@ function random(spunk){
     var x = Math.sin(++seed) * 10000;
     return x - Math.floor(x);
 }
+*/
