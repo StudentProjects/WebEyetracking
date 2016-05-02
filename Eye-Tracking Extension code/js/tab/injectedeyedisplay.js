@@ -113,7 +113,7 @@ function initializeEyeCanvas()
 		{
 			container: document.getElementById("eye-canvas-div"),
 			radius: 45,
-			maxOpacity: 1,
+			maxOpacity: .75,
 		    minOpacity: .0,
 		    blur: .75
 		});
