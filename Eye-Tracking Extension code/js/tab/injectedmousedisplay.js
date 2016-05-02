@@ -514,8 +514,7 @@ function manageMouseDiv(create)
 }
 
 //Show the collected data as a heatmap in the tab
-function displayMouseHeatmap()
-{	
+function displayMouseHeatmap() {
 	if(xMouseCoords && yMouseCoords) {
 	    animateBothMouseAndKeys = true;
 		initializeMouseCanvas();
@@ -603,6 +602,8 @@ function hideMouseHeatmap()
 		document.body.removeChild(document.getElementById("mouse-canvas-div"));
 		mouseCanvasDiv = null;
 	}
+
+    isDisplayingMouseHeatmap = false;
 }
 
 //Listen for messages from displayheatmap.js in extension
@@ -653,18 +654,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 			displayMouseHeatmap();
 			sendResponse({message: "Showing mouse heatmap!", data:true});
 		}
-		else
-		{
+		else {
 			sendResponse({message: "Heatmap already displayed!", data:false});
 		}
 	}
-	else if (request.msg == "injectedmousedisplay::hide")
-	{
+	else if (request.msg == "injectedmousedisplay::hide") {
 		forceMouseAnimationStop();
 		sendResponse({message: "Hiding mouse heatmap!", data:true});
 	}
-	else if (request.msg == "injectedmousedisplay::clearCanvas")
-	{
+	else if (request.msg == "injectedmousedisplay::clearCanvas") {
 		hideMouseHeatmap();
 	}
 	else if (request.msg == "injectedmousedisplay::setMouseData") {
