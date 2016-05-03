@@ -48,6 +48,12 @@ var isDisplayingMouseHeatmap = false;
 
 var animateBothMouseAndKeys = false;
 
+var isMouseClickFinished = false;
+var isKeyClickFinished = false;
+
+var animationMouseClick = null;
+var animationKeyClick = null;
+
 ///////////
 //METHODS//
 ///////////
@@ -439,47 +445,204 @@ function animateMouse()
 //Start the animate function. Gets the length of timeStampEye.
 function startMouseAnimation(startTime)
 {
-	console.log("Start mouse animation");
-	
-	//Check which mouse click and key event index
-	currentMouseClick = 0;
-	currentKey = 0;
-	keyEventTriggered = false;
-	
-	if(timeMouseClicks[currentMouseClick])
+    console.log("Start mouse animation");
+	if (timeStampMouse.length > 0)
 	{
-		while(startTime > timeMouseClicks[currentMouseClick])
-		{
-			currentMouseClick++;
-		}
-	}
+	    //Check which mouse click and key event index
+	    currentMouseClick = 0;
+	    currentKey = 0;
+	    keyEventTriggered = false;
 
-	if(timeStampKey[currentKey])
+	    if (timeMouseClicks[currentMouseClick]) {
+	        while (startTime > timeMouseClicks[currentMouseClick]) {
+	            currentMouseClick++;
+	        }
+	    }
+
+	    if (timeStampKey[currentKey]) {
+	        while (startTime > timeStampKey[currentKey]) {
+	            currentKey++;
+	        }
+	    }
+
+	    port.postMessage({ message: "display::mouseAnimationStarted" });
+	    console.log("Animating mouse data");
+
+	    //Set mouse related variables
+	    sizeMouse = timeStampMouse.length;
+	    indexMouse = 0;
+	    while (startTime > timeStampMouse[indexMouse]) {
+	        indexMouse++;
+	    }
+
+	    var time = new Date();
+	    previousMouseFrameTime = time.getTime();
+	    currentMouseFrameTime = startTime;
+	    console.log("Animating from frame " + indexMouse);
+	    manageMouseDiv(true);
+	    initializeMouseCanvas();
+	    animateMouse();
+	}
+	else
 	{
-		while(startTime > timeStampKey[currentKey])
-		{
-			currentKey++;
-		}
-	}	
-	
-	port.postMessage({message: "display::mouseAnimationStarted"});
-	console.log("Animating mouse data");
-	
-	//Set mouse related variables
-	sizeMouse = timeStampMouse.length;
-	indexMouse = 0;
-	while(startTime > timeStampMouse[indexMouse])
-	{
-		indexMouse++;
+	    //Check which mouse click and key event index
+	    currentMouseClick = 0;
+	    currentKey = 0;
+	    keyEventTriggered = false;
+
+	    if (timeMouseClicks[currentMouseClick]) {
+	        while (startTime >= timeMouseClicks[currentMouseClick]) {
+	            currentMouseClick++;
+	        }
+	    }
+
+	    if (timeStampKey[currentKey]) {
+	        while (startTime >= timeStampKey[currentKey]) {
+	            currentKey++;
+	        }
+	    }
+
+	    port.postMessage({ message: "display::mouseAnimationStarted" });
+	    console.log("Simulating mouse click and key events");
+
+	    //Set mouse related variables
+	    sizeMouse = timeMouseClicks.length;
+
+	    var time = new Date();
+	    previousMouseFrameTime = time.getTime();
+	    currentMouseFrameTime = startTime;
+	    console.log("Animating from frame " + timeMouseClicks[currentMouseClick]);
+
+	    if (timeStampKey.length > 0) {
+	        animateKeyClicksOnly();
+	    } else {
+	        isKeyClickFinished = true;
+	    }
+
+	    if (timeMouseClicks.length > 0) {
+	        animateMouseClicksOnly();
+	    } else {
+	        isMouseClickFinished = true;
+	    }
 	}
 	
-	var time = new Date();
-	previousMouseFrameTime = time.getTime();
-	currentMouseFrameTime = startTime;
-	console.log("Animating from frame " + indexMouse);
-	manageMouseDiv(true);
-	initializeMouseCanvas();
-	animateMouse();
+}
+
+function animateKeyClicksOnly() {
+    if (!isMouseAnimationPaused) {
+        var nextFrame = 0;
+
+        if (currentKey > 0) {
+            nextFrame = timeStampKey[currentKey] - timeStampKey[currentKey - 1];
+        } else {
+            nextFrame = timeStampKey[currentKey];
+        }
+
+        animationKeyClick = setTimeout(function() {
+            if (currentKey >= timeStampKey.length)
+            {
+                isKeyClickFinished = true;
+                if (isMouseClickFinished)
+                {
+                    stopMouseClickAnimation();
+                }
+                return false;
+            }
+            port.postMessage({ message: "display::setLastFrameTime", data: timeStampKey[currentKey] });
+            var active = document.activeElement;
+            //Check if we have an active element
+            if (active) {
+                //If the keycode is 8, a backspace event should be dispathes.
+                //Instead, this function gets the value of the current element,
+                //and then removes the last element in that string.
+                if (keys[currentKey] == 8) {
+                    var currentValue = active.value;
+                    if (currentValue) {
+                        var newValue = currentValue.substring(0, currentValue.length - 1);
+                        active.value = newValue;
+                    } else {
+                        active.value = "";
+                    }
+                }
+                    //If keycode is 13, an enter event should be dispatched. 
+                    //The following code checks if the current element is
+                    //a input element, and if so, it tries to find its
+                    //parent form and submit it.
+                else if (keys[currentKey] == 13) {
+                    try {
+                        var current = document.activeElement;
+
+                        if (current.nodeName == "INPUT") {
+                            while (current.nodeName != "FORM") {
+                                current = current.parentNode;
+                            }
+
+                            current.submit();
+                        }
+                    } catch (err) {
+                        console.log("Unable to generate ENTER event: " + err);
+                    }
+                    //In all other cases, add the char value of the key code to
+                    //the current element.
+                } else {
+                    var currentChar = String.fromCharCode(keys[currentKey]);
+                    active.value += currentChar;
+                }
+            } else {
+                console.log("Error: No active element, keyboard events will not be dispatched!");
+            }
+
+            currentKey++;
+            animateKeyClicksOnly();
+
+        },nextFrame);
+    }
+}
+
+function animateMouseClicksOnly()
+{
+    if (!isMouseAnimationPaused) {
+        //Check so that the current frame is the one closest to 
+        //the actual timestep. If not, skip to next frame and check
+        //that one instead. This is made to keep the animation in
+        //real time.
+
+
+        var nextFrame = 0;
+
+        if (currentMouseClick > 0) {
+            nextFrame = timeMouseClicks[currentMouseClick] - timeMouseClicks[currentMouseClick - 1];
+        } else {
+            nextFrame = timeMouseClicks[currentMouseClick];
+        }
+
+
+        animationMouseClick = setTimeout(function ()
+        {
+            if (currentMouseClick >= sizeMouse) {
+                isMouseClickFinished = true;
+                if (isKeyClickFinished) {
+                    stopMouseClickAnimation();
+                }
+                return false;
+            }
+
+            port.postMessage({ message: "display::setLastFrameTime", data: timeMouseClicks[currentMouseClick] });
+            target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
+
+            if (target) {
+                var evt2 = document.createEvent("MouseEvents");
+                evt2.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+                target.dispatchEvent(evt2);
+                target.focus();
+            }
+
+            currentMouseClick++;
+            animateMouseClicksOnly();
+
+        }, nextFrame);
+    }
 }
 
 //Show or hide mouse pointer
@@ -566,23 +729,62 @@ function stopMouseAnimation()
 	}
 }
 
+function stopMouseClickAnimation()
+{
+    if (isMouseClickFinished && isKeyClickFinished) {
+        console.log("stop mouse click and key event simulation!");
+        isMouseClickFinished = false;
+        isKeyClickFinished = false;
+        currentMouseClick = 0;
+        currentKey = 0;
+        animateBothMouseAndKeys = false;
+
+        if (animationMouseClick) {
+            clearTimeout(animationMouseClick);
+            animationMouseClick = null;
+        }
+        if (animationKeyClick) {
+            clearTimeout(animationKeyClick);
+            animationKeyClick = null;
+        }
+
+        port.postMessage({ message: "display::mouseAnimationFinished" });
+    }
+}
+
 
 function forceMouseAnimationStop()
 {
 
 	//Mouse
-	indexMouse = 0;
+    indexMouse = 0;
+    currentMouseClick = 0;
+    currentKey = 0;
 		
-	clearTimeout(animationMouse);
+    clearTimeout(animationMouse);
+
 	animationMouse = null;
 	manageMouseDiv(false);
-	
-	port.postMessage({message: "display::mouseAnimationFinished"});
+
 	isMouseAnimationPaused = false;
 	
 	animateBothMouseAndKeys = false;
 	
 	hideMouseHeatmap();
+
+	if (animationMouseClick) {
+	    clearTimeout(animationMouseClick);
+	    animationMouseClick = null;
+	}
+	if (animationKeyClick) {
+	    clearTimeout(animationKeyClick);
+	    animationKeyClick = null;
+	}
+
+	isMouseClickFinished = false;
+	isKeyClickFinished = false;
+
+	port.postMessage({ message: "display::mouseAnimationFinished" });
 }
 
 //Hide the heatmap
@@ -632,7 +834,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 		var time = new Date();
 		previousMouseFrameTime = time.getTime();
 		isMouseAnimationPaused = false;
-		animateMouse();
+		if (timeStampMouse.length > 0) {
+		    animateMouse();
+		} else {
+		    animateMouseClicksOnly();
+		}
 		sendResponse({message: "Resumed mouse rendering!"});	
 	}
 	else if(request.msg == "injectedmousedisplay::removeDataFromPreviousTest")

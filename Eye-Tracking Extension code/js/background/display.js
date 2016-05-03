@@ -88,8 +88,7 @@ chrome.runtime.onConnect.addListener(function(port)
 		{
 			chrome.runtime.sendMessage({msg: 'player::displayingData'});
 		}
-		else if(msg.message == "display::setLastFrameTime")
-		{
+		else if(msg.message == "display::setLastFrameTime") {
 			previousFrameTimestamp = msg.data;
 		}
 		else if(msg.message == "display::injectedContentReady")

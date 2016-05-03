@@ -56,9 +56,9 @@ function pushMousePosition()
 		currentTime += time.getTime() - lastTime;
 		lastTime = time.getTime();
 		
-		currentMouseRecording['mouseX'].push(mouseX);
+		/*currentMouseRecording['mouseX'].push(mouseX);
 		currentMouseRecording['mouseY'].push(mouseY);	
-		currentMouseRecording['timeStampMouse'].push(currentTime - pauseOffset);
+		currentMouseRecording['timeStampMouse'].push(currentTime - pauseOffset);*/
 		
 		if(mouseClicks > currentMouseRecording['mouseClickTimeStamp'].length)
 		{
