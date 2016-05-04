@@ -498,7 +498,7 @@ namespace tieto.education.eyetrackingwebserver
                             if(m_checkStatusTimer.Enabled == false && !m_isTerminatingListeningThread)
                             {
                                 m_lastEyeTrackerStatus = m_recorderInstance.isEyeTrackerOnline();
-                                m_lastMicrophoneStatus = m_recorderInstance.isMicrophoneConnected();
+                                m_lastMicrophoneStatus = false;//m_recorderInstance.isMicrophoneConnected();
 
                                 m_messageHandler.serverNotificationToClient(26, m_lastEyeTrackerStatus.ToString());
                                 m_messageHandler.serverNotificationToClient(30, m_lastMicrophoneStatus.ToString());
