@@ -160,12 +160,19 @@ namespace tieto.education.eyetrackingwebserver
        /// <returns>Bool, is a microphone connected</returns>
        public bool isMicrophoneConnected()
        {
-           Microphone mic = Microphone.Default;
-           if(mic != null)
+           try
            {
-               return true;
+               Microphone mic = Microphone.Default;
+               if (mic != null)
+               {
+                   return true;
+               }
+               return false;
            }
-           return false;
+           catch (Exception)
+           {
+               return false;
+           }
        }
 
        /// <summary>
