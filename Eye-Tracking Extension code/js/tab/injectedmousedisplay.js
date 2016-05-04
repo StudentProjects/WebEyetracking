@@ -628,6 +628,10 @@ function animateMouseClicksOnly()
             }
 
             port.postMessage({ message: "display::setLastFrameTime", data: timeMouseClicks[currentMouseClick] });
+
+            if (eyeCanvasDiv) {
+                eyeCanvasDiv.style.zIndex = "-1";
+            }
             target = document.elementFromPoint(xMouseClicks[currentMouseClick], yMouseClicks[currentMouseClick]);
 
             if (target) {
@@ -636,6 +640,10 @@ function animateMouseClicksOnly()
 
                 target.dispatchEvent(evt2);
                 target.focus();
+            }
+
+            if (eyeCanvasDiv) {
+                eyeCanvasDiv.style.zIndex = "999996";
             }
 
             currentMouseClick++;
