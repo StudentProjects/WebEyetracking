@@ -41,19 +41,28 @@ namespace tieto.education.eyetrackingwebserver
 
             m_eyeInstance = i_eye;
 
-            m_microphoneDevice = Microphone.Default;
-            if(m_microphoneDevice != null)
+            try
             {
-                m_microphoneDevice.BufferReady += new EventHandler<EventArgs>(saveAudio);
+                m_microphoneDevice = Microphone.Default;
+                if (m_microphoneDevice != null)
+                {
+                    m_microphoneDevice.BufferReady += new EventHandler<EventArgs>(saveAudio);
+                }
+
+                m_loadedBuffer = null;
+
+                m_updateFramework = new System.Timers.Timer();
+                m_updateFramework.Interval = 50;
+                m_updateFramework.AutoReset = true;
+                m_updateFramework.Elapsed += new ElapsedEventHandler(this.updateFramework);
+                m_updateFramework.Start();
             }
-
-            m_loadedBuffer = null;
-
-            m_updateFramework = new System.Timers.Timer();
-            m_updateFramework.Interval = 50;
-            m_updateFramework.AutoReset = true;
-            m_updateFramework.Elapsed += new ElapsedEventHandler(this.updateFramework);
-            m_updateFramework.Start();
+            catch (Exception)
+            {
+                m_recorderData = 0;
+                m_microphoneDevice = null;
+            }
+            
         }
 
         /// <summary>
